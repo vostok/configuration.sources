@@ -176,7 +176,7 @@ namespace Vostok.Configuration.Sources.Tests
             const string value = "wrong file format";
             var next = 0;
             var error = 0;
-            new JsonStringSource(value).Observe().Subscribe(node => next++, e => error++);
+            new XmlStringSource(value).Observe().Subscribe(node => next++, e => error++);
 
             next.Should().Be(0);
             error.Should().Be(1);

@@ -3,7 +3,7 @@ using Vostok.Configuration.Abstractions.SettingsTree;
 
 namespace Vostok.Configuration.Sources
 {
-    internal class TaskSource
+    public class TaskSource
     {
         private CurrentValueObserver<(ISettingsNode, Exception)> rawValueObserver;
 

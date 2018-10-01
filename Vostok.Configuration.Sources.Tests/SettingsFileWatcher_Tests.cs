@@ -114,33 +114,6 @@ namespace Vostok.Configuration.Sources.Tests
         }
 
         [Test]
-        public void Should_callback_on_exception()
-        {
-            var res = 0;
-            new Action(() => res = ReturnsNumberOfCallbacks()).ShouldPassIn(7.Seconds());
-            res.Should().Be(2);
-        }
-
-        private int ReturnsNumberOfCallbacks()
-        {
-            const string fileName = TestName + "_CallbackTest.tst";
-            var val = 0;
-            var jfs = new JsonFileSource(fileName);
-
-            TestHelper.CreateFile(TestName, "wrong file format", fileName);
-
-            var sub1 = jfs.Observe().Subscribe(settings => {}, e => val++);
-            var sub2 = jfs.Observe().Subscribe(settings => {}, e => val++);
-
-            Thread.Sleep(200.Milliseconds());
-
-            sub1.Dispose();
-            sub2.Dispose();
-            
-            return val;
-        }
-
-        [Test]
         public void Should_not_Observe_file_twice()
         {
             new Action(() => ReturnsNumberOfSubscribeActionInvokes_2().Should().Be(1)).ShouldPassIn(1.Seconds());
