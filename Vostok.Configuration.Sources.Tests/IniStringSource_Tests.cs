@@ -3,6 +3,7 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
 using Vostok.Commons.Testing;
+using Vostok.Configuration.Sources.Tests.Commons;
 using Vostok.Configuration.Sources.Watchers;
 
 // ReSharper disable AccessToModifiedClosure

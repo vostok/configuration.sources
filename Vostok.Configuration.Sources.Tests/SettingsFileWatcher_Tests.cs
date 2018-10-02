@@ -4,7 +4,7 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
 using Vostok.Commons.Testing;
-using Vostok.Configuration.Sources.Tests.Helper;
+using Vostok.Configuration.Sources.Tests.Commons;
 using Vostok.Configuration.Sources.Watchers;
 
 namespace Vostok.Configuration.Sources.Tests

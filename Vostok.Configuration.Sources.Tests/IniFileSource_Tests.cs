@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.Configuration.Sources.Tests.Helper;
+using Vostok.Configuration.Sources.Tests.Commons;
 
 namespace Vostok.Configuration.Sources.Tests
 {

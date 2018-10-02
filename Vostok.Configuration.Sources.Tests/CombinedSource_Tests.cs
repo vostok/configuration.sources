@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
-using FluentAssertions.Extensions;
 using NUnit.Framework;
-using Vostok.Commons.Testing;
 using Vostok.Configuration.Abstractions;
-using Vostok.Configuration.Abstractions.Merging;
-using Vostok.Configuration.Sources.Tests.Helper;
+using Vostok.Configuration.Sources.Tests.Commons;
 
 namespace Vostok.Configuration.Sources.Tests
 {

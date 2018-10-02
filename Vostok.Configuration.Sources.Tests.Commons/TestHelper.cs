@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Vostok.Configuration.Sources.Tests.Helper
+namespace Vostok.Configuration.Sources.Tests.Commons
 {
     public static class TestHelper
     {

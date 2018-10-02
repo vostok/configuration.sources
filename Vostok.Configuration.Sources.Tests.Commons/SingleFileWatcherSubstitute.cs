@@ -1,7 +1,7 @@
 using System;
 using System.Reactive.Subjects;
 
-namespace Vostok.Configuration.Sources.Tests.Helper
+namespace Vostok.Configuration.Sources.Tests.Commons
 {
     public class SingleFileWatcherSubstitute : IObservable<string>
     {
