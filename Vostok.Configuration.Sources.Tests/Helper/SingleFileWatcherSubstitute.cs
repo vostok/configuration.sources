@@ -3,7 +3,7 @@ using System.Reactive.Subjects;
 
 namespace Vostok.Configuration.Sources.Tests.Helper
 {
-    internal class SingleFileWatcherSubstitute : IObservable<string>
+    public class SingleFileWatcherSubstitute : IObservable<string>
     {
         private readonly Subject<string> observers;
         private string currentValue;

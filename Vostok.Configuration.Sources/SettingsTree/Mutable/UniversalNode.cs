@@ -7,7 +7,7 @@ using Vostok.Configuration.SettingsTree.Mutable;
 
 namespace Vostok.Configuration.Sources.SettingsTree.Mutable
 {
-    internal sealed class UniversalNode : ISettingsNode
+    public sealed class UniversalNode : ISettingsNode
     {
         private readonly IList<ISettingsNode> childrenList = new List<ISettingsNode>();
         private readonly IDictionary<string, ISettingsNode> childrenDict = new SortedDictionary<string, ISettingsNode>(StringComparer.InvariantCultureIgnoreCase);

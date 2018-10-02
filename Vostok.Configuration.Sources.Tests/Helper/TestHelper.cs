@@ -2,7 +2,7 @@
 
 namespace Vostok.Configuration.Sources.Tests.Helper
 {
-    internal static class TestHelper
+    public static class TestHelper
     {
         private static int fileNum = 1;
 

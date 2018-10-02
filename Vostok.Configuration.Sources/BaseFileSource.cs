@@ -32,7 +32,7 @@ namespace Vostok.Configuration.Sources
         {
         }
 
-        internal BaseFileSource(string filePath, FileSourceSettings settings, Func<string, (ISettingsNode, Exception)> parseSettings, Func<string, FileSourceSettings, IObservable<string>> fileWatcherCreator)
+        protected BaseFileSource(string filePath, FileSourceSettings settings, Func<string, (ISettingsNode, Exception)> parseSettings, Func<string, FileSourceSettings, IObservable<string>> fileWatcherCreator)
         {
             this.filePath = filePath;
             this.settings = settings ?? new FileSourceSettings();
