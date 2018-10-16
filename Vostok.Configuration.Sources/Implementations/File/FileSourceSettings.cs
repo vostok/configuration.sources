@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Vostok.Configuration.Sources
+namespace Vostok.Configuration.Sources.Implementations.File
 {
     public class FileSourceSettings
     {

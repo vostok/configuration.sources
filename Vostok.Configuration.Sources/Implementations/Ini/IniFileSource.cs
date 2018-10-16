@@ -1,8 +1,9 @@
 ﻿using System;
 using JetBrains.Annotations;
 using Vostok.Configuration.Abstractions.SettingsTree;
+using Vostok.Configuration.Sources.Implementations.File;
 
-namespace Vostok.Configuration.Sources
+namespace Vostok.Configuration.Sources.Implementations.Ini
 {
     /// <inheritdoc />
     /// <summary>
@@ -12,7 +13,7 @@ namespace Vostok.Configuration.Sources
     {
         /// <inheritdoc />
         /// <summary>
-        /// Creates a <see cref="T:Vostok.Configuration.Sources.IniFileSource" /> instance using given parameter <paramref name="filePath" />
+        /// Creates a <see cref="T:Vostok.Configuration.Sources.Implementations.Ini.IniFileSource" /> instance using given parameter <paramref name="filePath" />
         /// </summary>
         /// <param name="filePath">File name with settings</param>
         /// <param name="settings">File parsing settings</param>
@@ -21,11 +22,11 @@ namespace Vostok.Configuration.Sources
         {
         }
 
-        internal IniFileSource([NotNull] string filePath, Func<string, FileSourceSettings, IObservable<string>> fileWatcherCreator, FileSourceSettings settings = null)
+        internal IniFileSource([NotNull] string filePath, Func<string, FileSourceSettings, IObservable<(string, Exception)>> fileWatcherCreator, FileSourceSettings settings = null)
             : base(filePath, settings, ParseSettings, fileWatcherCreator)
         {
         }
 
-        private static (ISettingsNode settings, Exception error) ParseSettings(string str) => (new IniStringSource(str).Get(), null);
+        private static ISettingsNode ParseSettings(string str) => new IniStringSource(str).Get();
     }
 }

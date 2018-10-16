@@ -2,15 +2,12 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Vostok.Configuration.Abstractions;
-using Vostok.Configuration.Sources.Tests.Commons;
+using Vostok.Configuration.Sources.Implementations.Combined;
 
 namespace Vostok.Configuration.Sources.Tests
 {
-    [TestFixture]
-    public class CombinedSource_Tests: Sources_Test
+    internal class CombinedSource_Tests
     {
-        private SingleFileWatcherSubstitute[] watchers;
-
         [Test]
         public void Should_throw_exception_if_no_sources()
         {

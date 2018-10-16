@@ -1,45 +1,25 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
-using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.SettingsTree.Mutable;
 
-namespace Vostok.Configuration.Sources
+namespace Vostok.Configuration.Sources.Implementations.Ini
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// Ini converter to <see cref="ISettingsNode"/> tree from string
-    /// </summary>
-    public class IniStringSource : IConfigurationSource
+    internal class IniStringRawSource : IRawConfigurationSource
     {
         private readonly string ini;
         private readonly bool allowMultiLevelValues;
-        private readonly TaskSource taskSource;
         private volatile bool neverParsed;
         private (ISettingsNode settings, Exception error) currentSettings;
 
-        /// <summary>
-        /// <para>Creates a <see cref="IniStringSource"/> instance using given string in <paramref name="ini"/> parameter</para>
-        /// <para>Parsing is here.</para>
-        /// </summary>
-        /// <param name="ini">ini data in string</param>
-        /// <param name="allowMultiLevelValues">Allow interpret point divided values as fields of inner objects</param>
-        /// <exception cref="Exception">Ini has wrong format</exception>
-        public IniStringSource(string ini, bool allowMultiLevelValues = true)
+        public IniStringRawSource(string ini, bool allowMultiLevelValues = true)
         {
             this.ini = ini;
             this.allowMultiLevelValues = allowMultiLevelValues;
-            taskSource = new TaskSource();
             neverParsed = true;
         }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Returns previously parsed <see cref="ISettingsNode"/> tree.
-        /// </summary>
-        public ISettingsNode Get() => taskSource.Get(Observe()).settings;
-
+        
         private ISettingsNode ParseIni(string text, string name)
         {
             var res = new UniversalNode(name);
@@ -63,7 +43,7 @@ namespace Vostok.Configuration.Sources
                     if (pair.Length == 2 && pair[0].Length > 0 && !pair[0].Contains(" "))
                         ParsePair(pair[0], pair[1], section, currentLine);
                     else
-                        throw new FormatException($"{nameof(IniStringSource)}: wrong ini file ({currentLine}): line \"{line}\"");
+                        throw new FormatException($"{nameof(IniStringRawSource)}: wrong ini file ({currentLine}): line \"{line}\"");
                 }
             }
 
@@ -75,7 +55,7 @@ namespace Vostok.Configuration.Sources
             section = section.Replace(" ", "");
 
             if (settings[section] != null)
-                throw new FormatException($"{nameof(IniStringSource)}: wrong ini file ({currentLine}): section \"{section}\" already exists");
+                throw new FormatException($"{nameof(IniStringRawSource)}: wrong ini file ({currentLine}): section \"{section}\" already exists");
             var res = new UniversalNode(section);
             settings.Add(section, res);
             return res;
@@ -94,7 +74,7 @@ namespace Vostok.Configuration.Sources
                     {
                         var child = (UniversalNode) obj[keys[i]];
                         if (child.Value != null)
-                            throw new FormatException($"{nameof(IniStringSource)}: wrong ini file ({currentLine}): key \"{keys[i]}\" with value \"{child.Value}\" already exists");
+                            throw new FormatException($"{nameof(IniStringRawSource)}: wrong ini file ({currentLine}): key \"{keys[i]}\" with value \"{child.Value}\" already exists");
                         child.Value = value;
                     }
                     else
@@ -113,18 +93,20 @@ namespace Vostok.Configuration.Sources
             }
         }
 
-        public IObservable<(ISettingsNode settings, Exception error)> Observe()
+        public IObservable<(ISettingsNode settings, Exception error)> ObserveRaw()
         {
             if (neverParsed)
+            {
+                neverParsed = false;
                 try
                 {
                     currentSettings = string.IsNullOrWhiteSpace(ini) ? (null, null) : (ParseIni(ini, "root"), null as Exception);
-                    neverParsed = false;
                 }
                 catch (Exception e)
                 {
-                    return Observable.Throw<(ISettingsNode settings, Exception error)>(e);
+                    currentSettings = (null, e);
                 }
+            }
 
             return Observable.Return(currentSettings);
         }

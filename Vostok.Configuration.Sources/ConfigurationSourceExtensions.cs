@@ -1,7 +1,9 @@
 ﻿using System.Linq;
-using System.Reactive.Linq;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.Merging;
+using Vostok.Configuration.Sources.Helpers;
+using Vostok.Configuration.Sources.Implementations.Combined;
+using Vostok.Configuration.Sources.Implementations.Scoped;
 
 namespace Vostok.Configuration.Sources
 {

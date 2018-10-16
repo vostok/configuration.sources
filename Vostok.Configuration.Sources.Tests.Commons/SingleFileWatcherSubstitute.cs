@@ -1,29 +1,28 @@
 using System;
 using System.Reactive.Subjects;
+using Vostok.Configuration.Sources.Implementations.File;
 
 namespace Vostok.Configuration.Sources.Tests.Commons
 {
-    public class SingleFileWatcherSubstitute : IObservable<string>
+    public class SingleFileWatcherSubstitute : IObservable<(string, Exception)>
     {
-        private readonly Subject<string> observers;
-        private string currentValue;
+        private readonly Subject<(string, Exception)> observers;
+        private (string content, Exception error)? currentValue;
         private readonly object locker;
-        private bool initialized;
 
-        public SingleFileWatcherSubstitute(string filePath, FileSourceSettings encoding)
+        public SingleFileWatcherSubstitute(string filePath, FileSourceSettings fileSourceSettings)
         {
-            observers = new Subject<string>();
+            observers = new Subject<(string, Exception)>();
             currentValue = null;
-            initialized = false;
             locker = new object();
         }
 
-        public IDisposable Subscribe(IObserver<string> observer)
+        public IDisposable Subscribe(IObserver<(string, Exception)> observer)
         {
             var subscription = observers.Subscribe(observer);
             lock (locker)
-                if (initialized)
-                    observer.OnNext(currentValue);
+                if (currentValue != null)
+                    observer.OnNext(currentValue.Value);
 
             return subscription;
         }
@@ -35,17 +34,25 @@ namespace Vostok.Configuration.Sources.Tests.Commons
         /// <param name="ignoreIfEquals">Ignore if old and new values are equal. Always send OnNext for observers</param>
         public void GetUpdate(string newValue, bool ignoreIfEquals = false)
         {
-            initialized = true;
-            var isNew = newValue != currentValue;
-            currentValue = newValue;
+            var isNew = currentValue == null || newValue != currentValue.Value.content || currentValue.Value.error != null;
+            currentValue = (newValue, null as Exception);
             if (isNew || ignoreIfEquals)
-                observers.OnNext(currentValue);
+                observers.OnNext(currentValue.Value);
         }
 
         /// <summary>
         /// Imitates throwing exeptions on reading file
         /// </summary>
         /// <param name="e">Some exception</param>
-        public void ThrowException(Exception e) => observers.OnError(e);
+        public void ThrowException(Exception e)
+        {
+            if (currentValue == null)
+                observers.OnError(e);
+            else
+            {
+                currentValue = (currentValue.Value.content, e);
+                observers.OnNext(currentValue.Value);
+            }
+        }
     }
 }

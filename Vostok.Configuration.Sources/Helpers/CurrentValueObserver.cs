@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Vostok.Configuration.Sources
+namespace Vostok.Configuration.Sources.Helpers
 {
     internal class CurrentValueObserver<T>
     {

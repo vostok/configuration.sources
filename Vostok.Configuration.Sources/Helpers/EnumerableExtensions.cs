@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Vostok.Configuration.Sources
+namespace Vostok.Configuration.Sources.Helpers
 {
     public static class EnumerableExtensions
     {

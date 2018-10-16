@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Vostok.Configuration.Abstractions.Merging;
 using Vostok.Configuration.Abstractions.SettingsTree;
-using Vostok.Configuration.SettingsTree.Mutable;
 
 namespace Vostok.Configuration.Sources.SettingsTree.Mutable
 {

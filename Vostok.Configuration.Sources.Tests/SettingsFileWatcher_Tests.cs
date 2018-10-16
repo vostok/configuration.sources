@@ -22,10 +22,10 @@ namespace Vostok.Configuration.Sources.Tests
         {
             var watcher = SettingsFileWatcher.WatchFile("file.name");
             var read = false;
-            var sub = watcher.Subscribe(s =>
+            var sub = watcher.Subscribe(pair =>
             {
                 read = true;
-                s.Should().BeNull();
+                pair.Should().BeNull();
             });
             Thread.Sleep(50.Milliseconds());
             sub.Dispose();
@@ -46,10 +46,10 @@ namespace Vostok.Configuration.Sources.Tests
             var watcher = SettingsFileWatcher.WatchFile(fileName);
             var read = false;
             var sub = watcher.Subscribe(
-                s =>
+                pair =>
                 {
                     read = true;
-                    s.Should().Be(content);
+                    pair.content.Should().Be(content);
                 });
 
             Thread.Sleep(200.Milliseconds());
@@ -82,9 +82,9 @@ namespace Vostok.Configuration.Sources.Tests
             var val1 = 0;
             var val2 = 0;
             var sub1 = ((SingleFileWatcher)SettingsFileWatcher.WatchFile(fileName)).Subscribe(
-                s =>
+                pair =>
                 {
-                    s = s?.Trim();
+                    var s = pair.content?.Trim();
                     val1++;
                     if (val1 == 1)
                         s.Should().BeNull();
@@ -96,9 +96,9 @@ namespace Vostok.Configuration.Sources.Tests
             TestHelper.CreateFile(TestName, content, fileName);
 
             var sub2 = ((SingleFileWatcher)SettingsFileWatcher.WatchFile(fileName)).Subscribe(
-                s =>
+                pair =>
                 {
-                    s = s?.Trim();
+                    var s = pair.content?.Trim();
                     val2++;
                     if (val2 == 1)
                         s.Should().BeNull();
@@ -126,10 +126,10 @@ namespace Vostok.Configuration.Sources.Tests
             var fileName = TestHelper.CreateFile(TestName, content);
 
             var sub = ((SingleFileWatcher)SettingsFileWatcher.WatchFile(fileName)).Subscribe(
-                s =>
+                pair =>
                 {
                     val++;
-                    s = s?.Trim();
+                    var s = pair.content?.Trim();
                     s.Should().Be(content);
                 });
 

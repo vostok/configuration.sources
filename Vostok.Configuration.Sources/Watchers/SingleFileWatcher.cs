@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Vostok.Commons.Helpers.Extensions;
 using Vostok.Commons.Threading;
+using Vostok.Configuration.Sources.Helpers;
+using Vostok.Configuration.Sources.Implementations.File;
 
 namespace Vostok.Configuration.Sources.Watchers
 {
@@ -13,13 +15,13 @@ namespace Vostok.Configuration.Sources.Watchers
     /// <summary>
     /// Watching changes in as single text file
     /// </summary>
-    internal class SingleFileWatcher : IObservable<string>
+    internal class SingleFileWatcher : IObservable<(string content, Exception error)>
     {
         private readonly string filePath;
         private readonly FileSourceSettings settings;
         private readonly AtomicBoolean taskIsRun;
 
-        private readonly Subject<string> observers;
+        private readonly Subject<(string content, Exception error)> observers;
 
         private volatile ValueWrapper currentValueWrapper;
         private CancellationTokenSource tokenDelaySource;
@@ -34,7 +36,7 @@ namespace Vostok.Configuration.Sources.Watchers
         {
             this.filePath = filePath;
             settings = fileSourceSettings ?? new FileSourceSettings();
-            observers = new Subject<string>();
+            observers = new Subject<(string content, Exception error)>();
             taskIsRun = new AtomicBoolean(false);
 
             var path = Path.GetDirectoryName(filePath);
@@ -45,7 +47,7 @@ namespace Vostok.Configuration.Sources.Watchers
             fileWatcher.EnableRaisingEvents = true;
         }
 
-        public IDisposable Subscribe(IObserver<string> observer)
+        public IDisposable Subscribe(IObserver<(string content, Exception error)> observer)
         {
             var subsription = observers.Subscribe(observer);
             if (currentValueWrapper != null)
@@ -71,13 +73,17 @@ namespace Vostok.Configuration.Sources.Watchers
                 {
                     if (CheckFile(out var changes))
                     {
-                        currentValueWrapper = new ValueWrapper(changes);
-                        observers.OnNext(changes);
+                        var result = (changes, null as Exception);
+                        currentValueWrapper = new ValueWrapper(result);
+                        observers.OnNext(result);
                     }
                 }
                 catch (Exception e)
                 {
-                    observers.OnError(e);
+                    if (currentValueWrapper == null)
+                        observers.OnError(e);
+                    else if (!ExceptionsComparer.Equals(currentValueWrapper.Value.error, e))
+                        observers.OnNext((currentValueWrapper.Value.content, e));
                 }
 
                 if (tokenDelaySource == null || tokenDelay.IsCancellationRequested)
@@ -101,13 +107,13 @@ namespace Vostok.Configuration.Sources.Watchers
                     changes = reader.ReadToEnd();
             }
 
-            return currentValueWrapper == null || currentValueWrapper.Value != changes;
+            return currentValueWrapper == null || currentValueWrapper.Value.content != changes;
         }
 
         private class ValueWrapper
         {
-            public ValueWrapper(string value) => Value = value;
-            public string Value { get; }
+            public ValueWrapper((string content, Exception error) value) => Value = value;
+            public (string content, Exception error) Value { get; }
         }
     }
 }

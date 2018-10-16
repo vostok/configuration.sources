@@ -1,7 +1,7 @@
 ﻿using System;
 using Vostok.Configuration.Abstractions.SettingsTree;
 
-namespace Vostok.Configuration.Sources
+namespace Vostok.Configuration.Sources.Helpers
 {
     public class TaskSource
     {
@@ -18,7 +18,7 @@ namespace Vostok.Configuration.Sources
             catch
             {
                 rawValueObserver = new CurrentValueObserver<(ISettingsNode, Exception)>();
-                throw;
+                return rawValueObserver.Get(observable);
             }
         }
     }

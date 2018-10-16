@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Vostok.Configuration.SettingsTree.Mutable
+namespace Vostok.Configuration.Sources.SettingsTree.Mutable
 {
     internal static class EnumerableExtensions
     {
