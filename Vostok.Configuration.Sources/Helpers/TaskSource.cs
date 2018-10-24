@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Vostok.Configuration.Abstractions.SettingsTree;
 
 namespace Vostok.Configuration.Sources.Helpers
@@ -17,9 +18,18 @@ namespace Vostok.Configuration.Sources.Helpers
             }
             catch
             {
-                rawValueObserver = new CurrentValueObserver<(ISettingsNode, Exception)>();
+                ReplaceObserver();
                 return rawValueObserver.Get(observable);
             }
+        }
+
+        private void ReplaceObserver()
+        {
+            var currentObserver = rawValueObserver;
+            var newObserver = new CurrentValueObserver<(ISettingsNode, Exception)>();
+            if (Interlocked.CompareExchange(ref rawValueObserver, newObserver, currentObserver) != currentObserver)
+                newObserver.Dispose();
+            currentObserver.Dispose();
         }
     }
 }

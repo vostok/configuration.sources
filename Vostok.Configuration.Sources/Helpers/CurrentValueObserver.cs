@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Vostok.Configuration.Sources.Helpers
 {
-    internal class CurrentValueObserver<T>
+    internal class CurrentValueObserver<T> : IDisposable
     {
         private volatile TaskCompletionSource<T> resultSource = new TaskCompletionSource<T>();
         private IDisposable innerSubscription;
@@ -38,6 +38,13 @@ namespace Vostok.Configuration.Sources.Helpers
             var newSource = new TaskCompletionSource<T>();
             newSource.TrySetResult(value);
             return newSource;
+        }
+
+        public void Dispose()
+        {
+            var subscription = innerSubscription;
+            if (subscription != null && ReferenceEquals(Interlocked.CompareExchange(ref innerSubscription, null, subscription), subscription))
+                subscription.Dispose();
         }
     }
 }
