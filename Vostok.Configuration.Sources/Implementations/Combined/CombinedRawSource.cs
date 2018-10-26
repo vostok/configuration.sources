@@ -35,7 +35,26 @@ namespace Vostok.Configuration.Sources.Implementations.Combined
         /// <para>Returns current value immediately on subscribtion.</para>
         /// </summary>
         /// <returns>Event with new RawSettings tree</returns>
-        public IObservable<(ISettingsNode settings, Exception error)> ObserveRaw() => 
-            observer ?? (observer = sources.Select(s => s.Observe()).CombineLatest().Select(l => l.Aggregate((a, b) => (a.settings.Merge(b.settings, options), null as Exception)))); // TODO(krait):  merge exceptions
+        public IObservable<(ISettingsNode settings, Exception error)> ObserveRaw()
+        {
+            if (observer != null)
+                return observer;
+            observer = sources
+                .Select(s => s.Observe())
+                .CombineLatest()
+                .Select(l => (MergeSettings(l), MergeErrors(l)));
+            return observer;
+        }
+
+        private ISettingsNode MergeSettings(IEnumerable<(ISettingsNode settings, Exception error)> values)
+        {
+            return values.Select(pair => pair.settings).Aggregate((a, b) => a.Merge(b, options));
+        }
+
+        private static Exception MergeErrors(IEnumerable<(ISettingsNode settings, Exception error)> values)
+        {
+            var errors = values.Select(pair => pair.error).Where(error => error != null).ToArray();
+            return errors.Length > 0 ? new AggregateException(errors) : null;
+        }
     }
 }
