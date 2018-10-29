@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
 using Vostok.Configuration.Abstractions.SettingsTree;
-using Vostok.Configuration.Sources.Implementations.Ini;
+using Vostok.Configuration.Sources.SettingsTree;
 
 namespace Vostok.Configuration.Sources.Implementations.Environment
 {
@@ -17,21 +18,21 @@ namespace Vostok.Configuration.Sources.Implementations.Environment
             neverParsed = true;
         }
 
-        private static ISettingsNode GetSettings(string vars) => new IniStringSource(vars, false).Get();
-
-        private static string GetVariables()
+        private static ISettingsNode GetSettings()
         {
-            var builder = new StringBuilder();
+            var trees = new List<ISettingsNode>();
             foreach (DictionaryEntry ev in System.Environment.GetEnvironmentVariables())
-                builder.AppendLine($"{ev.Key}={ev.Value}");
-            return builder.ToString();
+                trees.Add(TreeFactory.CreateTreeByMultiLevelKey(
+                    "root", ev.Key.ToString().Replace(" ", "").Split('.'), ev.Value.ToString()));
+
+            return trees.Any() ? trees.Aggregate((a, b) => a.Merge(b)) : null;
         }
 
         public IObservable<(ISettingsNode settings, Exception error)> ObserveRaw()
         {
             if (neverParsed)
             {
-                currentValue = (GetSettings(GetVariables()), null as Exception);
+                currentValue = (GetSettings(), null as Exception);
                 neverParsed = false;
             }
 

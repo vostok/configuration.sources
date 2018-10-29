@@ -33,37 +33,14 @@ namespace Vostok.Configuration.Sources.Tests
             iss.Get().Should().BeNull();
         }
         
-        [Test]
-        public void Should_throw_FormatException_on_wrong_ini_format()
+        [TestCase("???")]
+        [TestCase("[]")]
+        [TestCase(" = 123")]
+        public void Should_throw_FormatException_on_wrong_ini_format(string ini)
         {
-            var value = "???";
             new Action(() =>
             {
-                new IniStringSource(value).Get();
-            }).Should().Throw<FormatException>();
-
-            value = "[]";
-            new Action(() =>
-            {
-                new IniStringSource(value).Get();
-            }).Should().Throw<FormatException>();
-
-            value = " = 123";
-            new Action(() =>
-            {
-                new IniStringSource(value).Get();
-            }).Should().Throw<FormatException>();
-
-            value = "A.B = 123 \r A.B = 321";
-            new Action(() =>
-            {
-                new IniStringSource(value).Get();
-            }).Should().Throw<FormatException>();
-
-            value = "a=0 \r a.b=1 \r a.b.c=2 \r a.b=11";
-            new Action(() =>
-            {
-                new IniStringSource(value).Get();
+                new IniStringSource(ini).Get();
             }).Should().Throw<FormatException>();
         }
 
@@ -117,14 +94,6 @@ namespace Vostok.Configuration.Sources.Tests
             result["a"].Value.Should().BeNull("rewritten with b");
             result["a"]["b"].Value.Should().BeNull("rewritten with c");
             result["a"]["b"]["c"].Value.Should().Be("2");
-        }
-
-        [Test]
-        public void Should_throw_if_key_already_exists_while_deep_parsing()
-        {
-            new Action(() => {
-                new IniStringSource("a=0 \r a.b.c=2 \r a.b=1").Get();
-            }).Should().Throw<FormatException>();
         }
 
         [Test]
