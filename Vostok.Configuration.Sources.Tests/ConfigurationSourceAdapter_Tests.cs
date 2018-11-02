@@ -14,7 +14,7 @@ using Vostok.Configuration.Sources.Helpers;
 namespace Vostok.Configuration.Sources.Tests
 {
     [TestFixture]
-    public class ConfigurationSourceAdapter_Tests
+    internal class ConfigurationSourceAdapter_Tests
     {
         private ConfigurationSourceAdapter adapter;
         private IRawConfigurationSource rawSource;

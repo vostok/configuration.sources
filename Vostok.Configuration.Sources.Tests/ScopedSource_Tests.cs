@@ -3,12 +3,11 @@ using FluentAssertions;
 using NUnit.Framework;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Scoped;
-using Vostok.Configuration.Sources.Tests.Commons;
 
 namespace Vostok.Configuration.Sources.Tests
 {
     [TestFixture]
-    public class ScopedSource_Tests : Sources_Test
+    internal class ScopedSource_Tests
     {
         [Test]
         public void Should_return_full_tree_by_tree()

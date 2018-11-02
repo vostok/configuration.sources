@@ -5,8 +5,8 @@ namespace Vostok.Configuration.Sources.Constant
 {
     public class BaseConstantSource : ConfigurationSourceAdapter
     {
-        protected BaseConstantSource(Func<ISettingsNode> getSettings)
-            : base(new BaseConstantRawSource(getSettings))
+        protected BaseConstantSource(Func<ISettingsNode> settingsGetter)
+            : base(new BaseConstantRawSource(settingsGetter))
         {
         }
     }

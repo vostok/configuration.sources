@@ -12,6 +12,7 @@ using Vostok.Configuration.Sources.Combined;
 
 namespace Vostok.Configuration.Sources.Tests
 {
+    [TestFixture]
     internal class CombinedSource_Tests
     {
         private ISettingsNode[] settingsNodes;
