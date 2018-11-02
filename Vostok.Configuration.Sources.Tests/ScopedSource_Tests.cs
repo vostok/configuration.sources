@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Vostok.Configuration.Abstractions.SettingsTree;
-using Vostok.Configuration.Sources.Implementations.Scoped;
+using Vostok.Configuration.Sources.Scoped;
 using Vostok.Configuration.Sources.Tests.Commons;
 
 namespace Vostok.Configuration.Sources.Tests

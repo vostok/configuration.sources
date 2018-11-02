@@ -1,6 +1,6 @@
 using System;
 using System.Reactive.Subjects;
-using Vostok.Configuration.Sources.Implementations.File;
+using Vostok.Configuration.Sources.File;
 
 namespace Vostok.Configuration.Sources.Tests.Commons
 {

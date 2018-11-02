@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using JetBrains.Annotations;
-using Vostok.Configuration.Sources.Implementations.File;
+using Vostok.Configuration.Sources.File;
 
 namespace Vostok.Configuration.Sources.Watchers
 {

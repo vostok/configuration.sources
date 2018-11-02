@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Reactive.Linq;
 using Vostok.Configuration.Abstractions.SettingsTree;
-using Vostok.Configuration.Sources.Helpers;
 using Vostok.Configuration.Sources.Watchers;
 
-namespace Vostok.Configuration.Sources.Implementations.File
+namespace Vostok.Configuration.Sources.File
 {
     /// <inheritdoc />
     /// <summary>

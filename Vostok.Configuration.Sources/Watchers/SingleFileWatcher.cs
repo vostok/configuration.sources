@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Vostok.Commons.Helpers.Extensions;
 using Vostok.Commons.Threading;
+using Vostok.Configuration.Sources.File;
 using Vostok.Configuration.Sources.Helpers;
-using Vostok.Configuration.Sources.Implementations.File;
 
 namespace Vostok.Configuration.Sources.Watchers
 {
@@ -100,7 +100,7 @@ namespace Vostok.Configuration.Sources.Watchers
         {
             changes = null;
 
-            if (File.Exists(filePath))
+            if (System.IO.File.Exists(filePath))
             {
                 using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
                 using (var reader = new StreamReader(fileStream, settings.Encoding))

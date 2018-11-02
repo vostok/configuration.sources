@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.Merging;
 
-namespace Vostok.Configuration.Sources.Implementations.Combined
+namespace Vostok.Configuration.Sources.Combined
 {
     public class CombinedSource : ConfigurationSourceAdapter
     {

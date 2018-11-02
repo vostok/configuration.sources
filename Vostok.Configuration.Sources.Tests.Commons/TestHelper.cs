@@ -31,7 +31,7 @@ namespace Vostok.Configuration.Sources.Tests.Commons
         {
             var dir = Directory.GetCurrentDirectory();
             foreach (var file in Directory.EnumerateFiles(dir, $"{testName}_*"))
-                File.Delete(file);
+                System.IO.File.Delete(file);
         }
     }
 }

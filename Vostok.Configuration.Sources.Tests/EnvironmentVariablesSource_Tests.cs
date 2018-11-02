@@ -6,7 +6,7 @@ using FluentAssertions.Extensions;
 using NUnit.Framework;
 using Vostok.Commons.Testing;
 using Vostok.Configuration.Abstractions.SettingsTree;
-using Vostok.Configuration.Sources.Implementations.Environment;
+using Vostok.Configuration.Sources.Environment;
 using Vostok.Configuration.Sources.Tests.Commons;
 
 namespace Vostok.Configuration.Sources.Tests
@@ -45,12 +45,12 @@ namespace Vostok.Configuration.Sources.Tests
         private static void CheckResult(ISettingsNode settings)
         {
             var windows = new[] { PlatformID.Win32NT, PlatformID.Win32S, PlatformID.Win32Windows, PlatformID.WinCE };
-            if (windows.Contains(Environment.OSVersion.Platform))
+            if (windows.Contains(System.Environment.OSVersion.Platform))
             {
                 settings["pAtH"].Value.Should().NotBeNull();
                 settings["APPdata"].Value.Should().NotBeNull();
             }
-            else if (Environment.OSVersion.Platform == PlatformID.Unix)
+            else if (System.Environment.OSVersion.Platform == PlatformID.Unix)
             {
                 settings["pAtH"].Value.Should().NotBeNull();
                 settings["sheLL"].Value.Should().NotBeNull();

@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.SettingsTree;
 
-namespace Vostok.Configuration.Sources.Implementations.Scoped
+namespace Vostok.Configuration.Sources.Scoped
 {
     /// <summary>
     /// Searches subtree in <see cref="ISettingsNode"/> tree.

@@ -7,7 +7,7 @@ using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.Merging;
 using Vostok.Configuration.Abstractions.SettingsTree;
 
-namespace Vostok.Configuration.Sources.Implementations.Combined
+namespace Vostok.Configuration.Sources.Combined
 {
     /// <summary>
     /// A source that combines settings from several other sources, resolving possible conflicts in favor of sources which one came earlier in the list

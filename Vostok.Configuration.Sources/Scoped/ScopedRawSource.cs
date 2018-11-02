@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.SettingsTree;
 
-namespace Vostok.Configuration.Sources.Implementations.Scoped
+namespace Vostok.Configuration.Sources.Scoped
 {
     internal class ScopedRawSource : IRawConfigurationSource
     {

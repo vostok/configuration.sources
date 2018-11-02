@@ -8,7 +8,7 @@ using NUnit.Framework;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.Merging;
 using Vostok.Configuration.Abstractions.SettingsTree;
-using Vostok.Configuration.Sources.Implementations.Combined;
+using Vostok.Configuration.Sources.Combined;
 
 namespace Vostok.Configuration.Sources.Tests
 {

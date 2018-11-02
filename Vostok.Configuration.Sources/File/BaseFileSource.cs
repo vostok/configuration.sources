@@ -1,7 +1,7 @@
 using System;
 using Vostok.Configuration.Abstractions.SettingsTree;
 
-namespace Vostok.Configuration.Sources.Implementations.File
+namespace Vostok.Configuration.Sources.File
 {
     public class BaseFileSource : ConfigurationSourceAdapter
     {
