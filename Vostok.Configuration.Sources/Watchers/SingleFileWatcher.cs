@@ -21,11 +21,11 @@ namespace Vostok.Configuration.Sources.Watchers
         private readonly FileSourceSettings settings;
         private readonly AtomicBoolean taskIsRun;
 
-        private readonly Subject<(string content, Exception error)> observers;
+        private readonly ReplaySubject<(string content, Exception error)> observers;
 
-        private volatile ValueWrapper currentValueWrapper;
         private CancellationTokenSource tokenDelaySource;
         private CancellationToken tokenDelay;
+        private IFileSystem fileSystem;
 
         /// <summary>
         /// Creates a <see cref="SingleFileWatcher"/> instance with given parameter <paramref name="filePath"/>
@@ -33,30 +33,32 @@ namespace Vostok.Configuration.Sources.Watchers
         /// <param name="filePath">Full file path</param>
         /// <param name="fileSourceSettings"></param>
         public SingleFileWatcher([NotNull] string filePath, FileSourceSettings fileSourceSettings)
+            : this(filePath, fileSourceSettings, new FileSystem())
+        {
+        }
+        
+        internal SingleFileWatcher([NotNull] string filePath, FileSourceSettings fileSourceSettings, IFileSystem fileSystem)
         {
             this.filePath = filePath;
             settings = fileSourceSettings ?? new FileSourceSettings();
-            observers = new Subject<(string content, Exception error)>();
+            this.fileSystem = fileSystem;
+            observers = new ReplaySubject<(string content, Exception error)>(1);
             taskIsRun = new AtomicBoolean(false);
 
             var path = Path.GetDirectoryName(filePath);
             if (string.IsNullOrEmpty(path))
                 path = AppDomain.CurrentDomain.BaseDirectory;
-            var fileWatcher = new FileSystemWatcher(path, Path.GetFileName(filePath));
-            fileWatcher.Changed += OnFileWatcherEvent;
-            fileWatcher.EnableRaisingEvents = true;
+            fileSystem.WatchFileSystem(path, Path.GetFileName(filePath), OnFileWatcherEvent);
         }
 
         public IDisposable Subscribe(IObserver<(string content, Exception error)> observer)
         {
-            var subsription = observers.Subscribe(observer);
-            if (currentValueWrapper != null)
-                observer.OnNext(currentValueWrapper.Value);
+            var subscription = observers.Subscribe(observer);
 
             if (taskIsRun.TrySetTrue())
                 Task.Run(WatchFile);
 
-            return subsription;
+            return subscription;
         }
 
         private void OnFileWatcherEvent(object sender, FileSystemEventArgs args)
@@ -71,19 +73,11 @@ namespace Vostok.Configuration.Sources.Watchers
             {
                 try
                 {
-                    if (CheckFile(out var changes))
-                    {
-                        var result = (changes, null as Exception);
-                        currentValueWrapper = new ValueWrapper(result);
-                        observers.OnNext(result);
-                    }
+                    observers.OnNext((ReadFile(), null));
                 }
                 catch (Exception e)
                 {
-                    if (currentValueWrapper == null)
-                        observers.OnError(e);
-                    else if (!ExceptionsComparer.Equals(currentValueWrapper.Value.error, e))
-                        observers.OnNext((currentValueWrapper.Value.content, e));
+                    observers.OnNext((null, e));
                 }
 
                 if (tokenDelaySource == null || tokenDelay.IsCancellationRequested)
@@ -96,24 +90,13 @@ namespace Vostok.Configuration.Sources.Watchers
             }
         }
 
-        private bool CheckFile(out string changes)
+        private string ReadFile()
         {
-            changes = null;
-
-            if (System.IO.File.Exists(filePath))
-            {
-                using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
-                using (var reader = new StreamReader(fileStream, settings.Encoding))
-                    changes = reader.ReadToEnd();
-            }
-
-            return currentValueWrapper == null || currentValueWrapper.Value.content != changes;
-        }
-
-        private class ValueWrapper
-        {
-            public ValueWrapper((string content, Exception error) value) => Value = value;
-            public (string content, Exception error) Value { get; }
+            if (!fileSystem.Exists(filePath))
+                return null;
+            
+            using (var reader = fileSystem.OpenFile(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, settings.Encoding))
+                return reader.ReadToEnd();
         }
     }
 }
