@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Extensions;
+using Microsoft.Reactive.Testing;
 using NSubstitute;
 using NUnit.Framework;
+using Vostok.Commons.Testing;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Scoped;
+using Vostok.Configuration.Sources.Tests.Helpers;
 
 namespace Vostok.Configuration.Sources.Tests
 {
@@ -76,22 +76,23 @@ namespace Vostok.Configuration.Sources.Tests
             var source = new ScopedRawSource(testSource, "key");
             var value1 = new ValueNode("key", "value1");
 
-            var task = Task.Run(() => source.ObserveRaw().Buffer(100.Milliseconds(), 2).ToEnumerable().First());
-            
-            testSource.RawSource.PushNewConfiguration(new ObjectNode("root", new Dictionary<string, ISettingsNode>
+            var observer = new TestScheduler().CreateObserver<(ISettingsNode, Exception)>();
+            using (source.ObserveRaw().Subscribe(observer))
             {
-                ["key"] = value1
-            }));
-            
-            Thread.Sleep(50.Milliseconds());
+                testSource.RawSource.PushNewConfiguration(new ObjectNode("root", new Dictionary<string, ISettingsNode>
+                {
+                    ["key"] = value1
+                }));
 
-            var value2 = new ValueNode("key", "value2");
-            testSource.RawSource.PushNewConfiguration(new ObjectNode("root", new Dictionary<string, ISettingsNode>
-            {
-                ["key"] = value2
-            }));
+                var value2 = new ValueNode("key", "value2");
+                testSource.RawSource.PushNewConfiguration(new ObjectNode("root", new Dictionary<string, ISettingsNode>
+                {
+                    ["key"] = value2
+                }));
 
-            task.Result.Should().Equal((value1, null), (value2, null));
+                Action assertion = () => observer.GetValues().Should().Equal((value1, null), (value2, null));
+                assertion.ShouldPassIn(1.Seconds());
+            }
         }
     }
 }

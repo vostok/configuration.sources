@@ -1,9 +1,6 @@
 using System;
 using System.IO;
-using System.Linq;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
@@ -91,22 +88,18 @@ namespace Vostok.Configuration.Sources.Tests
                     return settings;
                 });
 
-            var task = Task.Run(
-                () =>
-                {
-                    var pushes = source.ObserveRaw()
-                        .Buffer(200.Microseconds())
-                        .ToEnumerable()
-                        .ToArray();
-                });
-
-            task.Wait(50.Microseconds());
+            using (source.ObserveRaw().Subscribe(_ => {}))
+            {
+                Action assertion = () => parseCalls.Should().Be(1);
             
-            subject.OnNext(("settings", null));
-            subject.OnNext(("settings", null));
-
-            Action assertion = () => parseCalls.Should().Be(1);
-            assertion.ShouldPassIn(1.Seconds());
+                subject.OnNext(("settings", null));
+            
+                assertion.ShouldPassIn(1.Seconds());
+            
+                subject.OnNext(("settings", null));
+            
+                assertion.ShouldNotFailIn(500.Milliseconds());
+            }
         }
 
         [Test]

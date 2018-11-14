@@ -1,17 +1,17 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Extensions;
+using Microsoft.Reactive.Testing;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Vostok.Commons.Testing;
 using Vostok.Configuration.Sources.File;
 using Vostok.Configuration.Sources.Helpers;
+using Vostok.Configuration.Sources.Tests.Helpers;
 using Vostok.Configuration.Sources.Watchers;
 
 namespace Vostok.Configuration.Sources.Tests
@@ -97,18 +97,18 @@ namespace Vostok.Configuration.Sources.Tests
 
             handler.Should().NotBeNull();
             
-            var task = Task.Run(() => watcher.DistinctUntilChanged().Buffer(1.Seconds(), 2).ToEnumerable().First());
+            var observer = new TestScheduler().CreateObserver<(string, Exception)>();
+            using (watcher.Subscribe(observer))
+            {
+                Action assertion1 = () => observer.GetValues().Should().Equal(("settings1", null));
+                assertion1.ShouldPassIn(100.Milliseconds());
 
-            Thread.Sleep(200.Milliseconds());
+                fileContent = "settings2";
+                handler(null, new FileSystemEventArgs(WatcherChangeTypes.Changed, Path.GetDirectoryName(settingsPath), Path.GetFileName(settingsPath)));
 
-            fileContent = "settings2";
-            handler(null, new FileSystemEventArgs(WatcherChangeTypes.Changed, Path.GetDirectoryName(settingsPath), Path.GetFileName(settingsPath)));
-
-            task.Wait(1.Seconds());
-            task.IsCompleted.Should().BeTrue();
-            task.Result
-                .Should()
-                .BeEquivalentTo(new (string, Exception)[] {("settings1", null), ("settings2", null)}, options => options.WithStrictOrdering());
+                Action assertion2 = () => observer.GetValues().Should().Equal(("settings1", null), ("settings2", null));
+                assertion2.ShouldPassIn(100.Milliseconds());
+            }
         }
 
         [Test]
@@ -116,19 +116,19 @@ namespace Vostok.Configuration.Sources.Tests
         {
             SetupFileExists(settingsPath, "settings1");
 
-            var watcher = CreateFileWatcher(100.Milliseconds());
+            var watcher = CreateFileWatcher(50.Milliseconds());
 
-            var task = Task.Run(() => watcher.DistinctUntilChanged().Buffer(1.Seconds(), 2).ToEnumerable().First());
-            
-            Thread.Sleep(200.Milliseconds());
+            var observer = new TestScheduler().CreateObserver<(string, Exception)>();
+            using (watcher.Subscribe(observer))
+            {
+                Action assertion1 = () => observer.GetValues().Distinct().Should().Equal(("settings1", null));
+                assertion1.ShouldPassIn(100.Milliseconds());
 
-            fileContent = "settings2";
+                fileContent = "settings2";
 
-            task.Wait(1.Seconds());
-            task.IsCompleted.Should().BeTrue();
-            task.Result
-                .Should()
-                .BeEquivalentTo(new (string, Exception)[] {("settings1", null), ("settings2", null)}, options => options.WithStrictOrdering());
+                Action assertion2 = () => observer.GetValues().Distinct().Should().Equal(("settings1", null), ("settings2", null));
+                assertion2.ShouldPassIn(100.Milliseconds());
+            }
         }
 
         private SingleFileWatcher CreateFileWatcher(TimeSpan? fileWatcherPeriod = null)

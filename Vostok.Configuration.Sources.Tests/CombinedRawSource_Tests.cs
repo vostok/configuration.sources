@@ -1,17 +1,17 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Extensions;
+using Microsoft.Reactive.Testing;
 using NSubstitute;
 using NUnit.Framework;
+using Vostok.Commons.Testing;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.Merging;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Combined;
+using Vostok.Configuration.Sources.Tests.Helpers;
 
 namespace Vostok.Configuration.Sources.Tests
 {
@@ -74,19 +74,27 @@ namespace Vostok.Configuration.Sources.Tests
         {
             var source = new CombinedRawSource(sources.Take(2).ToArray());
 
-            var task = Task.Run(() => source.ObserveRaw().Buffer(100.Milliseconds(), 2).ToEnumerable().First());
+            var observer = new TestScheduler().CreateObserver<(ISettingsNode, Exception)>();
+            using (source.ObserveRaw().Subscribe(observer))
+            {
+                Action assertion1 = () => observer.Messages.Count.Should().Be(1);
+                assertion1.ShouldPassIn(100.Milliseconds());
+                
+                settingsNodes[0] = Substitute.For<ISettingsNode>();
 
-            settingsNodes[0] = Substitute.For<ISettingsNode>();
-
-            var merged01 = Substitute.For<ISettingsNode>();
-            settingsNodes[0].Merge(settingsNodes[1], Arg.Any<SettingsMergeOptions>()).Returns(merged01);
+                var merged01 = Substitute.For<ISettingsNode>();
+                settingsNodes[0].Merge(settingsNodes[1], Arg.Any<SettingsMergeOptions>()).Returns(merged01);
             
-            Thread.Sleep(50.Milliseconds());
-            
-            sources[0].RawSource.PushNewConfiguration(settingsNodes[0]);
+                sources[0].RawSource.PushNewConfiguration(settingsNodes[0]);
 
-            task.Result.Count.Should().Be(2);
-            task.Result.Last().Should().Be((merged01, null as Exception));
+                Action assertion2 = () =>
+                {
+                    var values = observer.GetValues().ToArray();
+                    values.Length.Should().Be(2);
+                    values.Last().Should().Be((merged01, null));
+                };
+                assertion2.ShouldPassIn(100.Milliseconds());
+            }
         }
     }
 }
