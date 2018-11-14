@@ -21,18 +21,5 @@ namespace Vostok.Configuration.Sources.Scoped
             : base(new ScopedRawSource(source, scope))
         {
         }
-
-        /// <summary>
-        /// <para>Creates a <see cref="ScopedSource"/> instance for <see cref="settings"/> to search in by <see cref="scope"/></para> 
-        /// <para>You can use "[n]" format in <see cref="scope"/> to get n-th index of list.</para>
-        /// </summary>
-        /// <param name="settings">Tree to search in</param>
-        /// <param name="scope">Search path</param>
-        public ScopedSource(
-            [NotNull] ISettingsNode settings,
-            [NotNull] params string[] scope)
-            : base(new ScopedRawSource(settings, scope))
-        {
-        }
     }
 }
