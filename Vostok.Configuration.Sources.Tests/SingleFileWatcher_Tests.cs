@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using FluentAssertions;
 using FluentAssertions.Extensions;
-using Microsoft.Reactive.Testing;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
@@ -97,16 +96,16 @@ namespace Vostok.Configuration.Sources.Tests
 
             handler.Should().NotBeNull();
             
-            var observer = new TestScheduler().CreateObserver<(string, Exception)>();
+            var observer = new TestObserver<(string, Exception)>();
             using (watcher.Subscribe(observer))
             {
-                Action assertion1 = () => observer.GetValues().Should().Equal(("settings1", null));
+                Action assertion1 = () => observer.Values.Should().Equal(("settings1", null));
                 assertion1.ShouldPassIn(100.Milliseconds());
 
                 fileContent = "settings2";
                 handler(null, new FileSystemEventArgs(WatcherChangeTypes.Changed, Path.GetDirectoryName(settingsPath), Path.GetFileName(settingsPath)));
 
-                Action assertion2 = () => observer.GetValues().Should().Equal(("settings1", null), ("settings2", null));
+                Action assertion2 = () => observer.Values.Should().Equal(("settings1", null), ("settings2", null));
                 assertion2.ShouldPassIn(100.Milliseconds());
             }
         }
@@ -118,15 +117,15 @@ namespace Vostok.Configuration.Sources.Tests
 
             var watcher = CreateFileWatcher(50.Milliseconds());
 
-            var observer = new TestScheduler().CreateObserver<(string, Exception)>();
+            var observer = new TestObserver<(string, Exception)>();
             using (watcher.Subscribe(observer))
             {
-                Action assertion1 = () => observer.GetValues().Distinct().Should().Equal(("settings1", null));
+                Action assertion1 = () => observer.Values.Distinct().Should().Equal(("settings1", null));
                 assertion1.ShouldPassIn(100.Milliseconds());
 
                 fileContent = "settings2";
 
-                Action assertion2 = () => observer.GetValues().Distinct().Should().Equal(("settings1", null), ("settings2", null));
+                Action assertion2 = () => observer.Values.Distinct().Should().Equal(("settings1", null), ("settings2", null));
                 assertion2.ShouldPassIn(100.Milliseconds());
             }
         }

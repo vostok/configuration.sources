@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Extensions;
-using Microsoft.Reactive.Testing;
 using NSubstitute;
 using NUnit.Framework;
 using Vostok.Commons.Testing;
@@ -74,10 +73,10 @@ namespace Vostok.Configuration.Sources.Tests
         {
             var source = new CombinedRawSource(sources.Take(2).ToArray());
 
-            var observer = new TestScheduler().CreateObserver<(ISettingsNode, Exception)>();
+            var observer = new TestObserver<(ISettingsNode, Exception)>();
             using (source.ObserveRaw().Subscribe(observer))
             {
-                Action assertion1 = () => observer.Messages.Count.Should().Be(1);
+                Action assertion1 = () => observer.Values.Count.Should().Be(1);
                 assertion1.ShouldPassIn(100.Milliseconds());
                 
                 settingsNodes[0] = Substitute.For<ISettingsNode>();
@@ -89,8 +88,8 @@ namespace Vostok.Configuration.Sources.Tests
 
                 Action assertion2 = () =>
                 {
-                    var values = observer.GetValues().ToArray();
-                    values.Length.Should().Be(2);
+                    var values = observer.Values;
+                    values.Count.Should().Be(2);
                     values.Last().Should().Be((merged01, null));
                 };
                 assertion2.ShouldPassIn(100.Milliseconds());

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using FluentAssertions;
 using FluentAssertions.Extensions;
-using Microsoft.Reactive.Testing;
 using NSubstitute;
 using NUnit.Framework;
 using Vostok.Commons.Testing;
@@ -76,7 +75,7 @@ namespace Vostok.Configuration.Sources.Tests
             var source = new ScopedRawSource(testSource, "key");
             var value1 = new ValueNode("key", "value1");
 
-            var observer = new TestScheduler().CreateObserver<(ISettingsNode, Exception)>();
+            var observer = new TestObserver<(ISettingsNode, Exception)>();
             using (source.ObserveRaw().Subscribe(observer))
             {
                 testSource.RawSource.PushNewConfiguration(new ObjectNode("root", new Dictionary<string, ISettingsNode>
@@ -90,7 +89,7 @@ namespace Vostok.Configuration.Sources.Tests
                     ["key"] = value2
                 }));
 
-                Action assertion = () => observer.GetValues().Should().Equal((value1, null), (value2, null));
+                Action assertion = () => observer.Values.Should().Equal((value1, null), (value2, null));
                 assertion.ShouldPassIn(1.Seconds());
             }
         }
