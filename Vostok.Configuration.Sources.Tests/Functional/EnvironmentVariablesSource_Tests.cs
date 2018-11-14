@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 using FluentAssertions;
-using FluentAssertions.Extensions;
 using NUnit.Framework;
-using Vostok.Commons.Testing;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Environment;
-using Vostok.Configuration.Sources.Tests.Commons;
 
 namespace Vostok.Configuration.Sources.Tests
 {
@@ -21,25 +17,6 @@ namespace Vostok.Configuration.Sources.Tests
             var res = evs.Get();
 
             CheckResult(res);
-        }
-
-        [Test]
-        public void Should_observe_variables()
-        {
-            new Action(() => ShouldObserveVariablesTest_ReturnsIfValueWasReceived().Should().BeTrue()).ShouldPassIn(1.Seconds());
-        }
-        private static bool ShouldObserveVariablesTest_ReturnsIfValueWasReceived()
-        {
-            var val = false;
-            var evs = new EnvironmentVariablesSource();
-            var sub = evs.Observe().Subscribe(p =>
-            {
-                val = true;
-                CheckResult(p.settings);
-            });
-            Thread.Sleep(200.Milliseconds());
-            sub.Dispose();
-            return val;
         }
 
         private static void CheckResult(ISettingsNode settings)

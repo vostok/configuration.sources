@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Vostok.Configuration.Sources\Vostok.Configuration.Sources.csproj" />
-    <ProjectReference Include="..\Vostok.Configuration.Sources.Tests.Commons\Vostok.Configuration.Sources.Tests.Commons.csproj" />
   </ItemGroup>
 
   <ItemGroup>

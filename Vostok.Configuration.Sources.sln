@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vostok.Configuration.Source
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vostok.Configuration.Sources.Tests", "Vostok.Configuration.Sources.Tests\Vostok.Configuration.Sources.Tests.csproj", "{87C54CC1-C3B8-4730-B55D-5DB6F9C3ABA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vostok.Configuration.Sources.Tests.Commons", "Vostok.Configuration.Sources.Tests.Commons\Vostok.Configuration.Sources.Tests.Commons.csproj", "{BC7F6631-DAF3-46DB-BD2B-53970E3BA7AD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,12 +25,6 @@ Global
 		{87C54CC1-C3B8-4730-B55D-5DB6F9C3ABA3}.NoTests|Any CPU.ActiveCfg = Release|Any CPU
 		{87C54CC1-C3B8-4730-B55D-5DB6F9C3ABA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87C54CC1-C3B8-4730-B55D-5DB6F9C3ABA3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BC7F6631-DAF3-46DB-BD2B-53970E3BA7AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC7F6631-DAF3-46DB-BD2B-53970E3BA7AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BC7F6631-DAF3-46DB-BD2B-53970E3BA7AD}.NoTests|Any CPU.ActiveCfg = Release|Any CPU
-		{BC7F6631-DAF3-46DB-BD2B-53970E3BA7AD}.NoTests|Any CPU.Build.0 = Release|Any CPU
-		{BC7F6631-DAF3-46DB-BD2B-53970E3BA7AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BC7F6631-DAF3-46DB-BD2B-53970E3BA7AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

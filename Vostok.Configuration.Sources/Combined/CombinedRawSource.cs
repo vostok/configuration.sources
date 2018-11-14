@@ -18,6 +18,11 @@ namespace Vostok.Configuration.Sources.Combined
         private readonly SettingsMergeOptions options;
         private IObservable<(ISettingsNode settings, Exception error)> observer;
 
+        public CombinedRawSource(params IConfigurationSource[] sources)
+            : this(sources, new SettingsMergeOptions())
+        {
+        }
+        
         public CombinedRawSource(
             [NotNull] IReadOnlyCollection<IConfigurationSource> sources,
             SettingsMergeOptions options)
@@ -42,7 +47,12 @@ namespace Vostok.Configuration.Sources.Combined
             observer = sources
                 .Select(s => s.Observe())
                 .CombineLatest()
-                .Select(l => (MergeSettings(l), MergeErrors(l)));
+                .Select(l =>
+                {
+                    var error = MergeErrors(l);
+                    var settings = error == null ? MergeSettings(l) : null;
+                    return (settings, error);
+                });
             return observer;
         }
 
