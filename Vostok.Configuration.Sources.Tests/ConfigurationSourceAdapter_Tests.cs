@@ -18,8 +18,7 @@ namespace Vostok.Configuration.Sources.Tests
     {
         private ConfigurationSourceAdapter adapter;
         private IRawConfigurationSource rawSource;
-        private RestartingSubject<Subject<(ISettingsNode, Exception)>, (ISettingsNode, Exception)> rawSubject;
-        private RestartingSubject<ReplaySubject<(ISettingsNode, Exception)>, (ISettingsNode, Exception)> publicSubject;
+        private Subject<(ISettingsNode, Exception)> rawSubject;
         private readonly List<IDisposable> subscriptions = new List<IDisposable>();
         private readonly object lockObject = new object();
         private List<(ISettingsNode settings, Exception error)> sequence;
@@ -27,13 +26,11 @@ namespace Vostok.Configuration.Sources.Tests
         [SetUp]
         public void SetUp()
         {
-            rawSubject = new RestartingSubject<Subject<(ISettingsNode, Exception)>, (ISettingsNode, Exception)>();
+            rawSubject = new Subject<(ISettingsNode, Exception)>();
             
             rawSource = Substitute.For<IRawConfigurationSource>();
             rawSource.ObserveRaw().Returns(rawSubject);
             adapter = new TestConfigurationSourceAdapter(rawSource);
-            
-            publicSubject = new RestartingSubject<ReplaySubject<(ISettingsNode, Exception)>, (ISettingsNode, Exception)>();
             
             // ReSharper disable once InconsistentlySynchronizedField
             sequence = new List<(ISettingsNode settings, Exception error)>();
@@ -93,40 +90,41 @@ namespace Vostok.Configuration.Sources.Tests
         }
 
         [Test]
-        public void Get_should_throw_when_subscription_completes_with_error_twice()
+        public void Get_should_resubscribe_when_current_observable_completes_with_error()
         {
-            SubstitutePublicObservable();
-            
             var getTask = Task.Run(() => adapter.Get());
             getTask.Wait(50.Milliseconds());
             getTask.IsCompleted.Should().BeFalse();
             
-            publicSubject.OnError(new IOException());
+            rawSubject.OnNext((null, new IOException()));
+            
+            getTask.Wait(100.Milliseconds());
+            getTask.IsCompleted.Should().BeFalse();
+            
+            var settings = PushSettings(rawSubject, "value");
+
+            getTask.Wait(1.Seconds());
+            getTask.IsCompleted.Should().BeTrue();
+            getTask.Result.Should().Be(settings);
+        }
+
+        [Test]
+        public void Get_should_throw_when_observables_completes_with_error_twice()
+        {
+            var getTask = Task.Run(() => adapter.Get());
+            getTask.Wait(50.Milliseconds());
+            getTask.IsCompleted.Should().BeFalse();
+            
+            rawSubject.OnNext((null, new IOException()));
+
+            getTask.Wait(100.Milliseconds());
+            getTask.IsCompleted.Should().BeFalse();
+            
+            rawSubject.OnNext((null, new IOException()));
         
             Task.WaitAny(new Task[] {getTask}, 1.Seconds());
             getTask.IsCompleted.Should().BeTrue();
             getTask.IsFaulted.Should().BeTrue();
-        }
-
-        [Test]
-        public void Get_should_create_new_subscription_when_old_is_failed()
-        {
-            SubstitutePublicObservable();
-            
-            var getTask = Task.Run(() => adapter.Get());
-            getTask.Wait(50.Milliseconds());
-            getTask.IsCompleted.Should().BeFalse();
-            
-            publicSubject.OnError(new IOException());
-
-            Task.WaitAny(new Task[] {getTask}, 1.Seconds());
-            getTask.IsCompleted.Should().BeTrue();
-            getTask.IsFaulted.Should().BeTrue();
-            
-            publicSubject.RestartSequence();
-            var settings = PushSettings(publicSubject, "value");
-            
-            adapter.Get().Should().Be(settings);
         }
         
         [Test]
@@ -276,12 +274,6 @@ namespace Vostok.Configuration.Sources.Tests
                 onErrorCalled.Should().BeTrue();
             };
             assertion.ShouldPassIn(1.Seconds());
-        }
-        
-        private void SubstitutePublicObservable()
-        {
-            adapter = Substitute.ForPartsOf<ConfigurationSourceAdapter>(Substitute.For<IRawConfigurationSource>());
-            adapter.Observe().Returns(publicSubject);
         }
 
         private void AddSequenceItem((ISettingsNode, Exception) item)

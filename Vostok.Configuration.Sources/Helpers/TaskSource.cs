@@ -10,16 +10,16 @@ namespace Vostok.Configuration.Sources.Helpers
 
         public TaskSource() => rawValueObserver = new CurrentValueObserver<(ISettingsNode, Exception)>();
 
-        public (ISettingsNode settings, Exception error) Get(IObservable<(ISettingsNode, Exception)> observable)
+        public (ISettingsNode settings, Exception error) Get(Func<IObservable<(ISettingsNode, Exception)>> observableProvider)
         {
             try
             {
-                return rawValueObserver.Get(observable);
+                return rawValueObserver.Get(observableProvider());
             }
             catch
             {
                 ReplaceObserver();
-                return rawValueObserver.Get(observable);
+                return rawValueObserver.Get(observableProvider());
             }
         }
 

@@ -11,8 +11,7 @@ namespace Vostok.Configuration.Sources
     {
         protected IRawConfigurationSource rawSource;
         private TaskSource taskSource;
-        private RestartingSubject<Subject<(ISettingsNode, Exception)>, (ISettingsNode settings, Exception error)> subject;
-        private IObservable<(ISettingsNode settings, Exception error)> publicObservable;
+        private ReplaySubject<(ISettingsNode, Exception)> subject;
         private IObservable<(ISettingsNode settings, Exception error)> internalObservable;
         private (ISettingsNode settings, Exception error)? lastValue;
 
@@ -20,15 +19,7 @@ namespace Vostok.Configuration.Sources
         {
             this.rawSource = rawSource;
             taskSource = new TaskSource();
-            subject = new RestartingSubject<Subject<(ISettingsNode, Exception)>, (ISettingsNode settings, Exception error)>();
-            publicObservable = Observable.Create<(ISettingsNode, Exception)>(
-                observer =>
-                {
-                    if (lastValue.HasValue)
-                        observer.OnNext(lastValue.Value);
-                    var subscription = subject.Subscribe(observer);
-                    return subscription;
-                });
+            subject = new ReplaySubject<(ISettingsNode, Exception)>(1);
             internalObservable = rawSource.ObserveRaw();
             internalObservable.Subscribe(
                 newValue =>
@@ -37,7 +28,7 @@ namespace Vostok.Configuration.Sources
                         if (lastValue.HasValue)
                             OnNext((lastValue.Value.settings, newValue.error));
                         else
-                            subject.OnError(newValue.error);
+                            OnError(newValue.error);
                     else
                         OnNext(newValue);
                 });
@@ -51,7 +42,7 @@ namespace Vostok.Configuration.Sources
         /// <exception cref="Exception">Only on first read. Otherwise returns last parsed value.</exception>
         public ISettingsNode Get()
         {
-            return taskSource.Get(Observe()).settings;
+            return taskSource.Get(Observe).settings;
         }
 
         /// <inheritdoc />
@@ -61,7 +52,7 @@ namespace Vostok.Configuration.Sources
         /// </summary>
         public virtual IObservable<(ISettingsNode settings, Exception error)> Observe()
         {
-            return publicObservable;
+            return subject.AsObservable();
         }
 
         private void OnNext((ISettingsNode settings, Exception error) newValue)
@@ -70,9 +61,15 @@ namespace Vostok.Configuration.Sources
                 ExceptionsComparer.Equals(lastValue.Value.error, newValue.error))
                 return;
             lastValue = newValue;
-            if (subject.Completed)
-                subject.RestartSequence();
             subject.OnNext(newValue);
+        }
+
+        private void OnError(Exception error)
+        {
+            var oldSubject = subject;
+            subject = new ReplaySubject<(ISettingsNode, Exception)>(1);
+            oldSubject.OnError(error);
+            oldSubject.Dispose();
         }
     }
 }
