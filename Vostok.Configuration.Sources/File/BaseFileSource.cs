@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.SettingsTree;
 
 namespace Vostok.Configuration.Sources.File
@@ -15,7 +12,7 @@ namespace Vostok.Configuration.Sources.File
         /// <param name="filePath">File name with settings</param>
         /// <param name="settings">File parsing settings</param>
         /// <param name="parseSettings">"Get" method invocation for string source</param>
-        protected BaseFileSource(string filePath, FileSourceSettings settings, Func<string, ISettingsNode> parseSettings)
+        public BaseFileSource(string filePath, FileSourceSettings settings, Func<string, ISettingsNode> parseSettings)
             : base(new BaseFileRawSource(filePath, settings, parseSettings))
         {
         }

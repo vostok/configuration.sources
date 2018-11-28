@@ -9,7 +9,6 @@ using NSubstitute;
 using NUnit.Framework;
 using Vostok.Commons.Testing;
 using Vostok.Configuration.Abstractions.SettingsTree;
-using Vostok.Configuration.Sources.Helpers;
 
 namespace Vostok.Configuration.Sources.Tests
 {
