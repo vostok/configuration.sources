@@ -26,10 +26,12 @@ namespace Vostok.Configuration.Sources
                 newValue =>
                 {
                     if (newValue.error != null)
+                    {
                         if (lastValue.HasValue)
                             OnNext((lastValue.Value.settings, newValue.error));
                         else
                             OnError(newValue.error);
+                    }
                     else
                         OnNext(newValue);
                 });
@@ -37,24 +39,18 @@ namespace Vostok.Configuration.Sources
 
         /// <inheritdoc />
         /// <summary>
-        /// <para>Returns last parsed <see cref="ISettingsNode"/> tree.</para>
-        /// <para>Waits for first read.</para>
+        ///     <para>Returns last parsed <see cref="ISettingsNode" /> tree.</para>
+        ///     <para>Waits for first read.</para>
         /// </summary>
         /// <exception cref="Exception">Only on first read. Otherwise returns last parsed value.</exception>
-        public ISettingsNode Get()
-        {
-            return taskSource.Get(Observe).settings;
-        }
+        public ISettingsNode Get() => taskSource.Get(Observe).settings;
 
         /// <inheritdoc />
         /// <summary>
-        /// <para>Subscribtion to <see cref="ISettingsNode"/> tree changes.</para>
-        /// <para>Returns current value immediately on subscribtion.</para>
+        ///     <para>Subscribtion to <see cref="ISettingsNode" /> tree changes.</para>
+        ///     <para>Returns current value immediately on subscribtion.</para>
         /// </summary>
-        public virtual IObservable<(ISettingsNode settings, Exception error)> Observe()
-        {
-            return subject.AsObservable();
-        }
+        public virtual IObservable<(ISettingsNode settings, Exception error)> Observe() => subject.AsObservable();
 
         private void OnNext((ISettingsNode settings, Exception error) newValue)
         {

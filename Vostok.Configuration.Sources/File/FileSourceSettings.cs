@@ -9,15 +9,13 @@ namespace Vostok.Configuration.Sources.File
 
         public TimeSpan FileWatcherPeriod { get; set; } = TimeSpan.FromSeconds(5);
 
-        protected bool Equals(FileSourceSettings other) => Equals(Encoding, other.Encoding) && FileWatcherPeriod.Equals(other.FileWatcherPeriod);
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
                 return false;
             if (ReferenceEquals(this, obj))
                 return true;
-            return obj.GetType() == GetType() && Equals((FileSourceSettings) obj);
+            return obj.GetType() == GetType() && Equals((FileSourceSettings)obj);
         }
 
         public override int GetHashCode()
@@ -27,5 +25,7 @@ namespace Vostok.Configuration.Sources.File
                 return ((Encoding != null ? Encoding.GetHashCode() : 0) * 397) ^ FileWatcherPeriod.GetHashCode();
             }
         }
+
+        protected bool Equals(FileSourceSettings other) => Equals(Encoding, other.Encoding) && FileWatcherPeriod.Equals(other.FileWatcherPeriod);
     }
 }

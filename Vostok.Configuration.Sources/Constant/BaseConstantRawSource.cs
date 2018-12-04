@@ -13,7 +13,7 @@ namespace Vostok.Configuration.Sources.Constant
         {
             this.settingsGetter = settingsGetter;
         }
-        
+
         public IObservable<(ISettingsNode settings, Exception error)> ObserveRaw()
         {
             if (currentSettings == null)

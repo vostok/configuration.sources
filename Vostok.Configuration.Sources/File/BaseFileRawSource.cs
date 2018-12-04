@@ -32,26 +32,26 @@ namespace Vostok.Configuration.Sources.File
 
             var fileWatcher = fileWatcherProvider();
             fileObserver = fileWatcher.Select(
-                    pair =>
-                    {
-                        var (content, readingError) = pair;
-                        if (readingError != null)
-                            return (null, readingError);
-                        
-                        if (content == lastContent)
-                            return currentValue;
-                        lastContent = content;
-                        try
-                        {
-                            currentValue = (parseSettings(content), null as Exception);
-                        }
-                        catch (Exception error)
-                        {
-                            currentValue = (null, error);
-                        }
+                pair =>
+                {
+                    var (content, readingError) = pair;
+                    if (readingError != null)
+                        return (null, readingError);
 
+                    if (content == lastContent)
                         return currentValue;
-                    });
+                    lastContent = content;
+                    try
+                    {
+                        currentValue = (parseSettings(content), null as Exception);
+                    }
+                    catch (Exception error)
+                    {
+                        currentValue = (null, error);
+                    }
+
+                    return currentValue;
+                });
 
             return fileObserver;
         }

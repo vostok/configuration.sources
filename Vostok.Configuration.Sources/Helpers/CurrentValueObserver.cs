@@ -24,13 +24,11 @@ namespace Vostok.Configuration.Sources.Helpers
             return resultSource.Task.GetAwaiter().GetResult();
         }
 
-        private void OnError(Exception e) =>
-            resultSource.TrySetException(e);
-
-        private void OnNextValue(T value)
+        public void Dispose()
         {
-            if (!resultSource.TrySetResult(value))
-                resultSource = CreateCompletedSource(value);
+            var subscription = innerSubscription;
+            if (subscription != null && ReferenceEquals(Interlocked.CompareExchange(ref innerSubscription, null, subscription), subscription))
+                subscription.Dispose();
         }
 
         private static TaskCompletionSource<T> CreateCompletedSource(T value)
@@ -40,11 +38,13 @@ namespace Vostok.Configuration.Sources.Helpers
             return newSource;
         }
 
-        public void Dispose()
+        private void OnError(Exception e) =>
+            resultSource.TrySetException(e);
+
+        private void OnNextValue(T value)
         {
-            var subscription = innerSubscription;
-            if (subscription != null && ReferenceEquals(Interlocked.CompareExchange(ref innerSubscription, null, subscription), subscription))
-                subscription.Dispose();
+            if (!resultSource.TrySetResult(value))
+                resultSource = CreateCompletedSource(value);
         }
     }
 }

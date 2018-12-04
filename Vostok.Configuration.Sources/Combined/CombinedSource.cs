@@ -8,8 +8,8 @@ namespace Vostok.Configuration.Sources.Combined
     public class CombinedSource : ConfigurationSourceAdapter
     {
         /// <summary>
-        /// <para>Creates a <see cref="CombinedRawSource"/> instance new source using combining options.</para>
-        /// <para>Combines sources here.</para>
+        ///     <para>Creates a <see cref="CombinedRawSource" /> instance new source using combining options.</para>
+        ///     <para>Combines sources here.</para>
         /// </summary>
         /// <param name="sources">Configuration sources to combine</param>
         /// <param name="options"></param>
@@ -22,8 +22,8 @@ namespace Vostok.Configuration.Sources.Combined
 
         /// <inheritdoc />
         /// <summary>
-        /// <para>Creates a <see cref="CombinedRawSource" /> instance new source using default combining options</para>
-        /// <para>Combines sources here.</para>
+        ///     <para>Creates a <see cref="CombinedRawSource" /> instance new source using default combining options</para>
+        ///     <para>Combines sources here.</para>
         /// </summary>
         /// <param name="sources">Configurations</param>
         public CombinedSource(params IConfigurationSource[] sources)

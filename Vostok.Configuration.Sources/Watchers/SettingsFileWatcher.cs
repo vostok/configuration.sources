@@ -6,7 +6,7 @@ using Vostok.Configuration.Sources.File;
 namespace Vostok.Configuration.Sources.Watchers
 {
     /// <summary>
-    /// Watches for changes in files
+    ///     Watches for changes in files
     /// </summary>
     internal static class SettingsFileWatcher
     {
@@ -14,7 +14,7 @@ namespace Vostok.Configuration.Sources.Watchers
             new ConcurrentDictionary<(string fileName, FileSourceSettings settings), IObservable<(string content, Exception error)>>();
 
         /// <summary>
-        /// Subscribtion to <paramref name="file" />
+        ///     Subscribtion to <paramref name="file" />
         /// </summary>
         /// <param name="file">Full file path</param>
         /// <param name="settings"></param>
@@ -23,7 +23,7 @@ namespace Vostok.Configuration.Sources.Watchers
         {
             return Watchers.GetOrAdd((file, settings), _ => new SingleFileWatcher(file, settings));
         }
-        
+
         internal static void ClearCache() => Watchers.Clear();
     }
 }

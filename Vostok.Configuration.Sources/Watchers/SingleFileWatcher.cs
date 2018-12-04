@@ -13,7 +13,7 @@ namespace Vostok.Configuration.Sources.Watchers
 {
     /// <inheritdoc />
     /// <summary>
-    /// Watching changes in as single text file
+    ///     Watching changes in as single text file
     /// </summary>
     internal class SingleFileWatcher : IObservable<(string content, Exception error)>
     {
@@ -28,7 +28,7 @@ namespace Vostok.Configuration.Sources.Watchers
         private CancellationToken tokenDelay;
 
         /// <summary>
-        /// Creates a <see cref="SingleFileWatcher"/> instance with given parameter <paramref name="filePath"/>
+        ///     Creates a <see cref="SingleFileWatcher" /> instance with given parameter <paramref name="filePath" />
         /// </summary>
         /// <param name="filePath">Full file path</param>
         /// <param name="fileSourceSettings"></param>
@@ -36,7 +36,7 @@ namespace Vostok.Configuration.Sources.Watchers
             : this(filePath, fileSourceSettings, new FileSystem())
         {
         }
-        
+
         internal SingleFileWatcher([NotNull] string filePath, FileSourceSettings fileSourceSettings, IFileSystem fileSystem)
         {
             this.filePath = filePath;
@@ -94,7 +94,7 @@ namespace Vostok.Configuration.Sources.Watchers
         {
             if (!fileSystem.Exists(filePath))
                 return null;
-            
+
             using (var reader = fileSystem.OpenFile(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, settings.Encoding))
                 return reader.ReadToEnd();
         }

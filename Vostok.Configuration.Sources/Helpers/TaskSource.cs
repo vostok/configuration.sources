@@ -8,7 +8,8 @@ namespace Vostok.Configuration.Sources.Helpers
     {
         private CurrentValueObserver<(ISettingsNode, Exception)> rawValueObserver;
 
-        public TaskSource() => rawValueObserver = new CurrentValueObserver<(ISettingsNode, Exception)>();
+        public TaskSource() =>
+            rawValueObserver = new CurrentValueObserver<(ISettingsNode, Exception)>();
 
         public (ISettingsNode settings, Exception error) Get(Func<IObservable<(ISettingsNode, Exception)>> observableProvider)
         {

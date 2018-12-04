@@ -10,7 +10,7 @@ namespace Vostok.Configuration.Sources
         private static ConcurrentDictionary<(Type, object), IConfigurationSource> implementations = new ConcurrentDictionary<(Type, object), IConfigurationSource>();
 
         private IConfigurationSource currentImplementation;
-        
+
         protected SingletonConfigurationSource(object key, Func<IConfigurationSource> constructor)
         {
             var typedKey = (GetType(), key);
