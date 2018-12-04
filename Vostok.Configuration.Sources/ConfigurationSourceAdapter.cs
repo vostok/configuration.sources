@@ -10,6 +10,7 @@ namespace Vostok.Configuration.Sources
     public abstract class ConfigurationSourceAdapter : IConfigurationSource
     {
         protected IRawConfigurationSource rawSource;
+
         private TaskSource taskSource;
         private ReplaySubject<(ISettingsNode, Exception)> subject;
         private IObservable<(ISettingsNode settings, Exception error)> internalObservable;

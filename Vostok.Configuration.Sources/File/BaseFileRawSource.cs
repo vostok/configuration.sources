@@ -27,7 +27,7 @@ namespace Vostok.Configuration.Sources.File
         /// <inheritdoc />
         public IObservable<(ISettingsNode settings, Exception error)> ObserveRaw()
         {
-            if (fileObserver != null)
+            if (fileObserver != null) // CR(krait): Such checks imply that ObserveRaw() can be called multiple times. If it's true, then nasty races can occur here. But it seems to be so that this method is called only once, in ConfigurationSourceAdapter.ctor..
                 return fileObserver;
 
             var fileWatcher = fileWatcherProvider();

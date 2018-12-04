@@ -4,7 +4,7 @@ using Vostok.Configuration.Abstractions.SettingsTree;
 
 namespace Vostok.Configuration.Sources.Helpers
 {
-    public class TaskSource
+    public class TaskSource // CR(krait): Where are the tests?
     {
         private CurrentValueObserver<(ISettingsNode, Exception)> rawValueObserver;
 

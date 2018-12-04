@@ -8,7 +8,7 @@ namespace Vostok.Configuration.Sources.Helpers
     {
         bool Exists(string filePath);
 
-        [CanBeNull]
+        [CanBeNull] // CR(krait): Why CanBeNull?
         TextReader OpenFile(string filePath, FileMode fileMode, FileAccess fileAccess, FileShare fileShare, Encoding encoding);
 
         void WatchFileSystem(string path, string filter, FileSystemEventHandler handler);

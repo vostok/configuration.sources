@@ -16,15 +16,15 @@ namespace Vostok.Configuration.Sources.Combined
     {
         private readonly IReadOnlyCollection<IConfigurationSource> sources;
         private readonly SettingsMergeOptions options;
-        private IObservable<(ISettingsNode settings, Exception error)> observer;
+        private IObservable<(ISettingsNode settings, Exception error)> observer; // CR(krait): But it's an observable, not observer..
 
         public CombinedRawSource(params IConfigurationSource[] sources)
             : this(sources, new SettingsMergeOptions())
         {
         }
-        
+
         public CombinedRawSource(
-            [NotNull] IReadOnlyCollection<IConfigurationSource> sources,
+            [NotNull] IReadOnlyCollection<IConfigurationSource> sources, // CR(krait): And [ItemNotNull], probably?
             SettingsMergeOptions options)
         {
             if (sources == null || sources.Count == 0)
@@ -44,6 +44,7 @@ namespace Vostok.Configuration.Sources.Combined
         {
             if (observer != null)
                 return observer;
+
             observer = sources
                 .Select(s => s.Observe())
                 .CombineLatest()
@@ -58,11 +59,13 @@ namespace Vostok.Configuration.Sources.Combined
 
         private ISettingsNode MergeSettings(IEnumerable<(ISettingsNode settings, Exception error)> values)
         {
+            // CR(krait): What will happen if a pair (null, null) is pushed?
             return values.Select(pair => pair.settings).Aggregate((a, b) => a.Merge(b, options));
         }
 
         private static Exception MergeErrors(IEnumerable<(ISettingsNode settings, Exception error)> values)
         {
+            // CR(krait): And if there's only one error?
             var errors = values.Select(pair => pair.error).Where(error => error != null).ToArray();
             return errors.Length > 0 ? new AggregateException(errors) : null;
         }

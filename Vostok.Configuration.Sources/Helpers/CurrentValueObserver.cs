@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Vostok.Configuration.Sources.Helpers
 {
-    internal class CurrentValueObserver<T> : IDisposable
+    internal class CurrentValueObserver<T> : IDisposable // CR(krait): Where are the tests?
     {
         private volatile TaskCompletionSource<T> resultSource = new TaskCompletionSource<T>();
         private IDisposable innerSubscription;
@@ -30,10 +30,10 @@ namespace Vostok.Configuration.Sources.Helpers
         private void OnNextValue(T value)
         {
             if (!resultSource.TrySetResult(value))
-                resultSource = NewCompletedSource(value);
+                resultSource = CreateCompletedSource(value);
         }
 
-        private static TaskCompletionSource<T> NewCompletedSource(T value)
+        private static TaskCompletionSource<T> CreateCompletedSource(T value)
         {
             var newSource = new TaskCompletionSource<T>();
             newSource.TrySetResult(value);

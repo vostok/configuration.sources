@@ -20,12 +20,12 @@ namespace Vostok.Configuration.Sources.Watchers
         private readonly string filePath;
         private readonly FileSourceSettings settings;
         private readonly AtomicBoolean taskIsRun;
+        private readonly IFileSystem fileSystem;
 
         private readonly ReplaySubject<(string content, Exception error)> observers;
 
         private CancellationTokenSource tokenDelaySource;
         private CancellationToken tokenDelay;
-        private IFileSystem fileSystem;
 
         /// <summary>
         /// Creates a <see cref="SingleFileWatcher"/> instance with given parameter <paramref name="filePath"/>
