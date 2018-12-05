@@ -11,7 +11,7 @@ namespace Vostok.Configuration.Sources
     {
         protected IRawConfigurationSource rawSource;
 
-        private TaskSource taskSource;
+        private TaskSource<(ISettingsNode settings, Exception error)> taskSource;
         private ReplaySubject<(ISettingsNode, Exception)> subject;
         private IObservable<(ISettingsNode settings, Exception error)> internalObservable;
         private (ISettingsNode settings, Exception error)? lastValue;
@@ -19,7 +19,7 @@ namespace Vostok.Configuration.Sources
         protected ConfigurationSourceAdapter(IRawConfigurationSource rawSource)
         {
             this.rawSource = rawSource;
-            taskSource = new TaskSource();
+            taskSource = new TaskSource<(ISettingsNode settings, Exception error)>();
             subject = new ReplaySubject<(ISettingsNode, Exception)>(1);
             internalObservable = rawSource.ObserveRaw();
             internalObservable.Subscribe(

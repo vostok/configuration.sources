@@ -4,16 +4,16 @@ using System.Threading.Tasks;
 
 namespace Vostok.Configuration.Sources.Helpers
 {
-    internal class CurrentValueObserver<T> : IDisposable // CR(krait): Where are the tests?
+    internal class CurrentValueObserver<T> : IDisposable, ICurrentValueObserver<T>
     {
         private volatile TaskCompletionSource<T> resultSource = new TaskCompletionSource<T>();
         private IDisposable innerSubscription;
 
-        public T Get(IObservable<T> observable)
+        public T Get(Func<IObservable<T>> observableProvider)
         {
             while (innerSubscription == null)
             {
-                var newSubscription = observable.Subscribe(OnNextValue, OnError);
+                var newSubscription = observableProvider().Subscribe(OnNextValue, OnError);
 
                 if (Interlocked.CompareExchange(ref innerSubscription, newSubscription, null) == null)
                     break;

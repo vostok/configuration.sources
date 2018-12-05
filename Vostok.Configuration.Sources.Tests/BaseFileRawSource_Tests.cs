@@ -101,23 +101,5 @@ namespace Vostok.Configuration.Sources.Tests
                 assertion.ShouldNotFailIn(500.Milliseconds());
             }
         }
-
-        [Test]
-        public void Should_cache_fileWatcher()
-        {
-            var watcherProviderCalls = 0;
-            var source = new BaseFileRawSource(
-                () =>
-                {
-                    watcherProviderCalls++;
-                    return subject;
-                },
-                content => settings);
-            
-            source.ObserveRaw();
-            source.ObserveRaw();
-
-            watcherProviderCalls.Should().Be(1);
-        }
     }
 }

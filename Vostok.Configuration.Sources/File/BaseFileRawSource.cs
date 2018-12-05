@@ -9,7 +9,6 @@ namespace Vostok.Configuration.Sources.File
     {
         private readonly Func<string, ISettingsNode> parseSettings;
         private readonly Func<IObservable<(string, Exception)>> fileWatcherProvider;
-        private IObservable<(ISettingsNode settings, Exception error)> fileObserver;
         private string lastContent;
         private (ISettingsNode settings, Exception error) currentValue;
 
@@ -27,11 +26,8 @@ namespace Vostok.Configuration.Sources.File
         /// <inheritdoc />
         public IObservable<(ISettingsNode settings, Exception error)> ObserveRaw()
         {
-            if (fileObserver != null) // CR(krait): Such checks imply that ObserveRaw() can be called multiple times. If it's true, then nasty races can occur here. But it seems to be so that this method is called only once, in ConfigurationSourceAdapter.ctor..
-                return fileObserver;
-
             var fileWatcher = fileWatcherProvider();
-            fileObserver = fileWatcher.Select(
+            return fileWatcher.Select(
                 pair =>
                 {
                     var (content, readingError) = pair;
@@ -52,8 +48,6 @@ namespace Vostok.Configuration.Sources.File
 
                     return currentValue;
                 });
-
-            return fileObserver;
         }
     }
 }

@@ -17,7 +17,6 @@ namespace Vostok.Configuration.Sources.Combined
     {
         private readonly IReadOnlyCollection<IConfigurationSource> sources;
         private readonly SettingsMergeOptions options;
-        private IObservable<(ISettingsNode settings, Exception error)> observer; // CR(krait): But it's an observable, not observer..
 
         public CombinedRawSource(params IConfigurationSource[] sources)
             : this(sources, new SettingsMergeOptions())
@@ -25,7 +24,7 @@ namespace Vostok.Configuration.Sources.Combined
         }
 
         public CombinedRawSource(
-            [NotNull] IReadOnlyCollection<IConfigurationSource> sources, // CR(krait): And [ItemNotNull], probably?
+            [NotNull] [ItemNotNull] IReadOnlyCollection<IConfigurationSource> sources,
             SettingsMergeOptions options)
         {
             if (sources == null || sources.Count == 0)
@@ -43,33 +42,21 @@ namespace Vostok.Configuration.Sources.Combined
         /// <returns>Event with new RawSettings tree</returns>
         public IObservable<(ISettingsNode settings, Exception error)> ObserveRaw()
         {
-            if (observer != null)
-                return observer;
-
-            observer = sources
+            return sources
                 .Select(s => s.Observe())
                 .CombineLatest()
-                .Select(
-                    l =>
-                    {
-                        var error = MergeErrors(l);
-                        var settings = error == null ? MergeSettings(l) : null;
-                        return (settings, error);
-                    });
-            return observer;
+                .Select(list => (MergeSettings(list), MergeErrors(list)));
         }
 
         private static Exception MergeErrors(IEnumerable<(ISettingsNode settings, Exception error)> values)
         {
-            // CR(krait): And if there's only one error?
             var errors = values.Select(pair => pair.error).Where(error => error != null).ToArray();
-            return errors.Length > 0 ? new AggregateException(errors) : null;
+            return errors.Length > 1 ? new AggregateException(errors) : errors.FirstOrDefault();
         }
 
         private ISettingsNode MergeSettings(IEnumerable<(ISettingsNode settings, Exception error)> values)
         {
-            // CR(krait): What will happen if a pair (null, null) is pushed?
-            return values.Select(pair => pair.settings).Aggregate((a, b) => a.Merge(b, options));
+            return values.Select(pair => pair.settings).Aggregate((a, b) => a?.Merge(b, options));
         }
     }
 }

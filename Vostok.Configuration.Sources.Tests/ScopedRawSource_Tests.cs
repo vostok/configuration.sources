@@ -38,35 +38,23 @@ namespace Vostok.Configuration.Sources.Tests
         }
 
         [Test]
-        public void Should_scope_settings_when_no_errors()
+        public void Should_scope_settings([Values] bool hasError)
         {
+            var error = hasError ? new IOException() : null;
             var scopedSettings = new ValueNode("value");
             
             var settings = Substitute.For<ISettingsNode>();
             settings.ScopeTo("key").Returns(scopedSettings);
             
-            var source = new ScopedRawSource(testSource, "key");
-            
             testSource.RawSource.PushNewConfiguration(settings);
-
-            source.ObserveRaw().WaitFirstValue(100.Milliseconds()).Should().Be((scopedSettings, null));
-            settings.Received().ScopeTo("key");
-        }
-
-        [Test]
-        public void Should_push_null_and_error_when_underlying_source_has_error()
-        {
-            var error = new IOException();
-            var settings = Substitute.For<ISettingsNode>();
-            
-            testSource.RawSource.PushNewConfiguration(settings);
-            testSource.RawSource.PushNewConfiguration(null, error);
+            if (hasError)
+                testSource.RawSource.PushNewConfiguration(null, error);
             testSource.Observe().WaitFirstValue(100.Milliseconds()).Should().Be((settings, error));
-
+            
             var source = new ScopedRawSource(testSource, "key");
-
-            source.ObserveRaw().WaitFirstValue(100.Milliseconds()).Should().Be((null, error));
-            settings.DidNotReceiveWithAnyArgs().ScopeTo();
+            
+            source.ObserveRaw().WaitFirstValue(100.Milliseconds()).Should().Be((scopedSettings, error));
+            settings.Received().ScopeTo("key");
         }
 
         [Test]

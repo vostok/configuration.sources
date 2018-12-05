@@ -38,7 +38,7 @@ namespace Vostok.Configuration.Sources.Tests
         }
 
         [Test]
-        public void Should_merge_settings_correctly()
+        public void Should_merge_settings_nodes_correctly()
         {
             var merged01 = Substitute.For<ISettingsNode>();
             settingsNodes[0].Merge(settingsNodes[1], Arg.Any<SettingsMergeOptions>()).Returns(merged01);
@@ -56,7 +56,31 @@ namespace Vostok.Configuration.Sources.Tests
         }
 
         [Test]
-        public void Should_merge_exceptions_into_aggregate_exception()
+        public void Should_merge_null_settings_correctly()
+        {
+            var source = new CombinedRawSource(sources);
+            
+            sources[0].RawSource.PushNewConfiguration(null);
+
+            source.ObserveRaw().WaitFirstValue(100.Milliseconds())
+                .Should().BeEquivalentTo((null as ISettingsNode, null as Exception));
+        }
+
+        [Test]
+        public void Should_push_single_exception_when_one_exception()
+        {
+            var source = new CombinedRawSource(sources);
+            
+            var error = new IOException();
+            sources[0].RawSource.PushNewConfiguration(null, error);
+            sources[1].RawSource.PushNewConfiguration(null);
+
+            source.ObserveRaw().WaitFirstValue(100.Milliseconds()).error
+                .Should().BeEquivalentTo(error);
+        }
+
+        [Test]
+        public void Should_merge_exceptions_into_aggregate_exception_when_more_than_one_exception()
         {
             var source = new CombinedRawSource(sources);
             
@@ -64,8 +88,8 @@ namespace Vostok.Configuration.Sources.Tests
             sources[0].RawSource.PushNewConfiguration(null, errors[0]);
             sources[1].RawSource.PushNewConfiguration(null, errors[1]);
 
-            source.ObserveRaw().WaitFirstValue(100.Milliseconds())
-                .Should().BeEquivalentTo((null as ISettingsNode, new AggregateException(errors)));
+            source.ObserveRaw().WaitFirstValue(100.Milliseconds()).error
+                .Should().BeEquivalentTo(new AggregateException(errors));
         }
 
         [Test]

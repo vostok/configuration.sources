@@ -38,7 +38,6 @@ namespace Vostok.Configuration.Sources.Tests
                 .Should()
                 .Be(
                     new ObjectNode(
-                        "root",
                         new Dictionary<string, ISettingsNode>
                         {
                             ["key1"] = new ValueNode("key1", "value1"),
@@ -59,7 +58,6 @@ namespace Vostok.Configuration.Sources.Tests
                 .Should()
                 .Be(
                     new ObjectNode(
-                        "root",
                         new Dictionary<string, ISettingsNode>
                         {
                             ["a"] = new ObjectNode(

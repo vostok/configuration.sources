@@ -15,7 +15,7 @@ namespace Vostok.Configuration.Sources.Environment
             {
                 trees.Add(
                     TreeFactory.CreateTreeByMultiLevelKey(
-                        "root", // CR(krait): What's the name for?
+                        null,
                         ev.Key.ToString().Replace(" ", "").Split('.'),
                         ev.Value.ToString()));
             }
