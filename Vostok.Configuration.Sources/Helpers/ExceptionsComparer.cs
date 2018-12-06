@@ -20,10 +20,7 @@ namespace Vostok.Configuration.Sources.Helpers
         
         public int GetHashCode(Exception obj) => ToTuple(obj).GetHashCode();
 
-        private static (Type, string) ToTuple(Exception ex)
-        {
-            return (ex.GetType(), ex.Message);
-        }
+        private static (Type, string) ToTuple(Exception ex) => (ex.GetType(), ex.Message);
 
         private static IEnumerable<Exception> GetInnerExceptions(Exception exception)
         {

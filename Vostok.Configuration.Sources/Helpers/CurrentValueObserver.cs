@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Vostok.Configuration.Sources.Helpers
 {
-    internal class CurrentValueObserver<T> : IDisposable, ICurrentValueObserver<T>
+    internal class CurrentValueObserver<T> : ICurrentValueObserver<T>
     {
         private volatile TaskCompletionSource<T> resultSource = new TaskCompletionSource<T>();
         private IDisposable innerSubscription;

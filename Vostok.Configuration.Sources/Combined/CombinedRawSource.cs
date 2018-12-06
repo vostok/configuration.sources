@@ -54,9 +54,7 @@ namespace Vostok.Configuration.Sources.Combined
             return errors.Length > 1 ? new AggregateException(errors) : errors.FirstOrDefault();
         }
 
-        private ISettingsNode MergeSettings(IEnumerable<(ISettingsNode settings, Exception error)> values)
-        {
-            return values.Select(pair => pair.settings).Aggregate((a, b) => a?.Merge(b, options));
-        }
+        private ISettingsNode MergeSettings(IEnumerable<(ISettingsNode settings, Exception error)> values) => 
+            values.Select(pair => pair.settings).Aggregate((a, b) => a?.Merge(b, options));
     }
 }

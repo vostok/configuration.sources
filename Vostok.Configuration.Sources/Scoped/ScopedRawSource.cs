@@ -19,9 +19,7 @@ namespace Vostok.Configuration.Sources.Scoped
             this.scope = scope;
         }
 
-        public IObservable<(ISettingsNode settings, Exception error)> ObserveRaw()
-        {
-            return source.Observe().Select(pair => (pair.settings?.ScopeTo(scope), pair.error));
-        }
+        public IObservable<(ISettingsNode settings, Exception error)> ObserveRaw() => 
+            source.Observe().Select(pair => (pair.settings?.ScopeTo(scope), pair.error));
     }
 }
