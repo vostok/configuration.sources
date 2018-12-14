@@ -20,7 +20,7 @@ namespace Vostok.Configuration.Sources.File
         /// <param name="filePath">File name with settings</param>
         /// <param name="settings">File parsing settings</param>
         /// <param name="parseSettings">"Get" method invocation for string source</param>
-        protected BaseFileSource(string filePath, FileSourceSettings settings, Func<string, ISettingsNode> parseSettings)
+        public BaseFileSource(string filePath, FileSourceSettings settings, Func<string, ISettingsNode> parseSettings)
             : this(() => SettingsFileWatcher.WatchFile(filePath, settings), parseSettings)
         {
         }
