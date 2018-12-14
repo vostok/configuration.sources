@@ -13,36 +13,21 @@ namespace Vostok.Configuration.Sources.Helpers
     internal class GarbageCollectedCache<TKey, TValue>
     {
         private readonly Func<KeyValuePair<TKey, TValue>, bool> garbageSelector;
-        private readonly TimeSpan garbageCollectionPeriod;
         private readonly ConcurrentDictionary<TKey, TValue> cache = new ConcurrentDictionary<TKey, TValue>();
-        private readonly AtomicBoolean taskIsRun;
 
-        public GarbageCollectedCache(Func<KeyValuePair<TKey, TValue>, bool> garbageSelector, TimeSpan garbageCollectionPeriod)
+        public GarbageCollectedCache(Func<KeyValuePair<TKey, TValue>, bool> garbageSelector)
         {
             this.garbageSelector = garbageSelector;
-            this.garbageCollectionPeriod = garbageCollectionPeriod;
-            taskIsRun = new AtomicBoolean(false);
         }
 
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
         {
-            if (taskIsRun.TrySetTrue())
-                Task.Run(CollectGarbage);
-                    
-            return cache.GetOrAdd(key, valueFactory);
-        }
-
-        private async Task CollectGarbage()
-        {
-            while (true)
+            foreach (var kv in cache.ToArray())
             {
-                await Task.Delay(garbageCollectionPeriod).ConfigureAwait(false);
-                foreach (var kv in cache.ToArray())
-                {
-                    if (garbageSelector(kv))
-                        cache.TryRemove(kv.Key, out _);
-                }
+                if (garbageSelector(kv))
+                    cache.TryRemove(kv.Key, out _);
             }
+            return cache.GetOrAdd(key, valueFactory);
         }
     }
 }

@@ -21,12 +21,15 @@ namespace Vostok.Configuration.Sources.Tests
         private string settingsPath;
         private IFileSystem fileSystem;
         private string fileContent = "";
+        private IDisposable fsWatcher;
 
         [SetUp]
         public void SetUp()
         {
             settingsPath = @"C:\settings";
+            fsWatcher = Substitute.For<IDisposable>();
             fileSystem = Substitute.For<IFileSystem>();
+            fileSystem.WatchFileSystem("", "", null).ReturnsForAnyArgs(fsWatcher);
         }
 
         [Test]
@@ -56,30 +59,6 @@ namespace Vostok.Configuration.Sources.Tests
             var watcher = CreateFileWatcher();
 
             watcher.WaitFirstValue(1.Seconds()).Should().Be((null, error));
-        }
-
-        [Test]
-        public void Should_repeat_last_value_for_new_subscribers([Values]bool simulateReadingError)
-        {
-            var content = "settings";
-            var error = new IOException();
-            (string, Exception) expectedValue;
-
-            if (simulateReadingError)
-            {
-                SetupReadingError(settingsPath, error);
-                expectedValue = (null, error);
-            }
-            else
-            {
-                SetupFileExists(settingsPath, content);
-                expectedValue = (content, null);
-            }
-
-            var watcher = CreateFileWatcher();
-
-            watcher.WaitFirstValue(1.Seconds()).Should().Be(expectedValue);
-            watcher.WaitFirstValue(1.Seconds()).Should().Be(expectedValue);
         }
 
         [Test]
@@ -128,6 +107,35 @@ namespace Vostok.Configuration.Sources.Tests
                 Action assertion2 = () => observer.Values.Distinct().Should().Equal(("settings1", null), ("settings2", null));
                 assertion2.ShouldPassIn(100.Milliseconds());
             }
+        }
+
+        [Test]
+        public void Should_dispose_fsWatcher_after_unsubscription()
+        {
+            var watcher = CreateFileWatcher(50.Milliseconds());
+
+            var observer = new TestObserver<(string, Exception)>();
+            using (watcher.Subscribe(observer))
+            {
+                fsWatcher.DidNotReceive().Dispose();
+            }
+            fsWatcher.Received().Dispose();
+        }
+
+        [Test]
+        public void Should_stop_worker_after_unsubscription()
+        {
+            var watcher = CreateFileWatcher(50.Milliseconds());
+
+            var observer = new TestObserver<(string, Exception)>();
+            using (watcher.Subscribe(observer))
+            {
+                Action assertion1 = () => fileSystem.Received(2).Exists(settingsPath);
+                assertion1.ShouldPassIn(150.Milliseconds());
+            }
+            fileSystem.ClearReceivedCalls();
+            Action assertion2 = () => fileSystem.DidNotReceive().Exists(settingsPath);
+            assertion2.ShouldNotFailIn(100.Milliseconds());
         }
 
         private SingleFileWatcher CreateFileWatcher(TimeSpan? fileWatcherPeriod = null)

@@ -13,7 +13,7 @@ namespace Vostok.Configuration.Sources.Watchers
     {
         private static readonly GarbageCollectedCache<(string fileName, FileSourceSettings settings), SubscriptionsCounterAdapter<(string content, Exception error)>> Watchers =
             new GarbageCollectedCache<(string fileName, FileSourceSettings settings), SubscriptionsCounterAdapter<(string content, Exception error)>>(
-                kv => kv.Value.SubscriptionsCount == 0, TimeSpan.FromSeconds(5));
+                kv => kv.Value.SubscriptionsCount == 0);
 
         /// <summary>
         ///     Subscribtion to <paramref name="file" />
@@ -23,7 +23,12 @@ namespace Vostok.Configuration.Sources.Watchers
         /// <returns>Subscriber receiving file text. Receive null if file not exists.</returns>
         public static IObservable<(string content, Exception error)> WatchFile([NotNull] string file, FileSourceSettings settings = null)
         {
-            return Watchers.GetOrAdd((file, settings), _ => new SingleFileWatcher(file, settings).Replay().RefCount().WithSubscriptionsCounter());
+            return WatchFile(file, settings, () => new SingleFileWatcher(file, settings));
+        }
+        
+        internal static IObservable<(string content, Exception error)> WatchFile(string file, FileSourceSettings settings, Func<IObservable<(string, Exception)>> singleFileWatcherFactory)
+        {
+            return Watchers.GetOrAdd((file, settings), _ => singleFileWatcherFactory().Replay(1).RefCount().WithSubscriptionsCounter());
         }
     }
 }
