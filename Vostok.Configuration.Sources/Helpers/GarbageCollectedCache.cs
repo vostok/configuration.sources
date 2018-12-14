@@ -36,7 +36,7 @@ namespace Vostok.Configuration.Sources.Helpers
         {
             while (true)
             {
-                await Task.Delay(garbageCollectionPeriod);
+                await Task.Delay(garbageCollectionPeriod).ConfigureAwait(false);
                 foreach (var kv in cache.ToArray())
                 {
                     if (garbageSelector(kv))
