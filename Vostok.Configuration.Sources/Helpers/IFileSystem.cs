@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 
@@ -9,6 +10,6 @@ namespace Vostok.Configuration.Sources.Helpers
 
         TextReader OpenFile(string filePath, FileMode fileMode, FileAccess fileAccess, FileShare fileShare, Encoding encoding);
 
-        void WatchFileSystem(string path, string filter, FileSystemEventHandler handler);
+        IDisposable WatchFileSystem(string path, string filter, FileSystemEventHandler handler);
     }
 }

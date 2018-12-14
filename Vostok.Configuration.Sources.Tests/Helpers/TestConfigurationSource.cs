@@ -1,20 +1,33 @@
 using System;
+using System.Reactive.Subjects;
+using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.SettingsTree;
 
 namespace Vostok.Configuration.Sources.Tests
 {
-    internal class TestConfigurationSource : ConfigurationSourceAdapter
+    internal class TestConfigurationSource: IConfigurationSource
     {
-        internal TestRawConfigurationSource RawSource => (TestRawConfigurationSource)rawSource;
+        private readonly ReplaySubject<(ISettingsNode settings, Exception error)> subject = new ReplaySubject<(ISettingsNode settings, Exception error)>();
 
         public TestConfigurationSource()
-            : base(new TestRawConfigurationSource())
         {
+        }
+        
+        public TestConfigurationSource(ISettingsNode settings, Exception error = null)
+        {
+            PushNewConfiguration(settings, error);
         }
 
-        public TestConfigurationSource(ISettingsNode settings, Exception error = null)
-            : base(new TestRawConfigurationSource(settings, error))
+        public void PushNewConfiguration(ISettingsNode settings, Exception error = null)
         {
+            subject.OnNext((settings, error));
         }
+
+        public void ThrowError(Exception error)
+        {
+            subject.OnError(error);
+        }
+
+        public IObservable<(ISettingsNode settings, Exception error)> Observe() => subject;
     }
 }

@@ -94,11 +94,11 @@ namespace Vostok.Configuration.Sources.Tests
 
             var watcher = CreateFileWatcher(10.Seconds());
 
-            handler.Should().NotBeNull();
-            
             var observer = new TestObserver<(string, Exception)>();
             using (watcher.Subscribe(observer))
             {
+                handler.Should().NotBeNull();
+                
                 Action assertion1 = () => observer.Values.Should().Equal(("settings1", null));
                 assertion1.ShouldPassIn(100.Milliseconds());
 

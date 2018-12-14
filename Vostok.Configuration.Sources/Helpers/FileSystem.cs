@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 
@@ -13,11 +14,12 @@ namespace Vostok.Configuration.Sources.Helpers
             return new StreamReader(stream, encoding);
         }
 
-        public void WatchFileSystem(string path, string filter, FileSystemEventHandler handler)
+        public IDisposable WatchFileSystem(string path, string filter, FileSystemEventHandler handler)
         {
             var fileWatcher = new FileSystemWatcher(path, filter);
             fileWatcher.Changed += handler;
             fileWatcher.EnableRaisingEvents = true;
+            return fileWatcher;
         }
     }
 }

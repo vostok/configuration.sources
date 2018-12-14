@@ -10,14 +10,14 @@ using Vostok.Configuration.Sources.Constant;
 namespace Vostok.Configuration.Sources.Tests
 {
     [TestFixture]
-    internal class BaseConstantRawSource_Tests
+    internal class BaseConstantSource_Tests
     {
         [Test]
         public void Should_push_settings_from_getter_when_getter_succeeded()
         {
             var settings = Substitute.For<ISettingsNode>();
-            new TestConstantRawSource(() => settings)
-                .ObserveRaw()
+            new TestConstantSource(() => settings)
+                .Observe()
                 .WaitFirstValue(100.Milliseconds())
                 .Should()
                 .Be((settings, null));
@@ -27,8 +27,8 @@ namespace Vostok.Configuration.Sources.Tests
         public void Should_push_getter_exception_when_getter_failed()
         {
             var error = new FormatException();
-            new TestConstantRawSource(() => throw error)
-                .ObserveRaw()
+            new TestConstantSource(() => throw error)
+                .Observe()
                 .WaitFirstValue(100.Milliseconds())
                 .Should()
                 .Be((null, error));
@@ -38,15 +38,15 @@ namespace Vostok.Configuration.Sources.Tests
         public void Should_not_call_getter_twice()
         {
             var getter = Substitute.For<Func<ISettingsNode>>();
-            var source = new TestConstantRawSource(getter);
+            var source = new TestConstantSource(getter);
 
-            source.ObserveRaw()
+            source.Observe()
                 .WaitFirstValue(100.Milliseconds())
                 .settings
                 .Should()
                 .NotBeNull();
             
-            source.ObserveRaw()
+            source.Observe()
                 .WaitFirstValue(100.Milliseconds())
                 .settings
                 .Should()
@@ -55,9 +55,9 @@ namespace Vostok.Configuration.Sources.Tests
             getter.ReceivedCalls().Count().Should().Be(1);
         }
         
-        private class TestConstantRawSource : BaseConstantRawSource
+        private class TestConstantSource : BaseConstantSource
         {
-            public TestConstantRawSource(Func<ISettingsNode> settingsGetter)
+            public TestConstantSource(Func<ISettingsNode> settingsGetter)
                 : base(settingsGetter)
             {
             }

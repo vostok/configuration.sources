@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using NUnit.Framework;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Environment;
@@ -14,7 +15,7 @@ namespace Vostok.Configuration.Sources.Tests
         public void Should_return_correct_values()
         {
             var evs = new EnvironmentVariablesSource();
-            var res = evs.Get();
+            var res = evs.Observe().WaitFirstValue(100.Milliseconds()).settings;
 
             CheckResult(res);
         }

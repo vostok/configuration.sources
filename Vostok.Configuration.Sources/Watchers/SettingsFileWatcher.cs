@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Reactive.Linq;
 using JetBrains.Annotations;
 using Vostok.Configuration.Sources.File;
+using Vostok.Configuration.Sources.Helpers;
 
 namespace Vostok.Configuration.Sources.Watchers
 {
@@ -10,8 +11,9 @@ namespace Vostok.Configuration.Sources.Watchers
     /// </summary>
     internal static class SettingsFileWatcher
     {
-        private static readonly ConcurrentDictionary<(string fileName, FileSourceSettings settings), IObservable<(string content, Exception error)>> Watchers =
-            new ConcurrentDictionary<(string fileName, FileSourceSettings settings), IObservable<(string content, Exception error)>>();
+        private static readonly GarbageCollectedCache<(string fileName, FileSourceSettings settings), SubscriptionsCounterAdapter<(string content, Exception error)>> Watchers =
+            new GarbageCollectedCache<(string fileName, FileSourceSettings settings), SubscriptionsCounterAdapter<(string content, Exception error)>>(
+                kv => kv.Value.SubscriptionsCount == 0, TimeSpan.FromSeconds(5));
 
         /// <summary>
         ///     Subscribtion to <paramref name="file" />
@@ -21,9 +23,7 @@ namespace Vostok.Configuration.Sources.Watchers
         /// <returns>Subscriber receiving file text. Receive null if file not exists.</returns>
         public static IObservable<(string content, Exception error)> WatchFile([NotNull] string file, FileSourceSettings settings = null)
         {
-            return Watchers.GetOrAdd((file, settings), _ => new SingleFileWatcher(file, settings));
+            return Watchers.GetOrAdd((file, settings), _ => new SingleFileWatcher(file, settings).Replay().RefCount().WithSubscriptionsCounter());
         }
-
-        internal static void ClearCache() => Watchers.Clear();
     }
 }

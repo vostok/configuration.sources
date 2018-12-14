@@ -13,7 +13,7 @@ using Vostok.Configuration.Sources.Tests.Helpers;
 namespace Vostok.Configuration.Sources.Tests
 {
     [TestFixture]
-    internal class ScopedRawSource_Tests
+    internal class ScopedSource_Tests
     {
         private TestConfigurationSource testSource;
 
@@ -30,10 +30,10 @@ namespace Vostok.Configuration.Sources.Tests
             {
                 ["value"] = new ValueNode("1"),
             });
-            testSource.RawSource.PushNewConfiguration(tree);
+            testSource.PushNewConfiguration(tree);
             
-            var source = new ScopedRawSource(testSource);
-            var result = source.ObserveRaw().WaitFirstValue(100.Milliseconds());
+            var source = new ScopedSource(testSource);
+            var result = source.Observe().WaitFirstValue(100.Milliseconds());
             result.Should().Be((tree, null));
         }
 
@@ -46,33 +46,30 @@ namespace Vostok.Configuration.Sources.Tests
             var settings = Substitute.For<ISettingsNode>();
             settings.ScopeTo("key").Returns(scopedSettings);
             
-            testSource.RawSource.PushNewConfiguration(settings);
-            if (hasError)
-                testSource.RawSource.PushNewConfiguration(null, error);
-            testSource.Observe().WaitFirstValue(100.Milliseconds()).Should().Be((settings, error));
+            testSource.PushNewConfiguration(settings, error);
             
-            var source = new ScopedRawSource(testSource, "key");
+            var source = new ScopedSource(testSource, "key");
             
-            source.ObserveRaw().WaitFirstValue(100.Milliseconds()).Should().Be((scopedSettings, error));
+            source.Observe().WaitFirstValue(100.Milliseconds()).Should().Be((scopedSettings, error));
             settings.Received().ScopeTo("key");
         }
 
         [Test]
         public void Should_reflect_underlying_source_updates()
         {
-            var source = new ScopedRawSource(testSource, "key");
+            var source = new ScopedSource(testSource, "key");
             var value1 = new ValueNode("key", "value1");
 
             var observer = new TestObserver<(ISettingsNode, Exception)>();
-            using (source.ObserveRaw().Subscribe(observer))
+            using (source.Observe().Subscribe(observer))
             {
-                testSource.RawSource.PushNewConfiguration(new ObjectNode("root", new Dictionary<string, ISettingsNode>
+                testSource.PushNewConfiguration(new ObjectNode("root", new Dictionary<string, ISettingsNode>
                 {
                     ["key"] = value1
                 }));
 
                 var value2 = new ValueNode("key", "value2");
-                testSource.RawSource.PushNewConfiguration(new ObjectNode("root", new Dictionary<string, ISettingsNode>
+                testSource.PushNewConfiguration(new ObjectNode("root", new Dictionary<string, ISettingsNode>
                 {
                     ["key"] = value2
                 }));

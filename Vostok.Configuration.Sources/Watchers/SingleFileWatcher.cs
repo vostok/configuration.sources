@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace Vostok.Configuration.Sources.Watchers
         private readonly AtomicBoolean taskIsRun;
         private readonly IFileSystem fileSystem;
 
-        private readonly ReplaySubject<(string content, Exception error)> observers;
+        private readonly Subject<(string content, Exception error)> observers;
 
         private CancellationTokenSource tokenDelaySource;
         private CancellationToken tokenDelay;
@@ -42,23 +43,28 @@ namespace Vostok.Configuration.Sources.Watchers
             this.filePath = filePath;
             settings = fileSourceSettings ?? new FileSourceSettings();
             this.fileSystem = fileSystem;
-            observers = new ReplaySubject<(string content, Exception error)>(1);
+            observers = new Subject<(string content, Exception error)>();
             taskIsRun = new AtomicBoolean(false);
-
-            var path = Path.GetDirectoryName(filePath);
-            if (string.IsNullOrEmpty(path))
-                path = AppDomain.CurrentDomain.BaseDirectory;
-            fileSystem.WatchFileSystem(path, Path.GetFileName(filePath), OnFileWatcherEvent);
         }
 
         public IDisposable Subscribe(IObserver<(string content, Exception error)> observer)
         {
             var subscription = observers.Subscribe(observer);
 
-            if (taskIsRun.TrySetTrue())
-                Task.Run(WatchFile);
+            var watcher = StartWatcher();
+            
+            var tokenStopSource = new CancellationTokenSource();
+            Task.Run(() => WatchFile(tokenStopSource), tokenStopSource.Token);
+            
+            return new CompositeDisposable(watcher, new CancellationDisposable(tokenStopSource), subscription);
+        }
 
-            return subscription;
+        private IDisposable StartWatcher()
+        {
+            var path = Path.GetDirectoryName(filePath);
+            if (string.IsNullOrEmpty(path))
+                path = AppDomain.CurrentDomain.BaseDirectory;
+            return fileSystem.WatchFileSystem(path, Path.GetFileName(filePath), OnFileWatcherEvent);
         }
 
         private void OnFileWatcherEvent(object sender, FileSystemEventArgs args)
@@ -67,9 +73,9 @@ namespace Vostok.Configuration.Sources.Watchers
                 tokenDelaySource.Cancel();
         }
 
-        private async Task WatchFile()
+        private async Task WatchFile(CancellationTokenSource tokenStopSource)
         {
-            while (true)
+            while (!tokenStopSource.IsCancellationRequested)
             {
                 try
                 {
@@ -86,8 +92,11 @@ namespace Vostok.Configuration.Sources.Watchers
                     tokenDelay = tokenDelaySource.Token;
                 }
 
-                await Task.Delay(settings.FileWatcherPeriod, tokenDelay).SilentlyContinue().ConfigureAwait(false);
+                var cancellationToken = CancellationTokenSource.CreateLinkedTokenSource(tokenDelay, tokenStopSource.Token);
+                await Task.Delay(settings.FileWatcherPeriod, cancellationToken.Token).SilentlyContinue().ConfigureAwait(false);
             }
+
+            taskIsRun.TrySetFalse();
         }
 
         private string ReadFile()

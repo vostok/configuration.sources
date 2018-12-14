@@ -15,7 +15,7 @@ using Vostok.Configuration.Sources.Tests.Helpers;
 namespace Vostok.Configuration.Sources.Tests
 {
     [TestFixture]
-    internal class CombinedRawSource_Tests
+    internal class CombinedSource_Tests
     {
         private ISettingsNode[] settingsNodes;
         private TestConfigurationSource[] sources;
@@ -30,10 +30,10 @@ namespace Vostok.Configuration.Sources.Tests
         [Test]
         public void Should_throw_exception_when_no_sources()
         {
-            new Action(() => new CombinedRawSource(null))
+            new Action(() => new CombinedSource(null))
                 .Should().Throw<ArgumentException>();
 
-            new Action(() => new CombinedRawSource(new IConfigurationSource[0]))
+            new Action(() => new CombinedSource(new IConfigurationSource[0]))
                 .Should().Throw<ArgumentException>();
         }
 
@@ -46,9 +46,9 @@ namespace Vostok.Configuration.Sources.Tests
             var merged012 = Substitute.For<ISettingsNode>();
             merged01.Merge(settingsNodes[2], Arg.Any<SettingsMergeOptions>()).Returns(merged012);
 
-            var source = new CombinedRawSource(sources);
+            var source = new CombinedSource(sources);
 
-            source.ObserveRaw().WaitFirstValue(100.Milliseconds())
+            source.Observe().WaitFirstValue(100.Milliseconds())
                 .Should().Be((merged012, null));
 
             settingsNodes[0].Merge(settingsNodes[1], Arg.Any<SettingsMergeOptions>()).Received();
@@ -58,47 +58,47 @@ namespace Vostok.Configuration.Sources.Tests
         [Test]
         public void Should_merge_null_settings_correctly()
         {
-            var source = new CombinedRawSource(sources);
+            var source = new CombinedSource(sources);
             
-            sources[0].RawSource.PushNewConfiguration(null);
+            sources[0].PushNewConfiguration(null);
 
-            source.ObserveRaw().WaitFirstValue(100.Milliseconds())
+            source.Observe().WaitFirstValue(100.Milliseconds())
                 .Should().BeEquivalentTo((null as ISettingsNode, null as Exception));
         }
 
         [Test]
         public void Should_push_single_exception_when_one_exception()
         {
-            var source = new CombinedRawSource(sources);
+            var source = new CombinedSource(sources);
             
             var error = new IOException();
-            sources[0].RawSource.PushNewConfiguration(null, error);
-            sources[1].RawSource.PushNewConfiguration(null);
+            sources[0].PushNewConfiguration(null, error);
+            sources[1].PushNewConfiguration(null);
 
-            source.ObserveRaw().WaitFirstValue(100.Milliseconds()).error
+            source.Observe().WaitFirstValue(100.Milliseconds()).error
                 .Should().BeEquivalentTo(error);
         }
 
         [Test]
         public void Should_merge_exceptions_into_aggregate_exception_when_more_than_one_exception()
         {
-            var source = new CombinedRawSource(sources);
+            var source = new CombinedSource(sources);
             
             Exception[] errors = {new IOException(), new FormatException()};
-            sources[0].RawSource.PushNewConfiguration(null, errors[0]);
-            sources[1].RawSource.PushNewConfiguration(null, errors[1]);
+            sources[0].PushNewConfiguration(null, errors[0]);
+            sources[1].PushNewConfiguration(null, errors[1]);
 
-            source.ObserveRaw().WaitFirstValue(100.Milliseconds()).error
+            source.Observe().WaitFirstValue(100.Milliseconds()).error
                 .Should().BeEquivalentTo(new AggregateException(errors));
         }
 
         [Test]
         public void Should_reflect_underlying_sources_updates()
         {
-            var source = new CombinedRawSource(sources.Take(2).ToArray());
+            var source = new CombinedSource(sources.Take(2).ToArray());
 
             var observer = new TestObserver<(ISettingsNode, Exception)>();
-            using (source.ObserveRaw().Subscribe(observer))
+            using (source.Observe().Subscribe(observer))
             {
                 Action assertion1 = () => observer.Values.Count.Should().Be(1);
                 assertion1.ShouldPassIn(100.Milliseconds());
@@ -108,7 +108,7 @@ namespace Vostok.Configuration.Sources.Tests
                 var merged01 = Substitute.For<ISettingsNode>();
                 settingsNodes[0].Merge(settingsNodes[1], Arg.Any<SettingsMergeOptions>()).Returns(merged01);
             
-                sources[0].RawSource.PushNewConfiguration(settingsNodes[0]);
+                sources[0].PushNewConfiguration(settingsNodes[0]);
 
                 Action assertion2 = () =>
                 {

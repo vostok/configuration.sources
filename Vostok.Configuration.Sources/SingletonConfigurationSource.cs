@@ -17,9 +17,6 @@ namespace Vostok.Configuration.Sources
             currentImplementation = implementations.GetOrAdd(typedKey, _ => constructor());
         }
 
-        public ISettingsNode Get() =>
-            currentImplementation.Get();
-
         public IObservable<(ISettingsNode settings, Exception error)> Observe() =>
             currentImplementation.Observe();
 

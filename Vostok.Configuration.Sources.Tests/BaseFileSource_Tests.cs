@@ -11,7 +11,7 @@ using Vostok.Configuration.Sources.File;
 namespace Vostok.Configuration.Sources.Tests
 {
     [TestFixture]
-    public class BaseFileRawSource_Tests
+    public class BaseFileSource_Tests
     {
         private ReplaySubject<(string, Exception)> subject;
         private ValueNode settings;
@@ -26,13 +26,13 @@ namespace Vostok.Configuration.Sources.Tests
         [Test]
         public void Should_push_parsed_settings_when_no_errors()
         {
-            var source = new BaseFileRawSource(
+            var source = new BaseFileSource(
                 () => subject,
                 content => settings);
             
             subject.OnNext(("settings", null));
 
-            source.ObserveRaw().WaitFirstValue(100.Milliseconds())
+            source.Observe().WaitFirstValue(100.Milliseconds())
                 .Should()
                 .Be((settings, null));
         }
@@ -41,7 +41,7 @@ namespace Vostok.Configuration.Sources.Tests
         public void Should_push_error_from_fileObserver()
         {
             var parseCalls = 0;
-            var source = new BaseFileRawSource(
+            var source = new BaseFileSource(
                 () => subject,
                 content =>
                 {
@@ -52,7 +52,7 @@ namespace Vostok.Configuration.Sources.Tests
             var error = new IOException();
             subject.OnNext(("settings", error));
 
-            source.ObserveRaw().WaitFirstValue(100.Milliseconds())
+            source.Observe().WaitFirstValue(100.Milliseconds())
                 .Should()
                 .Be((null, error));
 
@@ -63,13 +63,13 @@ namespace Vostok.Configuration.Sources.Tests
         public void Should_push_parsing_error_when_failed_to_parse()
         {
             var error = new IOException();
-            var source = new BaseFileRawSource(
+            var source = new BaseFileSource(
                 () => subject,
                 content => throw error);
             
             subject.OnNext(("settings", null));
 
-            source.ObserveRaw().WaitFirstValue(100.Milliseconds())
+            source.Observe().WaitFirstValue(100.Milliseconds())
                 .Should()
                 .Be((null, error));
         }
@@ -78,7 +78,7 @@ namespace Vostok.Configuration.Sources.Tests
         public void Should_not_parse_same_content_twice([Values]bool parserThrows)
         {
             var parseCalls = 0;
-            var source = new BaseFileRawSource(
+            var source = new BaseFileSource(
                 () => subject,
                 content =>
                 {
@@ -88,7 +88,7 @@ namespace Vostok.Configuration.Sources.Tests
                     return settings;
                 });
 
-            using (source.ObserveRaw().Subscribe(_ => {}))
+            using (source.Observe().Subscribe(_ => {}))
             {
                 Action assertion = () => parseCalls.Should().Be(1);
             
