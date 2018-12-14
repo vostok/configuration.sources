@@ -26,10 +26,7 @@ namespace Vostok.Configuration.Sources.Tests
         [Test]
         public void Should_push_full_tree_when_no_scope()
         {
-            var tree = new ObjectNode(new SortedDictionary<string, ISettingsNode>
-            {
-                ["value"] = new ValueNode("1"),
-            });
+            var tree = new ObjectNode(new []{new ValueNode("1")});
             testSource.PushNewConfiguration(tree);
             
             var source = new ScopedSource(testSource);
@@ -63,16 +60,10 @@ namespace Vostok.Configuration.Sources.Tests
             var observer = new TestObserver<(ISettingsNode, Exception)>();
             using (source.Observe().Subscribe(observer))
             {
-                testSource.PushNewConfiguration(new ObjectNode("root", new Dictionary<string, ISettingsNode>
-                {
-                    ["key"] = value1
-                }));
+                testSource.PushNewConfiguration(new ObjectNode("root", new[] {value1}));
 
                 var value2 = new ValueNode("key", "value2");
-                testSource.PushNewConfiguration(new ObjectNode("root", new Dictionary<string, ISettingsNode>
-                {
-                    ["key"] = value2
-                }));
+                testSource.PushNewConfiguration(new ObjectNode("root", new[] {value2}));
 
                 Action assertion = () => observer.Values.Should().Equal((value1, null), (value2, null));
                 assertion.ShouldPassIn(1.Seconds());

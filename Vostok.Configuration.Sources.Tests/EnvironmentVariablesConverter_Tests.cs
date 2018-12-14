@@ -17,7 +17,7 @@ namespace Vostok.Configuration.Sources.Tests
         {
             converter = new EnvironmentVariablesConverter();
         }
-        
+
         [Test]
         public void Should_return_null_when_no_variables()
         {
@@ -38,10 +38,10 @@ namespace Vostok.Configuration.Sources.Tests
                 .Should()
                 .Be(
                     new ObjectNode(
-                        new Dictionary<string, ISettingsNode>
+                        new[]
                         {
-                            ["key1"] = new ValueNode("key1", "value1"),
-                            ["key2"] = new ValueNode("key2", "value2")
+                            new ValueNode("key1", "value1"),
+                            new ValueNode("key2", "value2")
                         }));
         }
 
@@ -58,14 +58,14 @@ namespace Vostok.Configuration.Sources.Tests
                 .Should()
                 .Be(
                     new ObjectNode(
-                        new Dictionary<string, ISettingsNode>
+                        new[]
                         {
-                            ["a"] = new ObjectNode(
+                            new ObjectNode(
                                 "a",
-                                new Dictionary<string, ISettingsNode>
+                                new[]
                                 {
-                                    ["b"] = new ValueNode("b", "value1"),
-                                    ["c"] = new ValueNode("c", "value2")
+                                    new ValueNode("b", "value1"),
+                                    new ValueNode("c", "value2")
                                 })
                         }));
         }

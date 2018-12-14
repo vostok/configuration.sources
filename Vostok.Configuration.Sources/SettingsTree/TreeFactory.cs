@@ -15,10 +15,7 @@ namespace Vostok.Configuration.Sources.SettingsTree
         public static ISettingsNode CreateTreeByMultiLevelKey(string rootName, string[] keys, ISettingsNode value)
         {
             return keys.Length > 0
-                ? new ObjectNode(rootName, new SortedDictionary<string, ISettingsNode>(StringComparer.InvariantCultureIgnoreCase)
-                {
-                    [keys[0]] = CreateTreeByMultiLevelKey(keys[0], keys.Skip(1).ToArray(), value)
-                })
+                ? new ObjectNode(rootName, new []{CreateTreeByMultiLevelKey(keys[0], keys.Skip(1).ToArray(), value)})
                 : value;
         }
     }

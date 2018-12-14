@@ -14,32 +14,26 @@ namespace Vostok.Configuration.Sources.Tests
         {
             var valueNode = new ValueNode("name", "value");
             TreeFactory.CreateTreeByMultiLevelKey("root", new string[0], valueNode)
-                .Should().Be(valueNode);
+                .Should()
+                .Be(valueNode);
         }
 
         [Test]
         public void Should_create_correct_tree_when_single_key()
         {
             var valueNode = new ValueNode("key", "value");
-            TreeFactory.CreateTreeByMultiLevelKey("root", new []{"key"}, valueNode)
-                .Should().Be(new ObjectNode("root", new Dictionary<string, ISettingsNode>
-                {
-                    ["key"] = valueNode
-                }));
+            TreeFactory.CreateTreeByMultiLevelKey("root", new[] {"key"}, valueNode)
+                .Should()
+                .Be(new ObjectNode("root", new[] {valueNode}));
         }
 
         [Test]
         public void Should_create_correct_tree_when_multiLevel_key()
         {
             var valueNode = new ValueNode("key2", "value");
-            TreeFactory.CreateTreeByMultiLevelKey("root", new []{"key1", "key2"}, valueNode)
-                .Should().Be(new ObjectNode("root", new Dictionary<string, ISettingsNode>
-                {
-                    ["key1"] = new ObjectNode("key1", new Dictionary<string, ISettingsNode>
-                    {
-                        ["key2"] = valueNode
-                    })
-                }));
+            TreeFactory.CreateTreeByMultiLevelKey("root", new[] {"key1", "key2"}, valueNode)
+                .Should()
+                .Be(new ObjectNode("root", new[] {new ObjectNode("key1", new[] {valueNode})}));
         }
     }
 }
