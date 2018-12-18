@@ -11,7 +11,6 @@ using Vostok.Commons.Testing;
 using Vostok.Configuration.Sources.File;
 using Vostok.Configuration.Sources.Helpers;
 using Vostok.Configuration.Sources.Tests.Helpers;
-using Vostok.Configuration.Sources.Watchers;
 
 namespace Vostok.Configuration.Sources.Tests
 {

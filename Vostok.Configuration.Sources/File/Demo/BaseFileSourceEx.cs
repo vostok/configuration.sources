@@ -2,38 +2,29 @@
 using System.Reactive.Linq;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.SettingsTree;
+using Vostok.Configuration.Sources.Helpers;
 
 namespace Vostok.Configuration.Sources.File
 {
-    public class BaseFileSource : IConfigurationSource
+    public class BaseFileSourceEx : IConfigurationSource
     {
+        private readonly Func<FileSourceSettings> settingsProvider;
         private readonly Func<string, ISettingsNode> parseSettings;
-        private readonly Func<IObservable<(string, Exception)>> fileWatcherProvider;
         private string lastContent;
         private (ISettingsNode settings, Exception error) currentValue;
 
-        /// <summary>
-        ///     <para>Creates a <see cref="BaseFileSource" /> instance.</para>
-        ///     <para>Wayits for file to be parsed.</para>
-        /// </summary>
-        /// <param name="filePath">File name with settings</param>
-        /// <param name="settings">File parsing settings</param>
-        /// <param name="parseSettings">"Get" method invocation for string source</param>
-        public BaseFileSource(string filePath, FileSourceSettings settings, Func<string, ISettingsNode> parseSettings)
-            : this(() => SettingsFileWatcher.WatchFile(filePath, settings), parseSettings)
+        private static readonly GenericWatcherCache<FileSourceSettings, string> Watchers = 
+            new GenericWatcherCache<FileSourceSettings, string>(new FileWatcherFactory(new FileSystem()));
+        
+        public BaseFileSourceEx(Func<FileSourceSettings> settingsProvider, Func<string, ISettingsNode> parseSettings)
         {
-        }
-
-        internal BaseFileSource(Func<IObservable<(string, Exception)>> fileWatcherProvider, Func<string, ISettingsNode> parseSettings)
-        {
-            this.fileWatcherProvider = fileWatcherProvider;
+            this.settingsProvider = settingsProvider;
             this.parseSettings = parseSettings;
         }
 
-        /// <inheritdoc />
         public IObservable<(ISettingsNode settings, Exception error)> Observe()
         {
-            var fileWatcher = fileWatcherProvider();
+            var fileWatcher = Watchers.Watch(settingsProvider());
             return fileWatcher.Select(
                 pair =>
                 {

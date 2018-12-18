@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Vostok.Commons.Helpers.Extensions;
 using Vostok.Commons.Threading;
-using Vostok.Configuration.Sources.File;
 using Vostok.Configuration.Sources.Helpers;
 
-namespace Vostok.Configuration.Sources.Watchers
+namespace Vostok.Configuration.Sources.File
 {
     /// <inheritdoc />
     /// <summary>
@@ -63,7 +62,7 @@ namespace Vostok.Configuration.Sources.Watchers
         {
             var path = Path.GetDirectoryName(filePath);
             if (string.IsNullOrEmpty(path))
-                path = AppDomain.CurrentDomain.BaseDirectory;
+                path = AppDomain.CurrentDomain.BaseDirectory; // TODO(krait): Use working directory instead.
             return fileSystem.WatchFileSystem(path, Path.GetFileName(filePath), OnFileWatcherEvent);
         }
 

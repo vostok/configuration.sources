@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Reactive.Linq;
 using JetBrains.Annotations;
-using Vostok.Configuration.Sources.File;
 using Vostok.Configuration.Sources.Helpers;
 
-namespace Vostok.Configuration.Sources.Watchers
+namespace Vostok.Configuration.Sources.File
 {
     /// <summary>
     ///     Watches for changes in files
