@@ -12,15 +12,16 @@ using Vostok.Configuration.Sources.File;
 using Vostok.Configuration.Sources.Helpers;
 using Vostok.Configuration.Sources.Tests.Helpers;
 
-namespace Vostok.Configuration.Sources.Tests
+namespace Vostok.Configuration.Sources.Tests.Integration
 {
     [TestFixture]
-    public class SingleFileWatcher_Tests
+    public class FileWatcher_Tests
     {
         private string settingsPath;
         private IFileSystem fileSystem;
         private string fileContent = "";
         private IDisposable fsWatcher;
+        private FileWatcherFactory factory;
 
         [SetUp]
         public void SetUp()
@@ -29,13 +30,14 @@ namespace Vostok.Configuration.Sources.Tests
             fsWatcher = Substitute.For<IDisposable>();
             fileSystem = Substitute.For<IFileSystem>();
             fileSystem.WatchFileSystem("", "", null).ReturnsForAnyArgs(fsWatcher);
+            factory = new FileWatcherFactory(fileSystem);
         }
 
         [Test]
         public void Should_push_null_content_when_file_not_exists()
         {
             fileSystem.Exists(settingsPath).Returns(false);
-            var watcher = new SingleFileWatcher(settingsPath, new FileSourceSettings(), fileSystem);
+            var watcher = CreateFileWatcher();
 
             watcher.WaitFirstValue(1.Seconds()).Should().Be((null, null));
         }
@@ -137,12 +139,12 @@ namespace Vostok.Configuration.Sources.Tests
             assertion2.ShouldNotFailIn(100.Milliseconds());
         }
 
-        private SingleFileWatcher CreateFileWatcher(TimeSpan? fileWatcherPeriod = null)
+        private IObservable<(string value, Exception error)> CreateFileWatcher(TimeSpan? fileWatcherPeriod = null)
         {
-            var settings = new FileSourceSettings();
+            var settings = new FileSourceSettings {FilePath = settingsPath};
             if (fileWatcherPeriod != null)
                 settings.FileWatcherPeriod = fileWatcherPeriod.Value;
-            return new SingleFileWatcher(settingsPath, settings, fileSystem);
+            return factory.CreateWatcher(settings);
         }
 
         private void SetupFileExists(string filePath, string initialContent)

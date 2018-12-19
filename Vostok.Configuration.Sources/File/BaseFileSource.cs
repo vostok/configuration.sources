@@ -2,6 +2,8 @@
 using System.Reactive.Linq;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.SettingsTree;
+using Vostok.Configuration.Sources.Helpers;
+using Vostok.Configuration.Sources.Watchers;
 
 namespace Vostok.Configuration.Sources.File
 {
@@ -9,9 +11,11 @@ namespace Vostok.Configuration.Sources.File
     {
         private readonly Func<string, ISettingsNode> parseSettings;
         private readonly Func<IObservable<(string, Exception)>> fileWatcherProvider;
-        private string lastContent;
-        private (ISettingsNode settings, Exception error) currentValue;
+        private CacheItem lastResult;
 
+        private static readonly WatcherCache<FileSourceSettings, string> Watchers = 
+            new WatcherCache<FileSourceSettings, string>(new FileWatcherFactory(new FileSystem()));
+        
         /// <summary>
         ///     <para>Creates a <see cref="BaseFileSource" /> instance.</para>
         ///     <para>Wayits for file to be parsed.</para>
@@ -19,8 +23,8 @@ namespace Vostok.Configuration.Sources.File
         /// <param name="filePath">File name with settings</param>
         /// <param name="settings">File parsing settings</param>
         /// <param name="parseSettings">"Get" method invocation for string source</param>
-        public BaseFileSource(string filePath, FileSourceSettings settings, Func<string, ISettingsNode> parseSettings)
-            : this(() => SettingsFileWatcher.WatchFile(filePath, settings), parseSettings)
+        public BaseFileSource(FileSourceSettings settings, Func<string, ISettingsNode> parseSettings)
+            : this(() => Watchers.Watch(settings), parseSettings)
         {
         }
 
@@ -41,20 +45,36 @@ namespace Vostok.Configuration.Sources.File
                     if (readingError != null)
                         return (null, readingError);
 
-                    if (content == lastContent)
-                        return currentValue;
-                    lastContent = content;
+                    var lastResult = this.lastResult;
+                    if (lastResult != null && content == lastResult.Content)
+                        return lastResult.Result;
+                    
+                    (ISettingsNode, Exception) result;
                     try
                     {
-                        currentValue = (parseSettings(content), null as Exception);
+                        result = (parseSettings(content), null as Exception);
                     }
                     catch (Exception error)
                     {
-                        currentValue = (null, error);
+                        result = (null, error);
                     }
+                    
+                    this.lastResult = new CacheItem(content, result);
 
-                    return currentValue;
+                    return result;
                 });
+        }
+        
+        private class CacheItem
+        {
+            public string Content { get; }
+            public (ISettingsNode settings, Exception error) Result { get; }
+
+            public CacheItem(string content, (ISettingsNode settings, Exception error) result)
+            {
+                Content = content;
+                Result = result;
+            }
         }
     }
 }

@@ -1,0 +1,64 @@
+﻿using System;
+using System.IO;
+using System.Reactive.Linq;
+using Vostok.Configuration.Sources.Helpers;
+
+namespace Vostok.Configuration.Sources.File
+{
+    internal class FileWatcherFactory : IWatcherFactory<FileSourceSettings, string>
+    {
+        private readonly IFileSystem fileSystem;
+
+        public FileWatcherFactory(IFileSystem fileSystem)
+        {
+            this.fileSystem = fileSystem;
+        }
+
+        public IObservable<(string value, Exception error)> CreateWatcher(FileSourceSettings settings)
+        {
+            return GenerateSignals(settings).SelectValueOrError(_ => ReadFile(settings));
+        }
+
+        private IObservable<object> GenerateSignals(FileSourceSettings settings)
+        {
+            return PeriodicalSignalsFromNow(settings.FileWatcherPeriod).Merge(FileSystemEvents(settings.FilePath));
+        }
+
+        private string ReadFile(FileSourceSettings settings)
+        {
+            if (!fileSystem.Exists(settings.FilePath))
+                return null;
+
+            using (var reader = fileSystem.OpenFile(settings.FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, settings.Encoding))
+                return reader.ReadToEnd();
+        }
+
+        private IObservable<object> PeriodicalSignalsFromNow(TimeSpan period)
+        {
+            return Observable.Return<object>(null)
+                .Concat(Observable.Interval(period).Select(_ => null as object));
+        }
+
+        private IObservable<object> FileSystemEvents(string filePath)
+        {
+            IDisposable watcher = null;
+            return Observable.FromEventPattern<FileSystemEventHandler, FileSystemEventArgs>(
+                h =>
+                {
+                    watcher = StartWatcher(filePath, h);
+                },
+                h =>
+                {
+                    watcher.Dispose();
+                });
+        }
+
+        private IDisposable StartWatcher(string filePath, FileSystemEventHandler handler)
+        {
+            var path = Path.GetDirectoryName(filePath);
+            if (string.IsNullOrEmpty(path))
+                path = Directory.GetCurrentDirectory();
+            return fileSystem.WatchFileSystem(path, Path.GetFileName(filePath), handler);
+        }
+    }
+}
