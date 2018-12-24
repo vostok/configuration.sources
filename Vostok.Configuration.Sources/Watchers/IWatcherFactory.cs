@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Vostok.Configuration.Sources.File
+namespace Vostok.Configuration.Sources.Watchers
 {
     public interface IWatcherFactory<in TSettings, TValue>
     {

@@ -5,8 +5,9 @@ using FluentAssertions.Extensions;
 using NUnit.Framework;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Environment;
+using Vostok.Configuration.Sources.Tests.Helpers;
 
-namespace Vostok.Configuration.Sources.Tests
+namespace Vostok.Configuration.Sources.Tests.Functional
 {
     [TestFixture]
     internal class EnvironmentVariablesSource_Tests

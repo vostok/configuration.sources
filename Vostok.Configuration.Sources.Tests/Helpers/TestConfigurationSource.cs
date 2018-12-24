@@ -3,7 +3,7 @@ using System.Reactive.Subjects;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.SettingsTree;
 
-namespace Vostok.Configuration.Sources.Tests
+namespace Vostok.Configuration.Sources.Tests.Helpers
 {
     internal class TestConfigurationSource: IConfigurationSource
     {

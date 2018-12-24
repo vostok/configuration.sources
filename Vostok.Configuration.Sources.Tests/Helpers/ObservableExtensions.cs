@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reactive.Linq;
 
-namespace Vostok.Configuration.Sources.Tests
+namespace Vostok.Configuration.Sources.Tests.Helpers
 {
     internal static class ObservableExtensions
     {

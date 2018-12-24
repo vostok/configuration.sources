@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using Vostok.Configuration.Abstractions.SettingsTree;

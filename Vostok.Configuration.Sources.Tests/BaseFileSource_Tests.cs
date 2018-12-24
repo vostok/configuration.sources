@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Vostok.Commons.Testing;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.File;
+using Vostok.Configuration.Sources.Tests.Helpers;
 
 namespace Vostok.Configuration.Sources.Tests
 {

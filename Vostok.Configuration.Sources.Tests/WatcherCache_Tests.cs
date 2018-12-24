@@ -3,7 +3,6 @@ using System.Reactive.Subjects;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.Configuration.Sources.File;
 using Vostok.Configuration.Sources.Tests.Helpers;
 using Vostok.Configuration.Sources.Watchers;
 using Exception = System.Exception;

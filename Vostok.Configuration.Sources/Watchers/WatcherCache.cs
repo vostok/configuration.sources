@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reactive.Linq;
-using Vostok.Configuration.Sources.File;
 using Vostok.Configuration.Sources.Helpers;
 
 namespace Vostok.Configuration.Sources.Watchers

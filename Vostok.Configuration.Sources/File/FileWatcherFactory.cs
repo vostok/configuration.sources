@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reactive.Linq;
 using Vostok.Configuration.Sources.Helpers;
+using Vostok.Configuration.Sources.Watchers;
 
 namespace Vostok.Configuration.Sources.File
 {

@@ -1,11 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
-using JetBrains.Annotations;
-using Vostok.Commons.Threading;
-using Vostok.Configuration.Sources.File;
 
 namespace Vostok.Configuration.Sources.Helpers
 {

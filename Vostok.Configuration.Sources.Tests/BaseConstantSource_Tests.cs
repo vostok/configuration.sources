@@ -6,6 +6,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Constant;
+using Vostok.Configuration.Sources.Tests.Helpers;
 
 namespace Vostok.Configuration.Sources.Tests
 {
