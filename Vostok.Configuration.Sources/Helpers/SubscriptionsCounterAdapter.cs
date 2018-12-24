@@ -6,7 +6,6 @@ namespace Vostok.Configuration.Sources.Helpers
 {
     internal class SubscriptionsCounterAdapter<T> : IObservable<T>
     {
-        public int SubscriptionsCount => subscriptionsCount;
         private readonly IObservable<T> source;
         private int subscriptionsCount;
 
@@ -14,7 +13,9 @@ namespace Vostok.Configuration.Sources.Helpers
         {
             this.source = source;
         }
-        
+
+        public int SubscriptionsCount => subscriptionsCount;
+
         public IDisposable Subscribe(IObserver<T> observer)
         {
             Interlocked.Increment(ref subscriptionsCount);

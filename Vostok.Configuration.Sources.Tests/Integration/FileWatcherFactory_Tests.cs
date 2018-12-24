@@ -142,7 +142,7 @@ namespace Vostok.Configuration.Sources.Tests.Integration
 
         private IObservable<(string value, Exception error)> CreateFileWatcher(TimeSpan? fileWatcherPeriod = null)
         {
-            var settings = new FileSourceSettings {FilePath = settingsPath};
+            var settings = new FileSourceSettings(settingsPath);
             if (fileWatcherPeriod != null)
                 settings.FileWatcherPeriod = fileWatcherPeriod.Value;
             return factory.CreateWatcher(settings);

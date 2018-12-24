@@ -16,7 +16,7 @@ namespace Vostok.Configuration.Sources.Helpers
 
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
         {
-            foreach (var kv in cache.ToArray())
+            foreach (var kv in cache.ToArray()) // CR(krait): Why .ToArray()? It's safe to enumerate a ConcurrentDictionary while modifying it.
             {
                 if (garbageSelector(kv))
                     cache.TryRemove(kv.Key, out _);

@@ -20,6 +20,12 @@ namespace Vostok.Configuration.Sources.File
             return GenerateSignals(settings).SelectValueOrError(_ => ReadFile(settings));
         }
 
+        private static IObservable<object> PeriodicalSignalsFromNow(TimeSpan period) // CR(krait): Move into an extension method.
+        {
+            return Observable.Return<object>(null)
+                .Concat(Observable.Interval(period).Select(_ => null as object));
+        }
+
         private IObservable<object> GenerateSignals(FileSourceSettings settings)
         {
             return PeriodicalSignalsFromNow(settings.FileWatcherPeriod).Merge(FileSystemEvents(settings.FilePath));
@@ -34,24 +40,12 @@ namespace Vostok.Configuration.Sources.File
                 return reader.ReadToEnd();
         }
 
-        private static IObservable<object> PeriodicalSignalsFromNow(TimeSpan period)
-        {
-            return Observable.Return<object>(null)
-                .Concat(Observable.Interval(period).Select(_ => null as object));
-        }
-
         private IObservable<object> FileSystemEvents(string filePath)
         {
             IDisposable watcher = null;
             return Observable.FromEventPattern<FileSystemEventHandler, FileSystemEventArgs>(
-                h =>
-                {
-                    watcher = StartWatcher(filePath, h);
-                },
-                h =>
-                {
-                    watcher.Dispose();
-                });
+                h => { watcher = StartWatcher(filePath, h); },
+                h => { watcher.Dispose(); });
         }
 
         private IDisposable StartWatcher(string filePath, FileSystemEventHandler handler)
