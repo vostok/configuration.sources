@@ -6,20 +6,11 @@ using Vostok.Configuration.Abstractions.SettingsTree;
 
 namespace Vostok.Configuration.Sources.Scoped
 {
-    /// <summary>
-    /// Searches subtree in <see cref="ISettingsNode"/> tree.
-    /// </summary>
     public class ScopedSource : IConfigurationSource
     {
         private readonly IConfigurationSource source;
         private readonly string[] scope;
 
-        /// <summary>
-        /// Creates a <see cref="ScopedSource"/> instance for <see cref="source"/> to search in by <see cref="scope"/>
-        /// <para>You can use "[n]" format in <see cref="scope"/> to get n-th index of list.</para>
-        /// </summary>
-        /// <param name="source">Source of <see cref="ISettingsNode"/> tree</param>
-        /// <param name="scope">Search path</param>
         public ScopedSource(
             [NotNull] IConfigurationSource source,
             [NotNull] params string[] scope)

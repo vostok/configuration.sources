@@ -34,7 +34,7 @@ namespace Vostok.Configuration.Sources.File
                 return reader.ReadToEnd();
         }
 
-        private IObservable<object> PeriodicalSignalsFromNow(TimeSpan period)
+        private static IObservable<object> PeriodicalSignalsFromNow(TimeSpan period)
         {
             return Observable.Return<object>(null)
                 .Concat(Observable.Interval(period).Select(_ => null as object));

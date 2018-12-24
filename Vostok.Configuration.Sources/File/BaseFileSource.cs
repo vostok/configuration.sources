@@ -16,13 +16,6 @@ namespace Vostok.Configuration.Sources.File
         private static readonly WatcherCache<FileSourceSettings, string> Watchers = 
             new WatcherCache<FileSourceSettings, string>(new FileWatcherFactory(new FileSystem()));
         
-        /// <summary>
-        ///     <para>Creates a <see cref="BaseFileSource" /> instance.</para>
-        ///     <para>Wayits for file to be parsed.</para>
-        /// </summary>
-        /// <param name="filePath">File name with settings</param>
-        /// <param name="settings">File parsing settings</param>
-        /// <param name="parseSettings">"Get" method invocation for string source</param>
         public BaseFileSource(FileSourceSettings settings, Func<string, ISettingsNode> parseSettings)
             : this(() => Watchers.Watch(settings), parseSettings)
         {
