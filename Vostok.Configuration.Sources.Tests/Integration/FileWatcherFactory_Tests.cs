@@ -8,6 +8,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Vostok.Commons.Testing;
+using Vostok.Commons.Testing.Observable;
 using Vostok.Configuration.Sources.File;
 using Vostok.Configuration.Sources.Helpers;
 using Vostok.Configuration.Sources.Tests.Helpers;

@@ -5,6 +5,7 @@ using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
 using Vostok.Commons.Testing;
+using Vostok.Commons.Testing.Observable;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Scoped;
 using Vostok.Configuration.Sources.Tests.Helpers;

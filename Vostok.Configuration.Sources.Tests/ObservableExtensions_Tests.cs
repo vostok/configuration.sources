@@ -2,6 +2,7 @@ using System;
 using System.Reactive.Subjects;
 using FluentAssertions;
 using NUnit.Framework;
+using Vostok.Commons.Testing.Observable;
 using Vostok.Configuration.Sources.Helpers;
 using Vostok.Configuration.Sources.Tests.Helpers;
 
