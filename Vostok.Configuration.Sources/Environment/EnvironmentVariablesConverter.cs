@@ -6,9 +6,9 @@ using Vostok.Configuration.Sources.SettingsTree;
 
 namespace Vostok.Configuration.Sources.Environment
 {
-    internal class EnvironmentVariablesConverter : IConfigurationConverter<IDictionary>
+    internal static class EnvironmentVariablesConverter
     {
-        public ISettingsNode Convert(IDictionary configuration)
+        public static ISettingsNode Convert(IDictionary configuration)
         {
             var trees = new List<ISettingsNode>();
             foreach (DictionaryEntry ev in configuration)

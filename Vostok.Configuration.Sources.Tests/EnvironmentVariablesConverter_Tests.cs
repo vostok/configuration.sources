@@ -10,19 +10,11 @@ namespace Vostok.Configuration.Sources.Tests
     [TestFixture]
     internal class EnvironmentVariablesConverter_Tests
     {
-        private EnvironmentVariablesConverter converter;
-
-        [SetUp]
-        public void SetUp()
-        {
-            converter = new EnvironmentVariablesConverter();
-        }
-
         [Test]
         public void Should_return_null_when_no_variables()
         {
             var vars = CreateVariablesDictionary(new Dictionary<string, string>());
-            converter.Convert(vars).Should().BeNull();
+            EnvironmentVariablesConverter.Convert(vars).Should().BeNull();
         }
 
         [Test]
@@ -34,7 +26,7 @@ namespace Vostok.Configuration.Sources.Tests
                     ["key1"] = "value1",
                     ["key2"] = "value2"
                 });
-            converter.Convert(vars)
+            EnvironmentVariablesConverter.Convert(vars)
                 .Should()
                 .Be(
                     new ObjectNode(
@@ -54,7 +46,7 @@ namespace Vostok.Configuration.Sources.Tests
                     ["a.b"] = "value1",
                     ["a.c"] = "value2"
                 });
-            converter.Convert(vars)
+            EnvironmentVariablesConverter.Convert(vars)
                 .Should()
                 .Be(
                     new ObjectNode(
@@ -78,7 +70,7 @@ namespace Vostok.Configuration.Sources.Tests
                 {
                     ["PATH"] = "value"
                 });
-            converter.Convert(vars)["path"].Should().Be(new ValueNode("PATH", "value"));
+            EnvironmentVariablesConverter.Convert(vars)["path"].Should().Be(new ValueNode("PATH", "value"));
         }
 
         private static IDictionary CreateVariablesDictionary(Dictionary<string, string> variables)

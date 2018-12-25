@@ -9,7 +9,7 @@ namespace Vostok.Configuration.Sources.Environment
         /// <para>Creates an <see cref="EnvironmentVariablesSource" /> instance.</para>
         /// </summary>
         public EnvironmentVariablesSource()
-            : base(() => new EnvironmentVariablesConverter().Convert(System.Environment.GetEnvironmentVariables()))
+            : base(() => EnvironmentVariablesConverter.Convert(System.Environment.GetEnvironmentVariables()))
         {
         }
     }

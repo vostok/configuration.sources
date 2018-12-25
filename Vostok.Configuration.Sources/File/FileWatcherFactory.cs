@@ -20,15 +20,9 @@ namespace Vostok.Configuration.Sources.File
             return GenerateSignals(settings).SelectValueOrError(_ => ReadFile(settings));
         }
 
-        private static IObservable<object> PeriodicalSignalsFromNow(TimeSpan period) // CR(krait): Move into an extension method.
-        {
-            return Observable.Return<object>(null)
-                .Concat(Observable.Interval(period).Select(_ => null as object));
-        }
-
         private IObservable<object> GenerateSignals(FileSourceSettings settings)
         {
-            return PeriodicalSignalsFromNow(settings.FileWatcherPeriod).Merge(FileSystemEvents(settings.FilePath));
+            return ObservableHelpers.PeriodicalSignalsFromNow(settings.FileWatcherPeriod).Merge(FileSystemEvents(settings.FilePath));
         }
 
         private string ReadFile(FileSourceSettings settings)
