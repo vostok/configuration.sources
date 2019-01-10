@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace Vostok.Configuration.Sources.Helpers
+namespace Vostok.Configuration.Sources.File
 {
     internal class FileSystem : IFileSystem
     {

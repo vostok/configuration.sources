@@ -9,6 +9,12 @@ using Vostok.Configuration.Abstractions.SettingsTree;
 
 namespace Vostok.Configuration.Sources.Combined
 {
+    /// <summary>
+    /// <para>Returns settings combined from all settings returned by the provided sources.</para>
+    /// <para>Order of the sources is important.</para>
+    /// <para>New settings are pushed to subscribers each time one of the sources generates new settings.</para>
+    /// </summary>
+    [PublicAPI]
     public class CombinedSource : IConfigurationSource
     {
         private readonly IReadOnlyCollection<IConfigurationSource> sources;
@@ -30,6 +36,7 @@ namespace Vostok.Configuration.Sources.Combined
             this.options = options;
         }
 
+        /// <inheritdoc />
         public IObservable<(ISettingsNode settings, Exception error)> Observe()
         {
             return sources

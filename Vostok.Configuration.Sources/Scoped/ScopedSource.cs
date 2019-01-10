@@ -6,6 +6,10 @@ using Vostok.Configuration.Abstractions.SettingsTree;
 
 namespace Vostok.Configuration.Sources.Scoped
 {
+    /// <summary>
+    /// A source which returns settings from the underlying source scoped to the given scope.
+    /// </summary>
+    [PublicAPI]
     public class ScopedSource : IConfigurationSource
     {
         private readonly IConfigurationSource source;
@@ -19,6 +23,7 @@ namespace Vostok.Configuration.Sources.Scoped
             this.scope = scope;
         }
 
+        /// <inheritdoc />
         public IObservable<(ISettingsNode settings, Exception error)> Observe() => 
             source.Observe().Select(pair => (pair.settings?.ScopeTo(scope), pair.error));
     }

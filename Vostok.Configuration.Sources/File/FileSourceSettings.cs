@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Text;
+using JetBrains.Annotations;
 
 namespace Vostok.Configuration.Sources.File
 {
+    /// <summary>
+    /// Settings for <see cref="BaseFileSource"/>.
+    /// </summary>
+    [PublicAPI]
     public class FileSourceSettings
     {
         public FileSourceSettings(string filePath)
@@ -10,10 +15,20 @@ namespace Vostok.Configuration.Sources.File
             FilePath = filePath;
         }
 
+        /// <summary>
+        /// Path to the file to read settings from. This setting is required.
+        /// </summary>
         public string FilePath { get; set; }
 
+        /// <summary>
+        /// Encoding to use when reading the settings file.
+        /// </summary>
         public Encoding Encoding { get; set; } = Encoding.UTF8;
 
+        /// <summary>
+        /// <para><see cref="BaseFileSource"/> updates settings from file each <see cref="FileWatcherPeriod"/>.</para>
+        /// <para>Settings are also updated upon receiving a file changed event.</para>
+        /// </summary>
         public TimeSpan FileWatcherPeriod { get; set; } = TimeSpan.FromSeconds(5);
 
         #region Equality
