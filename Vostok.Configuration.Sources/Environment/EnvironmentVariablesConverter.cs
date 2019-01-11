@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.SettingsTree;
 
@@ -10,17 +8,19 @@ namespace Vostok.Configuration.Sources.Environment
     {
         public static ISettingsNode Convert(IDictionary configuration)
         {
-            var trees = new List<ISettingsNode>();
-            foreach (DictionaryEntry ev in configuration)
+            var result = null as ISettingsNode;
+
+            foreach (DictionaryEntry entry in configuration)
             {
-                trees.Add(
-                    TreeFactory.CreateTreeByMultiLevelKey(
-                        null,
-                        ev.Key.ToString().Replace(" ", "").Split('.'),
-                        ev.Value.ToString()));
+                var node = TreeFactory.CreateTreeByMultiLevelKey(
+                    null,
+                    entry.Key.ToString().Replace(" ", "").Split('.'),
+                    entry.Value.ToString());
+
+                result = result == null ? node : result.Merge(node);
             }
 
-            return trees.Any() ? trees.Aggregate((a, b) => a.Merge(b)) : null;
+            return result;
         }
     }
 }
