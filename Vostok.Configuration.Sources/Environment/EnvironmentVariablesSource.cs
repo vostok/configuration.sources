@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Vostok.Configuration.Sources.Constant;
 
 namespace Vostok.Configuration.Sources.Environment
@@ -6,6 +7,7 @@ namespace Vostok.Configuration.Sources.Environment
     /// <para>Parses settings from application's environment variables.</para>
     /// <para>Multi-level keys are supported, like A.B.C = D</para>
     /// </summary>
+    [PublicAPI]
     public class EnvironmentVariablesSource : BaseConstantSource
     {
         /// <summary>
