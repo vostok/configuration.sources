@@ -10,9 +10,9 @@ notests *default:
 
   deps:
     - vostok.devtools
-	- vostok.configuration.abstractions
-	- vostok.commons.helpers/src
-	- vostok.commons.threading/src
+    - vostok.configuration.abstractions
+    - vostok.commons.helpers/src
+    - vostok.commons.threading/src
 
 full-build > notests:
   deps:
