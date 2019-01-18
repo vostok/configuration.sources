@@ -30,8 +30,15 @@ namespace Vostok.Configuration.Sources.File
             if (!fileSystem.Exists(settings.FilePath))
                 return null;
 
-            using (var reader = fileSystem.OpenFile(settings.FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, settings.Encoding))
-                return reader.ReadToEnd();
+            try
+            {
+                using (var reader = fileSystem.OpenFile(settings.FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, settings.Encoding))
+                    return reader.ReadToEnd();
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private IObservable<object> FileSystemEvents(string filePath)
