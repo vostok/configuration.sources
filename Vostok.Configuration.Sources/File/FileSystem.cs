@@ -18,6 +18,7 @@ namespace Vostok.Configuration.Sources.File
         {
             var fileWatcher = new FileSystemWatcher(path, filter);
             fileWatcher.Changed += handler;
+            fileWatcher.Deleted += handler;
             fileWatcher.EnableRaisingEvents = true;
             return fileWatcher;
         }
