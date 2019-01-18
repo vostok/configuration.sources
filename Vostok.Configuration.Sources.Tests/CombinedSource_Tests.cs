@@ -59,12 +59,14 @@ namespace Vostok.Configuration.Sources.Tests
         [Test]
         public void Should_merge_null_settings_correctly()
         {
+            var merged12 = Substitute.For<ISettingsNode>();
+            settingsNodes[1].Merge(settingsNodes[2], Arg.Any<SettingsMergeOptions>()).Returns(merged12);
+
             var source = new CombinedSource(sources);
             
             sources[0].PushNewConfiguration(null);
 
-            source.Observe().WaitFirstValue(100.Milliseconds())
-                .Should().BeEquivalentTo((null as ISettingsNode, null as Exception));
+            source.Observe().WaitFirstValue(100.Milliseconds()).settings.Should().BeSameAs(merged12);
         }
 
         [Test]

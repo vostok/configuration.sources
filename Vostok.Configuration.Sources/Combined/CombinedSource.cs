@@ -52,6 +52,6 @@ namespace Vostok.Configuration.Sources.Combined
         }
 
         private ISettingsNode MergeSettings(IEnumerable<(ISettingsNode settings, Exception error)> values) => 
-            values.Select(pair => pair.settings).Aggregate((a, b) => a?.Merge(b, options));
+            values.Select(pair => pair.settings).Where(value => value != null).Aggregate((a, b) => a?.Merge(b, options));
     }
 }
