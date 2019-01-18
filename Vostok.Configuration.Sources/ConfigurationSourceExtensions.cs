@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.Merging;
@@ -23,11 +24,19 @@ namespace Vostok.Configuration.Sources
         /// <summary>
         /// Returns a new <see cref="CombinedSource"/> constructed using given <see cref="IConfigurationSource"/>s.
         /// </summary>
-        public static IConfigurationSource Combine(this IConfigurationSource source, IConfigurationSource other, SettingsMergeOptions options = null) =>
-            new CombinedSource(new[] {source, other}, options);
+        public static IConfigurationSource CombineWith(this IConfigurationSource source, IConfigurationSource other, SettingsMergeOptions options = null) =>
+            new CombinedSource(source.ToEnumerable().Concat(other.ToEnumerable()), options);
 
-        /// <inheritdoc cref="Combine(IConfigurationSource,IConfigurationSource,SettingsMergeOptions)"/>
-        public static IConfigurationSource Combine(this IConfigurationSource source, params IConfigurationSource[] others) =>
-            new CombinedSource(source.ToEnumerable().Concat(others).ToArray());
+        /// <inheritdoc cref="CombineWith(IConfigurationSource,IConfigurationSource,SettingsMergeOptions)"/>
+        public static IConfigurationSource CombineWith(this IConfigurationSource source, params IConfigurationSource[] others) =>
+            new CombinedSource(source.ToEnumerable().Concat(others), null);
+        
+        /// <inheritdoc cref="CombineWith(IConfigurationSource,IConfigurationSource,SettingsMergeOptions)"/>
+        public static IConfigurationSource CombineWith(this IConfigurationSource source, SettingsMergeOptions options, params IConfigurationSource[] others) =>
+            new CombinedSource(source.ToEnumerable().Concat(others), options);
+        
+        /// <inheritdoc cref="CombineWith(IConfigurationSource,IConfigurationSource,SettingsMergeOptions)"/>
+        public static IConfigurationSource CombineWith(this IConfigurationSource source, IEnumerable<IConfigurationSource> others, SettingsMergeOptions options = null) =>
+            new CombinedSource(source.ToEnumerable().Concat(others), options);
     }
 }

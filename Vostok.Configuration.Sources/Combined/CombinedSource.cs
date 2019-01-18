@@ -17,19 +17,19 @@ namespace Vostok.Configuration.Sources.Combined
     [PublicAPI]
     public class CombinedSource : IConfigurationSource
     {
-        private readonly IReadOnlyCollection<IConfigurationSource> sources;
+        private readonly IEnumerable<IConfigurationSource> sources;
         private readonly SettingsMergeOptions options;
 
         public CombinedSource(params IConfigurationSource[] sources)
-            : this(sources, new SettingsMergeOptions())
+            : this(sources, null)
         {
         }
 
         public CombinedSource(
-            [NotNull] [ItemNotNull] IReadOnlyCollection<IConfigurationSource> sources,
-            SettingsMergeOptions options)
+            [NotNull] [ItemNotNull] IEnumerable<IConfigurationSource> sources,
+            [CanBeNull] SettingsMergeOptions options)
         {
-            if (sources == null || sources.Count == 0)
+            if (sources == null || !sources.Any())
                 throw new ArgumentException($"{nameof(CombinedSource)}: {nameof(sources)} collection should not be empty");
 
             this.sources = sources;
