@@ -46,7 +46,7 @@ namespace Vostok.Configuration.Sources.File
         {
             unchecked
             {
-                var hashCode = FilePath != null ? FilePath.GetHashCode() : 0;
+                var hashCode = FilePath != null ? PathComparer.Instance.GetHashCode(FilePath) : 0;
                 hashCode = (hashCode * 397) ^ (Encoding != null ? Encoding.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ FileWatcherPeriod.GetHashCode();
                 return hashCode;
@@ -54,7 +54,9 @@ namespace Vostok.Configuration.Sources.File
         }
 
         protected bool Equals(FileSourceSettings other) => 
-            string.Equals(FilePath, other.FilePath) && Equals(Encoding, other.Encoding) && FileWatcherPeriod.Equals(other.FileWatcherPeriod);
+            PathComparer.Instance.Equals(FilePath, other.FilePath) && 
+            Equals(Encoding, other.Encoding) && 
+            FileWatcherPeriod.Equals(other.FileWatcherPeriod);
 
         #endregion
     }
