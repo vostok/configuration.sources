@@ -53,17 +53,6 @@ namespace Vostok.Configuration.Sources.Tests.Integration
         }
 
         [Test]
-        public void Should_push_error_when_failed_to_read_file()
-        {
-            var error = new IOException();
-            SetupReadingError(settingsPath, error);
-
-            var watcher = CreateFileWatcher();
-
-            watcher.WaitFirstValue(1.Seconds()).Should().Be((null, error));
-        }
-
-        [Test]
         public void Should_receive_file_updates_from_fileSystem()
         {
             FileSystemEventHandler handler = null;
