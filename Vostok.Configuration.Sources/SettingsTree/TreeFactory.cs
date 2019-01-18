@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Environment;
+using Vostok.Configuration.Sources.Helpers;
 
 namespace Vostok.Configuration.Sources.SettingsTree
 {
@@ -20,11 +22,12 @@ namespace Vostok.Configuration.Sources.SettingsTree
         /// <summary>
         /// Creates a settings tree with a path specified by <paramref name="keys"/> and ending with node <paramref name="value"/>.
         /// </summary>
-        public static ISettingsNode CreateTreeByMultiLevelKey(string rootName, string[] keys, ISettingsNode value)
+        public static ISettingsNode CreateTreeByMultiLevelKey(string rootName, IEnumerable<string> keys, ISettingsNode value)
         {
-            return keys.Length > 0
-                ? new ObjectNode(rootName, new []{CreateTreeByMultiLevelKey(keys[0], keys.Skip(1).ToArray(), value)})
-                : value;
+            var root = value;
+            foreach (var key in rootName.ToEnumerable().Concat(keys).Reverse().Skip(1))
+                root = new ObjectNode(key, new[] {root});
+            return root;
         }
     }
 }

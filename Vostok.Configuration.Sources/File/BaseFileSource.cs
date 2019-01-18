@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reactive.Linq;
+using JetBrains.Annotations;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Watchers;
@@ -12,6 +13,7 @@ namespace Vostok.Configuration.Sources.File
     /// <para>Descendants should only specify how to parse file contents into a settings tree.</para>
     /// <para>The file is read upon receiving a file changed event and once in a period specified in settings.</para>
     /// </summary>
+    [PublicAPI]
     public class BaseFileSource : IConfigurationSource
     {
         private readonly Func<string, ISettingsNode> parseSettings;
