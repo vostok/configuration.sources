@@ -5,14 +5,14 @@ using Vostok.Configuration.Abstractions.SettingsTree;
 
 namespace Vostok.Configuration.Sources.Tests.Helpers
 {
-    internal class TestConfigurationSource: IConfigurationSource
+    internal class TestConfigurationSource : IConfigurationSource
     {
         private readonly ReplaySubject<(ISettingsNode settings, Exception error)> subject = new ReplaySubject<(ISettingsNode settings, Exception error)>();
 
         public TestConfigurationSource()
         {
         }
-        
+
         public TestConfigurationSource(ISettingsNode settings, Exception error = null)
         {
             PushNewConfiguration(settings, error);
