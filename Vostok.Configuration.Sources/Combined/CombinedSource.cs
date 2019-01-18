@@ -11,7 +11,7 @@ namespace Vostok.Configuration.Sources.Combined
 {
     /// <summary>
     /// <para>Returns settings combined from all settings returned by the provided sources.</para>
-    /// <para>Order of the sources is important.</para>
+    /// <para>Order of the sources is important: settings from sources that come later in the array have greater priority.</para>
     /// <para>New settings are pushed to subscribers each time one of the sources generates new settings.</para>
     /// </summary>
     [PublicAPI]
