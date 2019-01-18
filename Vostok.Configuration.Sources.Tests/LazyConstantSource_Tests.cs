@@ -7,18 +7,17 @@ using NUnit.Framework;
 using Vostok.Commons.Testing.Observable;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Constant;
-using Vostok.Configuration.Sources.Tests.Helpers;
 
 namespace Vostok.Configuration.Sources.Tests
 {
     [TestFixture]
-    internal class BaseConstantSource_Tests
+    internal class LazyConstantSource_Tests
     {
         [Test]
         public void Should_push_settings_from_getter_when_getter_succeeded()
         {
             var settings = Substitute.For<ISettingsNode>();
-            new TestConstantSource(() => settings)
+            new LazyConstantSource(() => settings)
                 .Observe()
                 .WaitFirstValue(100.Milliseconds())
                 .Should()
@@ -29,7 +28,7 @@ namespace Vostok.Configuration.Sources.Tests
         public void Should_push_getter_exception_when_getter_failed()
         {
             var error = new FormatException();
-            new TestConstantSource(() => throw error)
+            new LazyConstantSource(() => throw error)
                 .Observe()
                 .WaitFirstValue(100.Milliseconds())
                 .Should()
@@ -40,7 +39,7 @@ namespace Vostok.Configuration.Sources.Tests
         public void Should_not_call_getter_twice()
         {
             var getter = Substitute.For<Func<ISettingsNode>>();
-            var source = new TestConstantSource(getter);
+            var source = new LazyConstantSource(getter);
 
             source.Observe()
                 .WaitFirstValue(100.Milliseconds())
@@ -55,14 +54,6 @@ namespace Vostok.Configuration.Sources.Tests
                 .NotBeNull();
 
             getter.ReceivedCalls().Count().Should().Be(1);
-        }
-        
-        private class TestConstantSource : BaseConstantSource
-        {
-            public TestConstantSource(Func<ISettingsNode> settingsGetter)
-                : base(settingsGetter)
-            {
-            }
         }
     }
 }

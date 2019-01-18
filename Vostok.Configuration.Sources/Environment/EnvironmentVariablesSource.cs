@@ -8,7 +8,7 @@ namespace Vostok.Configuration.Sources.Environment
     /// <para>Multi-level keys are supported, like A.B.C = D</para>
     /// </summary>
     [PublicAPI]
-    public class EnvironmentVariablesSource : BaseConstantSource
+    public class EnvironmentVariablesSource : LazyConstantSource
     {
         /// <summary>
         /// <para>Creates an <see cref="EnvironmentVariablesSource" /> instance.</para>
