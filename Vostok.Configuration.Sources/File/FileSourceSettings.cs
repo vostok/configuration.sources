@@ -10,15 +10,15 @@ namespace Vostok.Configuration.Sources.File
     [PublicAPI]
     public class FileSourceSettings
     {
-        public FileSourceSettings(string filePath)
+        public FileSourceSettings([NotNull] string filePath)
         {
-            FilePath = filePath;
+            FilePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
         }
 
         /// <summary>
         /// Path to the file to read settings from. This setting is required.
         /// </summary>
-        public string FilePath { get; set; }
+        public string FilePath { get; }
 
         /// <summary>
         /// Encoding to use when reading the settings file.
