@@ -15,7 +15,8 @@ namespace Vostok.Configuration.Sources.Helpers
         /// <summary>
         /// Returns (<paramref name="selector"/>(value), null) normally, and (null, error) in case the <paramref name="selector"/>(value) call fails.
         /// </summary>
-        public static IObservable<(TResult value, Exception error)> SelectValueOrError<TSource, TResult>(this IObservable<TSource> source, Func<TSource, TResult> selector)
+        public static IObservable<(TResult value, Exception error)> SelectValueOrError<TSource, TResult>(
+            this IObservable<TSource> source, Func<TSource, TResult> selector)
         {
             return source.Select(
                 sourceValue =>
@@ -30,7 +31,34 @@ namespace Vostok.Configuration.Sources.Helpers
                     }
                 });
         }
-        
-        internal static SubscriptionsCounterAdapter<T> WithSubscriptionsCounter<T>(this IObservable<T> source) => new SubscriptionsCounterAdapter<T>(source);
+
+        /// <summary>
+        /// <para>Returns <c>(selector(sourceValue), null)</c> normally, and <c>(null, error)</c> in case <paramref name="selector"/> call fails.</para>
+        /// <para>Propagates any source errors as <c>(null, sourceError)</c> pairs without invoking <paramref name="selector"/>.</para>
+        /// </summary>
+        public static IObservable<(TResult value, Exception error)> SelectValueOrError<TSource, TResult>(
+            this IObservable<(TSource, Exception)> source, Func<TSource, TResult> selector)
+        {
+            return source.Select(
+                sourcePair =>
+                {
+                    var (sourceValue, sourceError) = sourcePair;
+
+                    if (sourceError != null)
+                        return (default, sourceError);
+
+                    try
+                    {
+                        return (selector(sourceValue), null as Exception);
+                    }
+                    catch (Exception e)
+                    {
+                        return (default, e);
+                    }
+                });
+        }
+
+        internal static SubscriptionsCounterAdapter<T> WithSubscriptionsCounter<T>(this IObservable<T> source) 
+            => new SubscriptionsCounterAdapter<T>(source);
     }
 }
