@@ -13,7 +13,7 @@ using Vostok.Configuration.Sources.Tests.Helpers;
 namespace Vostok.Configuration.Sources.Tests
 {
     [TestFixture]
-    public class BaseFileSource_Tests
+    public class FileSource_Tests
     {
         private ReplaySubject<(string, Exception)> subject;
         private ValueNode settings;
@@ -28,7 +28,7 @@ namespace Vostok.Configuration.Sources.Tests
         [Test]
         public void Should_push_parsed_settings_when_no_errors()
         {
-            var source = new BaseFileSource(
+            var source = new FileSource(
                 () => subject,
                 content => settings);
             
@@ -43,7 +43,7 @@ namespace Vostok.Configuration.Sources.Tests
         public void Should_push_error_from_fileObserver()
         {
             var parseCalls = 0;
-            var source = new BaseFileSource(
+            var source = new FileSource(
                 () => subject,
                 content =>
                 {
@@ -65,7 +65,7 @@ namespace Vostok.Configuration.Sources.Tests
         public void Should_push_parsing_error_when_failed_to_parse()
         {
             var error = new IOException();
-            var source = new BaseFileSource(
+            var source = new FileSource(
                 () => subject,
                 content => throw error);
             
@@ -80,7 +80,7 @@ namespace Vostok.Configuration.Sources.Tests
         public void Should_not_parse_same_content_twice([Values]bool parserThrows)
         {
             var parseCalls = 0;
-            var source = new BaseFileSource(
+            var source = new FileSource(
                 () => subject,
                 content =>
                 {

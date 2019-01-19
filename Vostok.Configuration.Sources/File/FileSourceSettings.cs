@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 namespace Vostok.Configuration.Sources.File
 {
     /// <summary>
-    /// Settings for <see cref="BaseFileSource"/>.
+    /// Settings for <see cref="FileSource"/>.
     /// </summary>
     [PublicAPI]
     public class FileSourceSettings
@@ -26,7 +26,7 @@ namespace Vostok.Configuration.Sources.File
         public Encoding Encoding { get; set; } = Encoding.UTF8;
 
         /// <summary>
-        /// <para><see cref="BaseFileSource"/> updates settings from file each <see cref="FileWatcherPeriod"/>.</para>
+        /// <para><see cref="FileSource"/> updates settings from file each <see cref="FileWatcherPeriod"/>.</para>
         /// <para>Settings are also updated upon receiving a file changed event.</para>
         /// </summary>
         public TimeSpan FileWatcherPeriod { get; set; } = TimeSpan.FromSeconds(5);

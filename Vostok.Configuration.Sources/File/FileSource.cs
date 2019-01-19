@@ -15,7 +15,7 @@ namespace Vostok.Configuration.Sources.File
     /// <para>The file is read upon receiving a file changed event and once in a period specified in settings.</para>
     /// </summary>
     [PublicAPI]
-    public class BaseFileSource : IConfigurationSource
+    public class FileSource : IConfigurationSource
     {
         private readonly Func<string, ISettingsNode> parseSettings;
         private readonly Func<IObservable<(string, Exception)>> fileWatcherProvider;
@@ -23,12 +23,12 @@ namespace Vostok.Configuration.Sources.File
         private static readonly WatcherCache<FileSourceSettings, string> Watchers = 
             new WatcherCache<FileSourceSettings, string>(new FileWatcherFactory(new FileSystem()));
         
-        public BaseFileSource(FileSourceSettings settings, Func<string, ISettingsNode> parseSettings)
+        public FileSource(FileSourceSettings settings, Func<string, ISettingsNode> parseSettings)
             : this(() => Watchers.Watch(settings), parseSettings)
         {
         }
 
-        internal BaseFileSource(Func<IObservable<(string, Exception)>> fileWatcherProvider, Func<string, ISettingsNode> parseSettings)
+        internal FileSource(Func<IObservable<(string, Exception)>> fileWatcherProvider, Func<string, ISettingsNode> parseSettings)
         {
             this.fileWatcherProvider = fileWatcherProvider;
             this.parseSettings = parseSettings;

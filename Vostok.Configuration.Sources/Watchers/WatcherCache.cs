@@ -9,7 +9,7 @@ namespace Vostok.Configuration.Sources.Watchers
     /// <summary>
     /// <para>Note: this class is intended to be used only by those implementing their own configuration sources.</para>
     /// <para>A helper class that implements a cache of generic settings watchers with in-built garbage collection.</para>
-    /// <para>See <see cref="BaseFileSource"/> implementation for a usage example.</para>
+    /// <para>See <see cref="FileSource"/> implementation for a usage example.</para>
     /// </summary>
     [PublicAPI]
     public class WatcherCache<TSettings, TValue>

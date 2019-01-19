@@ -7,7 +7,7 @@ namespace Vostok.Configuration.Sources.Watchers
     /// <summary>
     /// <para>Note: this class is intended to be used only by those implementing their own configuration sources.</para>
     /// <para>A generic settings watcher factory to be used in <see cref="WatcherCache{TSettings,TValue}"/>.</para>
-    /// <para>See <see cref="BaseFileSource"/> implementation for a usage example.</para>
+    /// <para>See <see cref="FileSource"/> implementation for a usage example.</para>
     /// </summary>
     [PublicAPI]
     public interface IWatcherFactory<in TSettings, TValue>
