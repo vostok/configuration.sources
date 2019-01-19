@@ -16,7 +16,7 @@
 
   <PropertyGroup>
     <Title>Vostok.Configuration.Sources</Title>
-    <Description>Vostok.Configuration.Sources</Description>
+    <Description>Simple standard implementations of sources and base classes and helpers for implementing custom configuration sources.</Description>
   </PropertyGroup>
 
   <PropertyGroup>
