@@ -35,7 +35,7 @@ namespace Vostok.Configuration.Sources.File
                 using (var reader = fileSystem.OpenFile(settings.FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, settings.Encoding))
                     return reader.ReadToEnd();
             }
-            catch
+            catch (FileNotFoundException)
             {
                 return null;
             }
