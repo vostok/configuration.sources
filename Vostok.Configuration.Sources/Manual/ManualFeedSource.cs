@@ -13,7 +13,7 @@ namespace Vostok.Configuration.Sources.Manual
     public class ManualFeedSource : IConfigurationSource
     {
         private readonly ReplaySubject<(ISettingsNode settings, Exception error)> subject = 
-            new ReplaySubject<(ISettingsNode settings, Exception error)>();
+            new ReplaySubject<(ISettingsNode settings, Exception error)>(1);
 
         public ManualFeedSource()
         {
