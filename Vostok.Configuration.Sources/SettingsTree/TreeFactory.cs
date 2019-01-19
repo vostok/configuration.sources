@@ -15,7 +15,7 @@ namespace Vostok.Configuration.Sources.SettingsTree
     [PublicAPI]
     public static class TreeFactory
     {
-        /// <inheritdoc cref="CreateTreeByMultiLevelKey(string,string[],ISettingsNode)"/>
+        /// <inheritdoc cref="CreateTreeByMultiLevelKey(string,IEnumerable{string},ISettingsNode)"/>
         public static ISettingsNode CreateTreeByMultiLevelKey(string rootName, string[] keys, string value) => 
             CreateTreeByMultiLevelKey(rootName, keys, new ValueNode(keys[keys.Length - 1], value));
 
