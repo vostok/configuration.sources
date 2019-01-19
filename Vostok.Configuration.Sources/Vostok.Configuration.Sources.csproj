@@ -45,6 +45,10 @@
    <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
      <ILRepackExecutable>dotnet "$(MSBuildThisFileDirectory)../../vostok.devtools.ilrepack.bin/netcoreapp2.1/ILRepack.Core.dll"</ILRepackExecutable>
   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+     <NoWarn>1701;1702;1591</NoWarn>
+   </PropertyGroup>
   
   <Target Name="RestorePackageReferences" BeforeTargets="Build">
     <ItemGroup>
