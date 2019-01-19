@@ -4,19 +4,18 @@ using JetBrains.Annotations;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.SettingsTree;
 
-namespace Vostok.Configuration.Sources.ManualFeed
+namespace Vostok.Configuration.Sources.Manual
 {
     /// <summary>
-    /// <para>Note: this class is intended to be used only by those implementing their own configuration sources.</para>
-    /// <para>Represents a source whose settings should be updated by manually calling a method from outside.</para>
+    /// Represents a source whose settings can be updated externally by manually calling <see cref="Push"/> method.
     /// </summary>
     [PublicAPI]
-    public class BaseManualFeedSource : IConfigurationSource
+    public class ManualFeedSource : IConfigurationSource
     {
         private readonly ReplaySubject<(ISettingsNode settings, Exception error)> subject = 
             new ReplaySubject<(ISettingsNode settings, Exception error)>();
 
-        protected void PushNewConfiguration(ISettingsNode settings, Exception error = null)
+        public void Push([CanBeNull] ISettingsNode settings, [CanBeNull] Exception error = null)
         {
             subject.OnNext((settings, error));
         }
