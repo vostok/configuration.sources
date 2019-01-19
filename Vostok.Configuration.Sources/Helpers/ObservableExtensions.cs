@@ -57,8 +57,5 @@ namespace Vostok.Configuration.Sources.Helpers
                     }
                 });
         }
-
-        internal static SubscriptionsCounterAdapter<T> WithSubscriptionsCounter<T>(this IObservable<T> source) 
-            => new SubscriptionsCounterAdapter<T>(source);
     }
 }

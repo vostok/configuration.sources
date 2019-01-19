@@ -11,6 +11,7 @@ notests *default:
   deps:
     - vostok.devtools
     - vostok.configuration.abstractions
+    - vostok.commons.collections/src
 
 full-build > notests:
   deps:

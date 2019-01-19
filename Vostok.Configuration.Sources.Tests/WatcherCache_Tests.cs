@@ -44,13 +44,6 @@ namespace Vostok.Configuration.Sources.Tests
         }
 
         [Test]
-        public void Should_not_cache_watchers_without_subscribers()
-        {
-            var watcher = watcherCache.Watch(settings);
-            watcherCache.Watch(settings).Should().NotBe(watcher);
-        }
-
-        [Test]
         public void Should_subscribe_to_watcher_no_more_than_once()
         {
             var fileWatcher = Substitute.For<IObservable<(string, Exception)>>();

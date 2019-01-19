@@ -27,6 +27,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ConcurrentDictionaryExtensions.cs" Link="Commons\ConcurrentDictionaryExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Reactive" Version="4.1.2" PrivateAssets="all" />
     <PackageReference Include="System.Reactive.Core" Version="4.1.2" PrivateAssets="all" />
     <PackageReference Include="System.Reactive.Linq" Version="4.1.2" PrivateAssets="all" />

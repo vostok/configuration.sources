@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading;
 using JetBrains.Annotations;
+using Vostok.Commons.Collections;
 using Vostok.Configuration.Sources.File;
-using Vostok.Configuration.Sources.Helpers;
 
 namespace Vostok.Configuration.Sources.Watchers
 {
@@ -12,21 +16,64 @@ namespace Vostok.Configuration.Sources.Watchers
     /// <para>See <see cref="FileSource"/> implementation for a usage example.</para>
     /// </summary>
     [PublicAPI]
-    public class WatcherCache<TSettings, TValue>
+    public class WatcherCache<TKey, TValue>
     {
-        private readonly IWatcherFactory<TSettings, TValue> watcherFactory;
-        private readonly GarbageCollectedCache<TSettings, SubscriptionsCounterAdapter<(TValue value, Exception error)>> watchers =
-            new GarbageCollectedCache<TSettings, SubscriptionsCounterAdapter<(TValue value, Exception error)>>(
-                kv => kv.Value.SubscriptionsCount == 0);
+        private readonly IWatcherFactory<TKey, TValue> factory;
+        private readonly ConcurrentDictionary<TKey, CountingAdapter> cache;
 
-        public WatcherCache(IWatcherFactory<TSettings, TValue> watcherFactory)
+        public WatcherCache(
+            [NotNull] IWatcherFactory<TKey, TValue> factory,
+            [NotNull] IEqualityComparer<TKey> comparer)
         {
-            this.watcherFactory = watcherFactory;
+            this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
+
+            cache = new ConcurrentDictionary<TKey, CountingAdapter>(comparer ?? throw new ArgumentNullException(nameof(comparer)));
         }
 
-        public IObservable<(TValue value, Exception error)> Watch(TSettings settings)
+        public WatcherCache(IWatcherFactory<TKey, TValue> factory)
+            : this(factory, EqualityComparer<TKey>.Default)
         {
-            return watchers.GetOrAdd(settings, s => watcherFactory.CreateWatcher(s).Replay(1).RefCount().WithSubscriptionsCounter());
+        }
+
+        public IObservable<(TValue value, Exception error)> Watch(TKey key)
+        {
+            return cache.GetOrAdd(key, CreateAdapter);
+        }
+
+        private CountingAdapter CreateAdapter(TKey key)
+        {
+            return new CountingAdapter(key, () => factory.CreateWatcher(key).Replay(1).RefCount(), cache);
+        }
+
+        private class CountingAdapter : IObservable<(TValue, Exception)>
+        {
+            private readonly TKey key;
+            private readonly Lazy<IObservable<(TValue, Exception)>> source;
+            private readonly ConcurrentDictionary<TKey, CountingAdapter> cache;
+            private int subscriptions;
+
+            public CountingAdapter(
+                TKey key, Func<IObservable<(TValue, Exception)>> source, ConcurrentDictionary<TKey, CountingAdapter> cache)
+            {
+                this.key = key;
+                this.cache = cache;
+                this.source = new Lazy<IObservable<(TValue, Exception)>>(source, LazyThreadSafetyMode.ExecutionAndPublication);
+            }
+
+            public IDisposable Subscribe(IObserver<(TValue, Exception)> observer)
+            {
+                var sourceSubcription = source.Value.Subscribe(observer);
+
+                Interlocked.Increment(ref subscriptions);
+
+                return new CompositeDisposable(sourceSubcription, Disposable.Create(Unsubscribe));
+            }
+
+            private void Unsubscribe()
+            {
+                if (Interlocked.Decrement(ref subscriptions) == 0)
+                    cache.Remove(key, this);
+            }
         }
     }
 }
