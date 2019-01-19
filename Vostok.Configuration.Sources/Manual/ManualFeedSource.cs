@@ -15,6 +15,9 @@ namespace Vostok.Configuration.Sources.Manual
         private readonly ReplaySubject<(ISettingsNode settings, Exception error)> subject = 
             new ReplaySubject<(ISettingsNode settings, Exception error)>();
 
+        /// <summary>
+        /// Pushes given <paramref name="settings"/> and <paramref name="error"/> to all subscribed observers.
+        /// </summary>
         public void Push([CanBeNull] ISettingsNode settings, [CanBeNull] Exception error = null)
         {
             subject.OnNext((settings, error));
