@@ -35,6 +35,9 @@ namespace Vostok.Configuration.Sources.Watchers
         {
         }
 
+        /// <summary>
+        /// Obtain a settings watcher for the given <paramref name="key"/>.
+        /// </summary>
         public IObservable<(TValue value, Exception error)> Watch(TKey key)
         {
             return cache.GetOrAdd(key, CreateAdapter);

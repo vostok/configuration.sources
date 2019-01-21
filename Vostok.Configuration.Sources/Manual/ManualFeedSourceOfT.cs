@@ -9,7 +9,6 @@ namespace Vostok.Configuration.Sources.Manual
     /// <summary>
     /// <para>Represents a source whose settings can be updated externally by manually calling <see cref="Push"/> method.</para>
     /// <para>Automatically applies a transform to all user-provided values to turn them into <see cref="ISettingsNode"/>s.</para>
-    /// 
     /// </summary>
     [PublicAPI]
     public class ManualFeedSource<T> : IConfigurationSource
@@ -40,6 +39,7 @@ namespace Vostok.Configuration.Sources.Manual
             }
         }
 
+        /// <inheritdoc />
         public IObservable<(ISettingsNode settings, Exception error)> Observe() => subject;
     }
 }
