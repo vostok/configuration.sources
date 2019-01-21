@@ -103,5 +103,19 @@ namespace Vostok.Configuration.Sources.Tests
                 assertion.ShouldNotFailIn(500.Milliseconds());
             }
         }
+
+        [Test]
+        public void Should_not_allow_null_settings()
+        {
+            new Action(() => new FileSource(null as FileSourceSettings, s => null))
+                .Should().Throw<ArgumentNullException>();
+        }
+
+        [Test]
+        public void Should_not_allow_null_settings_parser()
+        {
+            new Action(() => new FileSource(new FileSourceSettings("file"), null))
+                .Should().Throw<ArgumentNullException>();
+        }
     }
 }

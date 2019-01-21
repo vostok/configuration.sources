@@ -23,9 +23,13 @@ namespace Vostok.Configuration.Sources.File
         private static readonly WatcherCache<FileSourceSettings, string> Watchers = 
             new WatcherCache<FileSourceSettings, string>(new FileWatcherFactory(new FileSystem()));
         
-        public FileSource(FileSourceSettings settings, Func<string, ISettingsNode> parseSettings)
+        public FileSource([NotNull] FileSourceSettings settings, [NotNull] Func<string, ISettingsNode> parseSettings)
             : this(() => Watchers.Watch(settings), parseSettings)
         {
+            if (settings == null)
+                throw new ArgumentNullException(nameof(settings));
+            if (parseSettings == null)
+                throw new ArgumentNullException(nameof(parseSettings));
         }
 
         internal FileSource(Func<IObservable<(string, Exception)>> fileWatcherProvider, Func<string, ISettingsNode> parseSettings)

@@ -19,8 +19,8 @@ namespace Vostok.Configuration.Sources.Scoped
             [NotNull] IConfigurationSource source,
             [NotNull] params string[] scope)
         {
-            this.source = source;
-            this.scope = scope;
+            this.source = source ?? throw new ArgumentNullException(nameof(source));
+            this.scope = scope ?? throw new ArgumentNullException(nameof(scope));
         }
 
         /// <inheritdoc />

@@ -55,5 +55,12 @@ namespace Vostok.Configuration.Sources.Tests
 
             getter.ReceivedCalls().Count().Should().Be(1);
         }
+
+        [Test]
+        public void Should_not_allow_null_settings_provider()
+        {
+            new Action(() => new LazyConstantSource(null))
+                .Should().Throw<ArgumentNullException>();
+        }
     }
 }

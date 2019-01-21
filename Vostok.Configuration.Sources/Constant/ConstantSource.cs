@@ -14,7 +14,7 @@ namespace Vostok.Configuration.Sources.Constant
     {
         private readonly ISettingsNode settings;
 
-        public ConstantSource(ISettingsNode settings)
+        public ConstantSource([CanBeNull] ISettingsNode settings)
         {
             this.settings = settings;
         }

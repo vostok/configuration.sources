@@ -16,9 +16,9 @@ namespace Vostok.Configuration.Sources.Constant
         private readonly Func<ISettingsNode> settingsGetter;
         private readonly Lazy<(ISettingsNode, Exception)> currentSettings;
 
-        public LazyConstantSource(Func<ISettingsNode> settingsGetter)
+        public LazyConstantSource([NotNull] Func<ISettingsNode> settingsGetter)
         {
-            this.settingsGetter = settingsGetter;
+            this.settingsGetter = settingsGetter ?? throw new ArgumentNullException(nameof(settingsGetter));
 
             currentSettings = new Lazy<(ISettingsNode, Exception)>(ObtainSettings, LazyThreadSafetyMode.ExecutionAndPublication);
         }

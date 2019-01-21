@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Vostok.Commons.Testing;
 using Vostok.Commons.Testing.Observable;
 using Vostok.Configuration.Abstractions.SettingsTree;
+using Vostok.Configuration.Sources.Constant;
 using Vostok.Configuration.Sources.Scoped;
 using Vostok.Configuration.Sources.Tests.Helpers;
 
@@ -68,6 +69,20 @@ namespace Vostok.Configuration.Sources.Tests
                 Action assertion = () => observer.Values.Should().Equal((value1, null), (value2, null));
                 assertion.ShouldPassIn(1.Seconds());
             }
+        }
+
+        [Test]
+        public void Should_not_allow_null_scope()
+        {
+            new Action(() => new ScopedSource(new ConstantSource(null), null))
+                .Should().Throw<ArgumentNullException>();
+        }
+
+        [Test]
+        public void Should_not_allow_null_source()
+        {
+            new Action(() => new ScopedSource(null, "xx"))
+                .Should().Throw<ArgumentNullException>();
         }
     }
 }
