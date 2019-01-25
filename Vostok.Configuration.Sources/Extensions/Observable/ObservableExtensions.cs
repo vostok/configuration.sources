@@ -26,5 +26,13 @@ namespace Vostok.Configuration.Sources.Extensions.Observable
         {
             return System.Reactive.Linq.Observable.Where(source, predicate);
         }
+
+        /// <summary>
+        /// Returns an observable sequence that contains only distinct contiguous elements.
+        /// </summary>
+        public static IObservable<TSource> DistinctUntilChanged<TSource>(this IObservable<TSource> source)
+        {
+            return System.Reactive.Linq.Observable.DistinctUntilChanged(source);
+        }
     }
 }
