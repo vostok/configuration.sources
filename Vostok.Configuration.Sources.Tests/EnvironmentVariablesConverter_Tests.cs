@@ -37,14 +37,16 @@ namespace Vostok.Configuration.Sources.Tests
                         }));
         }
 
-        [Test]
-        public void Should_parse_variables_to_tree_when_multilevel_keys()
+        [TestCase(".")]
+        [TestCase(":")]
+        [TestCase("__")]
+        public void Should_parse_variables_to_tree_when_multilevel_keys(string separator)
         {
             var vars = CreateVariablesDictionary(
                 new Dictionary<string, string>
                 {
-                    ["a.b"] = "value1",
-                    ["a.c"] = "value2"
+                    [$"a{separator}b"] = "value1",
+                    [$"a{separator}c"] = "value2"
                 });
             EnvironmentVariablesConverter.Convert(vars)
                 .Should()
