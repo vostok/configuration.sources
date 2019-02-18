@@ -20,7 +20,7 @@ namespace Vostok.Configuration.Sources.Environment
                     entry.Key.ToString().Replace(" ", "").Split(Separators, StringSplitOptions.RemoveEmptyEntries),
                     entry.Value.ToString());
 
-                result = result == null ? node : result.Merge(node);
+                result = SettingsNodeMerger.Merge(result, node, null);
             }
 
             return result;
