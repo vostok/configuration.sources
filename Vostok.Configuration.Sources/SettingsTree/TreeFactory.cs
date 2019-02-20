@@ -17,11 +17,11 @@ namespace Vostok.Configuration.Sources.SettingsTree
     {
         /// <inheritdoc cref="CreateTreeByMultiLevelKey(string,IEnumerable{string},ISettingsNode)"/>
         public static ISettingsNode CreateTreeByMultiLevelKey(string rootName, string[] keys, string value) => 
-            CreateTreeByMultiLevelKey(rootName, keys, new ValueNode(keys[keys.Length - 1], value));
+            CreateTreeByMultiLevelKey(rootName, keys, new ValueNode(new []{rootName}.Concat(keys).Last(), value));
 
         /// <inheritdoc cref="CreateTreeByMultiLevelKey(string,IEnumerable{string},ISettingsNode)"/>
         public static ISettingsNode CreateTreeByMultiLevelKey(string rootName, string[] keys, string[] values) =>
-            CreateTreeByMultiLevelKey(rootName, keys, new ArrayNode(keys[keys.Length - 1], values.Select((v, i) => new ValueNode(i.ToString(), v)).ToArray()));
+            CreateTreeByMultiLevelKey(rootName, keys, new ArrayNode(new []{rootName}.Concat(keys).Last(), values.Select((v, i) => new ValueNode(i.ToString(), v)).ToArray()));
 
         /// <summary>
         /// Creates a settings tree with a path specified by <paramref name="keys"/> and ending with given <paramref name="value"/> node.
