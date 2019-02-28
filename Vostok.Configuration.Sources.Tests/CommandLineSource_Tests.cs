@@ -117,6 +117,26 @@ namespace Vostok.Configuration.Sources.Tests
             }));
         }
 
+        [Test]
+        public void Should_merge_value_nodes_with_same_keys_into_arrays()
+        {
+            Observe("key1=value1", "KEY1=value2", "key2=value3", "Key2=value4", "key3=value5")
+                .Should().Be(new ObjectNode(null, new ISettingsNode[]
+                {
+                    new ArrayNode("key1", new ISettingsNode[]
+                    {
+                        new ValueNode("0", "value1"),
+                        new ValueNode("1", "value2")
+                    }), 
+                    new ArrayNode("key2", new ISettingsNode[]
+                    {
+                        new ValueNode("0", "value3"),
+                        new ValueNode("1", "value4")
+                    }),
+                    new ValueNode("key3", "value5") 
+                }));
+        }
+
         private static ISettingsNode Observe(params string[] args)
             => new CommandLineSource(args).Observe().WaitFirstValue(1.Seconds()).settings;
     }
