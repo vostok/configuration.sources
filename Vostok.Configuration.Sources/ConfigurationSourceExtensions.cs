@@ -15,6 +15,11 @@ namespace Vostok.Configuration.Sources
     [PublicAPI]
     public static class ConfigurationSourceExtensions
     {
+        static ConfigurationSourceExtensions()
+        {
+            RxHacker.Hack();
+        }
+
         /// <summary>
         /// Wraps the provided <paramref name="source"/> into a <see cref="ScopedSource"/> with given <paramref name="scope"/>.
         /// </summary>

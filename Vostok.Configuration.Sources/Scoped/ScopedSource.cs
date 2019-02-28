@@ -24,7 +24,7 @@ namespace Vostok.Configuration.Sources.Scoped
         }
 
         /// <inheritdoc />
-        public IObservable<(ISettingsNode settings, Exception error)> Observe() => 
+        public IObservable<(ISettingsNode settings, Exception error)> Observe() =>
             source.Observe().Select(pair => (pair.settings?.ScopeTo(scope), pair.error));
     }
 }

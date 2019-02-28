@@ -12,6 +12,11 @@ namespace Vostok.Configuration.Sources.Helpers
     [PublicAPI]
     public static class ObservableHelpers
     {
+        static ObservableHelpers()
+        {
+            RxHacker.Hack();
+        }
+
         /// <summary>
         /// Returns an observable where an event happens once each <paramref name="period"/>. First event occurs immediately.
         /// </summary>
