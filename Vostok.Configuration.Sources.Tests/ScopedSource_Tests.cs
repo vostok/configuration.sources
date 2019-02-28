@@ -27,7 +27,7 @@ namespace Vostok.Configuration.Sources.Tests
         [Test]
         public void Should_push_full_tree_when_no_scope()
         {
-            var tree = new ObjectNode(new []{new ValueNode("1")});
+            var tree = new ObjectNode(new []{new ValueNode("key", "1")});
             testSource.PushNewConfiguration(tree);
             
             var source = new ScopedSource(testSource);
