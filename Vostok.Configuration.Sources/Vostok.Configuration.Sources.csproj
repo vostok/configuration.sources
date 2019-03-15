@@ -23,6 +23,7 @@
     <PackageProjectUrl>https://github.com/vostok/configuration.sources</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/vostok/configuration.sources/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>vostok vostok.configuration</PackageTags>
+    <PackageReleaseNotes>https://github.com/vostok/configuration.sources/blob/master/CHANGELOG.md</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/vostok/configuration.sources</RepositoryUrl>
   </PropertyGroup>
 
