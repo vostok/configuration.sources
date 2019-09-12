@@ -5,17 +5,17 @@ using JetBrains.Annotations;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Manual;
 using Vostok.Commons.Collections;
-using Vostok.Configuration.Extensions;
 using Vostok.Commons.Formatting;
 using System.Linq;
 using System.Text;
+using Vostok.Commons.Helpers.Extensions;
 
 namespace Vostok.Configuration.Sources.Object
 {
     /// <summary>
-    /// <para>A source which returns settings from the POCO object provided by user.</para>
-    /// <para>POCO object should contain simple properties and fields like dictionaries, </para>
-    /// <para>lists, arrays and other POCO objects. Keys of dictionaries should be of </para>
+    /// <para>A source which returns settings from the object provided by user.</para>
+    /// <para>Object should contain simple properties and fields like dictionaries, </para>
+    /// <para>lists, arrays and other nested objects. Keys of dictionaries should be of </para>
     /// <para>primitive types, enums, strings or Guids.</para>
     /// </summary>
     public class ObjectSource : ManualFeedSource<object>
