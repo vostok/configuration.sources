@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
-using Vostok.Configuration.Abstractions.SettingsTree;
-using Vostok.Configuration.Sources.Manual;
 using Vostok.Commons.Collections;
 using Vostok.Commons.Formatting;
-using System.Linq;
 using Vostok.Commons.Helpers.Extensions;
+using Vostok.Configuration.Abstractions.SettingsTree;
+using Vostok.Configuration.Sources.Manual;
 
 namespace Vostok.Configuration.Sources.Object
 {
@@ -17,6 +17,7 @@ namespace Vostok.Configuration.Sources.Object
     /// Keys of dictionaries must be of primitive types, enums, strings or Guids. Nested objects should also satisfy conditions listed above.
     /// If any object explicitly overrides <see cref="object.ToString"/> method then it's result will be used as value for ISettingsNode.</para>
     /// </summary>
+    [PublicAPI]
     public class ObjectSource : ManualFeedSource<object>
     {
         public ObjectSource()

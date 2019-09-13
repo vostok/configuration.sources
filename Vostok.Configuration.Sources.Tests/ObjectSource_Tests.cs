@@ -104,7 +104,6 @@ namespace Vostok.Configuration.Sources.Tests
             johnDoe.Children.Add(judyDoe);
             johnDoe.Children.Add(jamesDoe);
 
-
             johnDoe.Info.Add(PersonInfo.BirthDayDate, "Date");
             judyDoe.Info.Add(PersonInfo.SocialSecurityNumber, "Number");
 
@@ -147,12 +146,12 @@ namespace Vostok.Configuration.Sources.Tests
                                 new ISettingsNode[]
                                 {
                                     new ValueNode("BirthDayDate", "Date")
-                                }),
+                                })
                         }));
         }
 
         [Test]
-        public void Should_hanlde_sequence_of_dictionaries()
+        public void Should_handle_sequence_of_dictionaries()
         {
             var arrayOfDictionaries = new[]
             {
@@ -164,7 +163,7 @@ namespace Vostok.Configuration.Sources.Tests
                 new Dictionary<string, int>
                 {
                     {"1000", 1000}
-                },
+                }
             };
 
             Observe(arrayOfDictionaries)
@@ -185,13 +184,12 @@ namespace Vostok.Configuration.Sources.Tests
                                 null,
                                 new List<ISettingsNode>
                                 {
-                                    new ValueNode("1000", "1000"),
+                                    new ValueNode("1000", "1000")
                                 })
                         }));
         }
 
         [Test]
-
         public void Should_handle_dictionary_of_objects()
         {
             var dictionaryOfPersons = new Dictionary<string, Person>
@@ -224,7 +222,6 @@ namespace Vostok.Configuration.Sources.Tests
                                     new ValueNode("Name", "Judy Doe"),
                                     new ArrayNode("Children", Array.Empty<ISettingsNode>()),
                                     new ObjectNode("Info", Array.Empty<ISettingsNode>())
-
                                 }),
                             new ObjectNode(
                                 "Son",
@@ -234,7 +231,7 @@ namespace Vostok.Configuration.Sources.Tests
                                     new ValueNode("Name", "James Doe"),
                                     new ArrayNode("Children", Array.Empty<ISettingsNode>()),
                                     new ObjectNode("Info", Array.Empty<ISettingsNode>())
-                                }),
+                                })
                         }));
         }
 
@@ -297,12 +294,15 @@ namespace Vostok.Configuration.Sources.Tests
             return new ObjectSource(obj).Observe().WaitFirstValue(1.Seconds()).settings;
         }
 
+        private enum PersonInfo
+        {
+            BirthDayDate,
+            SocialSecurityNumber
+        }
+
         private class Person
         {
-            public string Name { get; }
             public int Age;
-            public ICollection<Person> Children { get; }
-            public IDictionary<PersonInfo, string> Info { get; }
 
             public Person(string name, int age)
             {
@@ -311,13 +311,10 @@ namespace Vostok.Configuration.Sources.Tests
                 Children = new List<Person>();
                 Info = new Dictionary<PersonInfo, string>();
             }
-        }
 
-        private enum PersonInfo
-        {
-            BirthDayDate,
-            SocialSecurityNumber
+            public string Name { get; }
+            public ICollection<Person> Children { get; }
+            public IDictionary<PersonInfo, string> Info { get; }
         }
-
     }
 }
