@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
@@ -38,6 +39,7 @@ namespace Vostok.Configuration.Sources.Tests
             Observe("string").Should().Be(new ValueNode("string"));
             Observe(Guid.Empty).Should().Be(new ValueNode(Guid.Empty.ToString()));
             Observe(100).Should().Be(new ValueNode("100"));
+            Observe(Encoding.Unicode).Should().Be(new ValueNode(Encoding.Unicode.WebName));
         }
 
         [Test]
