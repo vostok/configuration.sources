@@ -1,3 +1,7 @@
+## 0.1.4 (13-09-2019):
+
+Implemented ObjectSource.
+
 ## 0.1.3 (15-03-2019):
 
 Fixed possible assembly resolution issues caused by this library.
