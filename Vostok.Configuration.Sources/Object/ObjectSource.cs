@@ -13,11 +13,9 @@ namespace Vostok.Configuration.Sources.Object
 {
     /// <summary>
     /// <para>A source which returns settings from the object provided by user.</para>
-    /// <para>Object can contain primitive types, dictionaries, sequences and other nested</para>
-    /// <para>objects as public fields and properties. Keys of dictionaries must be of</para>
-    /// <para>primitive types, enums, strings or Guids. Nested objects should also satisfy</para>
-    /// <para>conditions listed above. If any object explicitly overrides <see cref="object.ToString"/></para>
-    /// <para>method then it will be called to provide value for ISettingsNode.</para>
+    /// <para>Object can contain primitive types, dictionaries, sequences and other nested objects as public fields and properties.
+    /// Keys of dictionaries must be of primitive types, enums, strings or Guids. Nested objects should also satisfy conditions listed above.
+    /// If any object explicitly overrides <see cref="object.ToString"/> method then it's result will be used as value for ISettingsNode.</para>
     /// </summary>
     public class ObjectSource : ManualFeedSource<object>
     {
