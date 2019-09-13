@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
-using Vostok.Configuration.Abstractions.SettingsTree;
-using Vostok.Configuration.Sources.Manual;
 using Vostok.Commons.Collections;
 using Vostok.Commons.Formatting;
-using System.Linq;
 using Vostok.Commons.Helpers.Extensions;
+using Vostok.Configuration.Abstractions.SettingsTree;
+using Vostok.Configuration.Sources.Manual;
 
 namespace Vostok.Configuration.Sources.Object
 {
@@ -19,6 +19,7 @@ namespace Vostok.Configuration.Sources.Object
     /// <para>conditions listed above. If any object explicitly overrides <see cref="object.ToString"/></para>
     /// <para>method then it will be called to provide value for ISettingsNode.</para>
     /// </summary>
+    [PublicAPI]
     public class ObjectSource : ManualFeedSource<object>
     {
         public ObjectSource()
