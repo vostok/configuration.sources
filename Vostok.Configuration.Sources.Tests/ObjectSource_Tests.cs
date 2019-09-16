@@ -15,9 +15,9 @@ namespace Vostok.Configuration.Sources.Tests
     internal class ObjectSource_Tests
     {
         [Test]
-        public void Should_return_null_value_node_for_null_object()
+        public void Should_return_null_settings_node_for_null_object()
         {
-            Observe(null).Should().Be(new ValueNode(null));
+            Observe(null).Should().BeNull();
         }
 
         [Test]

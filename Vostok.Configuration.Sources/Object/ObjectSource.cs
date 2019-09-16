@@ -21,7 +21,7 @@ namespace Vostok.Configuration.Sources.Object
     public class ObjectSource : ManualFeedSource<object>
     {
         public ObjectSource()
-            : base(obj => ParseObject(null, obj, new HashSet<object>(ByReferenceEqualityComparer<object>.Instance)))
+            : base(Parse)
         {
         }
 
@@ -29,6 +29,13 @@ namespace Vostok.Configuration.Sources.Object
             : this()
         {
             Push(source);
+        }
+
+        private static ISettingsNode Parse(object obj)
+        {
+            if (obj == null)
+                return null;
+            return ParseObject(null, obj, new HashSet<object>(ByReferenceEqualityComparer<object>.Instance));
         }
 
         private static ISettingsNode ParseObject([CanBeNull] string name, [CanBeNull] object item, [NotNull] HashSet<object> path)
