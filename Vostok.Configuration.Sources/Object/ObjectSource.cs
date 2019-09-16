@@ -34,7 +34,7 @@ namespace Vostok.Configuration.Sources.Object
         private static ISettingsNode ParseObject([CanBeNull] string name, [CanBeNull] object item, [NotNull] HashSet<object> path)
         {
             if (item == null)
-                return null;
+                return new ValueNode(name, null);
 
             if (!path.Add(item))
                 throw new ArgumentException("Object has cyclic dependency.");

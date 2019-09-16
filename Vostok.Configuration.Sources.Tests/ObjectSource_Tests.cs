@@ -15,9 +15,9 @@ namespace Vostok.Configuration.Sources.Tests
     internal class ObjectSource_Tests
     {
         [Test]
-        public void Should_return_null_settings_for_null_object()
+        public void Should_return_null_value_node_for_null_object()
         {
-            Observe(null).Should().BeNull();
+            Observe(null).Should().Be(new ValueNode(null));
         }
 
         [Test]
@@ -95,11 +95,33 @@ namespace Vostok.Configuration.Sources.Tests
         }
 
         [Test]
+        public void Should_handle_objects_with_null_properties()
+        {
+            var johnDoe = new Person
+            {
+                Name = "John Doe",
+                Age = 65
+            };
+
+            Observe(johnDoe)
+                .Should()
+                .Be(
+                    new ObjectNode(
+                        new ISettingsNode[]
+                        {
+                            new ValueNode("Age", "65"),
+                            new ValueNode("Name", "John Doe"),
+                            new ValueNode("Children", null),
+                            new ValueNode("Info", null),
+                        }));
+        }
+
+        [Test]
         public void Should_handle_complex_objects()
         {
             var johnDoe = new Person("John Doe", 65);
             var judyDoe = new Person("Judy Doe", 22);
-            var jamesDoe = new Person("James Doe", 40);
+            var jamesDoe = new Person {Name = "James Doe", Age = 40};
 
             johnDoe.Children.Add(judyDoe);
             johnDoe.Children.Add(jamesDoe);
@@ -137,8 +159,8 @@ namespace Vostok.Configuration.Sources.Tests
                                         {
                                             new ValueNode("Age", "40"),
                                             new ValueNode("Name", "James Doe"),
-                                            new ArrayNode("Children", Array.Empty<ISettingsNode>()),
-                                            new ObjectNode("Info", Array.Empty<ISettingsNode>())
+                                            new ValueNode("Children", null),
+                                            new ValueNode("Info", null)
                                         })
                                 }),
                             new ObjectNode(
@@ -304,6 +326,10 @@ namespace Vostok.Configuration.Sources.Tests
         {
             public int Age;
 
+            public Person()
+            {
+            }
+
             public Person(string name, int age)
             {
                 Name = name;
@@ -312,9 +338,9 @@ namespace Vostok.Configuration.Sources.Tests
                 Info = new Dictionary<PersonInfo, string>();
             }
 
-            public string Name { get; }
-            public ICollection<Person> Children { get; }
-            public IDictionary<PersonInfo, string> Info { get; }
+            public string Name { get; set; }
+            public ICollection<Person> Children { get; set; }
+            public IDictionary<PersonInfo, string> Info;
         }
     }
 }
