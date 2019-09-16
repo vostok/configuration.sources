@@ -65,10 +65,18 @@ namespace Vostok.Configuration.Sources.Object
                 var fieldsAndProperties = new List<ISettingsNode>();
 
                 foreach (var field in itemType.GetInstanceFields())
-                    fieldsAndProperties.Add(ParseObject(field.Name, field.GetValue(item), path));
+                {
+                    var fieldValue = field.GetValue(item);
+                    if (fieldValue != null)
+                        fieldsAndProperties.Add(ParseObject(field.Name, fieldValue, path));
+                }
 
                 foreach (var property in itemType.GetInstanceProperties())
-                    fieldsAndProperties.Add(ParseObject(property.Name, property.GetValue(item), path));
+                {
+                    var propertyValue = property.GetValue(item);
+                    if (propertyValue != null)
+                        fieldsAndProperties.Add(ParseObject(property.Name, propertyValue, path));
+                }
 
                 return new ObjectNode(name, fieldsAndProperties);
             }

@@ -110,9 +110,7 @@ namespace Vostok.Configuration.Sources.Tests
                         new ISettingsNode[]
                         {
                             new ValueNode("Age", "65"),
-                            new ValueNode("Name", "John Doe"),
-                            new ValueNode("Children", null),
-                            new ValueNode("Info", null),
+                            new ValueNode("Name", "John Doe")
                         }));
         }
 
@@ -158,9 +156,7 @@ namespace Vostok.Configuration.Sources.Tests
                                         new ISettingsNode[]
                                         {
                                             new ValueNode("Age", "40"),
-                                            new ValueNode("Name", "James Doe"),
-                                            new ValueNode("Children", null),
-                                            new ValueNode("Info", null)
+                                            new ValueNode("Name", "James Doe")
                                         })
                                 }),
                             new ObjectNode(
