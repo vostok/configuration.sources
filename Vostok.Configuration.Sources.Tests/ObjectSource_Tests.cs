@@ -307,9 +307,36 @@ namespace Vostok.Configuration.Sources.Tests
                         }));
         }
 
-        private static ISettingsNode Observe(object obj)
+        [Test]
+        public void Should_include_fields_and_properties_with_null_value()
         {
-            return new ObjectSource(obj).Observe().WaitFirstValue(1.Seconds()).settings;
+            var johnDoe = new Person
+            {
+                Name = "John Doe",
+                Age = 65
+            };
+
+            var settings = new ObjectSourceSettings
+            {
+                IgnoreFieldsWithNullValue = false
+            };
+
+            Observe(johnDoe, settings)
+                .Should()
+                .Be(
+                    new ObjectNode(
+                        new ISettingsNode[]
+                        {
+                            new ValueNode("Name", "John Doe"),
+                            new ValueNode("Age", "65"),
+                            new ValueNode("Children", null),
+                            new ValueNode("Info", null)
+                        }));
+        }
+
+        private static ISettingsNode Observe(object obj, ObjectSourceSettings settings = null)
+        {
+            return new ObjectSource(obj, settings).Observe().WaitFirstValue(1.Seconds()).settings;
         }
 
         private enum PersonInfo

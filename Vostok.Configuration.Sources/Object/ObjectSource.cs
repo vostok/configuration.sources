@@ -15,30 +15,31 @@ namespace Vostok.Configuration.Sources.Object
     /// <para>A source which returns settings from the object provided by user.</para>
     /// <para>Object can contain primitive types, dictionaries, sequences and other nested objects as public fields and properties.
     /// Keys of dictionaries must be of primitive types, enums, strings or Guids. Nested objects should also satisfy conditions listed above.
-    /// If any object explicitly overrides <see cref="object.ToString"/> method then it's result will be used as value for ISettingsNode.</para>
+    /// If any object explicitly overrides <see cref="object.ToString"/> method then it's result will be used as value for ISettingsNode.
+    /// See also <see cref="ObjectSourceSettings"/>.</para>
     /// </summary>
     [PublicAPI]
     public class ObjectSource : ManualFeedSource<object>
     {
-        public ObjectSource()
-            : base(Parse)
+        public ObjectSource(ObjectSourceSettings settings = null)
+            : base(obj => Parse(obj, settings ?? new ObjectSourceSettings()))
         {
         }
 
-        public ObjectSource([CanBeNull] object source)
-            : this()
+        public ObjectSource([CanBeNull] object source, ObjectSourceSettings settings = null)
+            : this(settings)
         {
             Push(source);
         }
 
-        private static ISettingsNode Parse(object obj)
+        private static ISettingsNode Parse([CanBeNull] object obj, [NotNull] ObjectSourceSettings settings)
         {
             if (obj == null)
                 return null;
-            return ParseObject(null, obj, new HashSet<object>(ByReferenceEqualityComparer<object>.Instance));
+            return ParseObject(null, obj, new HashSet<object>(ByReferenceEqualityComparer<object>.Instance), settings);
         }
 
-        private static ISettingsNode ParseObject([CanBeNull] string name, [CanBeNull] object item, [NotNull] HashSet<object> path)
+        private static ISettingsNode ParseObject([CanBeNull] string name, [CanBeNull] object item, [NotNull] HashSet<object> path, [NotNull] ObjectSourceSettings settings)
         {
             if (item == null)
                 return new ValueNode(name, null);
@@ -57,25 +58,25 @@ namespace Vostok.Configuration.Sources.Object
                     return new ValueNode(name, customFormatting);
 
                 if (DictionaryInspector.IsSimpleDictionary(itemType))
-                    return ParseDictionary(name, DictionaryInspector.EnumerateSimpleDictionary(item), path);
+                    return ParseDictionary(name, DictionaryInspector.EnumerateSimpleDictionary(item), path, settings);
 
                 if (item is IEnumerable sequence)
-                    return ParseEnumerable(name, sequence, path);
+                    return ParseEnumerable(name, sequence, path, settings);
 
                 var fieldsAndProperties = new List<ISettingsNode>();
 
                 foreach (var field in itemType.GetInstanceFields())
                 {
                     var fieldValue = field.GetValue(item);
-                    if (fieldValue != null)
-                        fieldsAndProperties.Add(ParseObject(field.Name, fieldValue, path));
+                    if (fieldValue != null || !settings.IgnoreFieldsWithNullValue)
+                        fieldsAndProperties.Add(ParseObject(field.Name, fieldValue, path, settings));
                 }
 
                 foreach (var property in itemType.GetInstanceProperties())
                 {
                     var propertyValue = property.GetValue(item);
-                    if (propertyValue != null)
-                        fieldsAndProperties.Add(ParseObject(property.Name, propertyValue, path));
+                    if (propertyValue != null || !settings.IgnoreFieldsWithNullValue)
+                        fieldsAndProperties.Add(ParseObject(property.Name, propertyValue, path, settings));
                 }
 
                 return new ObjectNode(name, fieldsAndProperties);
@@ -86,17 +87,17 @@ namespace Vostok.Configuration.Sources.Object
             }
         }
 
-        private static ArrayNode ParseEnumerable(string name, IEnumerable sequence, HashSet<object> path)
+        private static ArrayNode ParseEnumerable(string name, IEnumerable sequence, HashSet<object> path, ObjectSourceSettings settings)
         {
             var items = new List<ISettingsNode>();
             foreach (var element in sequence)
-                items.Add(ParseObject(null, element, path));
+                items.Add(ParseObject(null, element, path, settings));
             return new ArrayNode(name, items);
         }
 
-        private static ObjectNode ParseDictionary(string name, IEnumerable<(string, object)> pairs, HashSet<object> path)
+        private static ObjectNode ParseDictionary(string name, IEnumerable<(string, object)> pairs, HashSet<object> path, ObjectSourceSettings settings)
         {
-            var tokens = pairs.Select(pair => ParseObject(pair.Item1, pair.Item2, path)).ToArray();
+            var tokens = pairs.Select(pair => ParseObject(pair.Item1, pair.Item2, path, settings)).ToArray();
             return new ObjectNode(name, tokens);
         }
     }
