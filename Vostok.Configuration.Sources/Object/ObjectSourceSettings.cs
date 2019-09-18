@@ -9,8 +9,8 @@ namespace Vostok.Configuration.Sources.Object
     public class ObjectSourceSettings
     {
         /// <summary>
-        /// If set, <see cref="ObjectSource"/> does include fields and properties with null value in settings tree.
+        /// If set, <see cref="ObjectSource"/> does not include fields and properties with null value in settings tree.
         /// </summary>
-        public bool IncludeFieldsWithNullValue { get; set; }
+        public bool IgnoreFieldsWithNullValue { get; set; } = true;
     }
 }

@@ -318,7 +318,7 @@ namespace Vostok.Configuration.Sources.Tests
 
             var settings = new ObjectSourceSettings
             {
-                IncludeFieldsWithNullValue = true
+                IgnoreFieldsWithNullValue = false
             };
 
             Observe(johnDoe, settings)

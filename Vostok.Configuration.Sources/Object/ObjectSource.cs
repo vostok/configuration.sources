@@ -68,14 +68,14 @@ namespace Vostok.Configuration.Sources.Object
                 foreach (var field in itemType.GetInstanceFields())
                 {
                     var fieldValue = field.GetValue(item);
-                    if (fieldValue != null || settings.IncludeFieldsWithNullValue)
+                    if (fieldValue != null || !settings.IgnoreFieldsWithNullValue)
                         fieldsAndProperties.Add(ParseObject(field.Name, fieldValue, path, settings));
                 }
 
                 foreach (var property in itemType.GetInstanceProperties())
                 {
                     var propertyValue = property.GetValue(item);
-                    if (propertyValue != null || settings.IncludeFieldsWithNullValue)
+                    if (propertyValue != null || !settings.IgnoreFieldsWithNullValue)
                         fieldsAndProperties.Add(ParseObject(property.Name, propertyValue, path, settings));
                 }
 
