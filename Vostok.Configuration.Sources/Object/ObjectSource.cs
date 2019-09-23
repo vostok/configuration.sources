@@ -14,27 +14,40 @@ namespace Vostok.Configuration.Sources.Object
     /// <summary>
     /// <para>A source which returns settings from the object provided by user.</para>
     /// <para>Object can contain primitive types, dictionaries, sequences and other nested objects as public fields and properties.
-    /// Keys of dictionaries must be of primitive types, enums, strings or Guids. Nested objects should also satisfy conditions listed above.
-    /// If any object explicitly overrides <see cref="object.ToString"/> method then it's result will be used as value for ISettingsNode.</para>
+    /// Keys of dictionaries must be of primitive types, enums, strings or guids. Nested objects should also satisfy conditions listed above.
+    /// If any object explicitly overrides <see cref="object.ToString"/> method then it's result will be used as value for ISettingsNode.
+    /// When passing null into a constructor, the null should be explicitly type cast. For example:
+    /// <list type="bullet">
+    ///     <item>var source = new ObjectSource((CustomObject) null);</item>
+    ///     <item>var source = new ObjectSource((<see cref="ObjectSourceSettings"/>) null);</item>
+    /// </list>
+    /// See also <see cref="ObjectSourceSettings"/>.</para>
     /// </summary>
     [PublicAPI]
     public class ObjectSource : ManualFeedSource<object>
     {
-        public ObjectSource()
-            : base(obj => ParseObject(null, obj, new HashSet<object>(ByReferenceEqualityComparer<object>.Instance)))
+        public ObjectSource([CanBeNull] ObjectSourceSettings settings = null)
+            : base(obj => Parse(obj, settings ?? new ObjectSourceSettings()))
         {
         }
 
-        public ObjectSource([CanBeNull] object source)
-            : this()
+        public ObjectSource([CanBeNull] object source, [CanBeNull] ObjectSourceSettings settings = null)
+            : this(settings)
         {
             Push(source);
         }
 
-        private static ISettingsNode ParseObject([CanBeNull] string name, [CanBeNull] object item, [NotNull] HashSet<object> path)
+        private static ISettingsNode Parse([CanBeNull] object obj, [NotNull] ObjectSourceSettings settings)
+        {
+            if (obj == null)
+                return null;
+            return ParseObject(null, obj, new HashSet<object>(ByReferenceEqualityComparer<object>.Instance), settings);
+        }
+
+        private static ISettingsNode ParseObject([CanBeNull] string name, [CanBeNull] object item, [NotNull] HashSet<object> path, [NotNull] ObjectSourceSettings settings)
         {
             if (item == null)
-                return null;
+                return new ValueNode(name, null);
 
             if (!path.Add(item))
                 throw new ArgumentException("Object has cyclic dependency.");
@@ -50,18 +63,26 @@ namespace Vostok.Configuration.Sources.Object
                     return new ValueNode(name, customFormatting);
 
                 if (DictionaryInspector.IsSimpleDictionary(itemType))
-                    return ParseDictionary(name, DictionaryInspector.EnumerateSimpleDictionary(item), path);
+                    return ParseDictionary(name, DictionaryInspector.EnumerateSimpleDictionary(item), path, settings);
 
                 if (item is IEnumerable sequence)
-                    return ParseEnumerable(name, sequence, path);
+                    return ParseEnumerable(name, sequence, path, settings);
 
                 var fieldsAndProperties = new List<ISettingsNode>();
 
                 foreach (var field in itemType.GetInstanceFields())
-                    fieldsAndProperties.Add(ParseObject(field.Name, field.GetValue(item), path));
+                {
+                    var fieldValue = field.GetValue(item);
+                    if (fieldValue != null || !settings.IgnoreFieldsWithNullValue)
+                        fieldsAndProperties.Add(ParseObject(field.Name, fieldValue, path, settings));
+                }
 
                 foreach (var property in itemType.GetInstanceProperties())
-                    fieldsAndProperties.Add(ParseObject(property.Name, property.GetValue(item), path));
+                {
+                    var propertyValue = property.GetValue(item);
+                    if (propertyValue != null || !settings.IgnoreFieldsWithNullValue)
+                        fieldsAndProperties.Add(ParseObject(property.Name, propertyValue, path, settings));
+                }
 
                 return new ObjectNode(name, fieldsAndProperties);
             }
@@ -71,17 +92,17 @@ namespace Vostok.Configuration.Sources.Object
             }
         }
 
-        private static ArrayNode ParseEnumerable(string name, IEnumerable sequence, HashSet<object> path)
+        private static ArrayNode ParseEnumerable(string name, IEnumerable sequence, HashSet<object> path, ObjectSourceSettings settings)
         {
             var items = new List<ISettingsNode>();
             foreach (var element in sequence)
-                items.Add(ParseObject(null, element, path));
+                items.Add(ParseObject(null, element, path, settings));
             return new ArrayNode(name, items);
         }
 
-        private static ObjectNode ParseDictionary(string name, IEnumerable<(string, object)> pairs, HashSet<object> path)
+        private static ObjectNode ParseDictionary(string name, IEnumerable<(string, object)> pairs, HashSet<object> path, ObjectSourceSettings settings)
         {
-            var tokens = pairs.Select(pair => ParseObject(pair.Item1, pair.Item2, path)).ToArray();
+            var tokens = pairs.Select(pair => ParseObject(pair.Item1, pair.Item2, path, settings)).ToArray();
             return new ObjectNode(name, tokens);
         }
     }
