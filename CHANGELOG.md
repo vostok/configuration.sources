@@ -1,3 +1,8 @@
+## 0.1.5 (23-09-2019):
+
+Fixed ObjectSource.
+Implemented ObjectSourceSettings.
+
 ## 0.1.4 (13-09-2019):
 
 Implemented ObjectSource.
