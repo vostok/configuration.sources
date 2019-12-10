@@ -1,3 +1,7 @@
+## 0.1.6 (10.12.2019):
+
+Implemented TransformingSource.
+
 ## 0.1.5 (23-09-2019):
 
 Fixed ObjectSource.

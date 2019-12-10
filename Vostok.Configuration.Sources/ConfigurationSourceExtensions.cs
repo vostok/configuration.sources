@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.Merging;
+using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Combined;
 using Vostok.Configuration.Sources.Helpers;
 using Vostok.Configuration.Sources.Scoped;
+using Vostok.Configuration.Sources.Transforming;
 
 namespace Vostok.Configuration.Sources
 {
@@ -43,5 +46,11 @@ namespace Vostok.Configuration.Sources
         /// <inheritdoc cref="CombineWith(IConfigurationSource,IConfigurationSource,SettingsMergeOptions)"/>
         public static IConfigurationSource CombineWith(this IConfigurationSource source, IEnumerable<IConfigurationSource> others, SettingsMergeOptions options = null) =>
             new CombinedSource(source.ToEnumerable().Concat(others), options);
+
+        /// <summary>
+        /// Wraps provided <paramref name="source"/> into a <see cref="TransformingSource"/> with given <paramref name="transform"/>.
+        /// </summary>
+        public static IConfigurationSource Transform(this IConfigurationSource source, Func<ISettingsNode, ISettingsNode> transform) =>
+            new TransformingSource(source, transform);
     }
 }
