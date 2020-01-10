@@ -1,3 +1,7 @@
+## 0.1.7 (11.01.2020):
+
+CommandLineSource: support for single-hyphen key syntax, default keys and values.
+
 ## 0.1.6 (10.12.2019):
 
 Implemented TransformingSource.

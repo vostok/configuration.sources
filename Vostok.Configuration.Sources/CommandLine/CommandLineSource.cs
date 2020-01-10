@@ -10,33 +10,50 @@ namespace Vostok.Configuration.Sources.CommandLine
 {
     /// <summary>
     /// <para>A source that provides settings parsed from given command line arguments.</para>
-    /// <para>Supports 5 flavors of key-value syntax:</para>
+    /// <para>Supports 7 flavors of key-value syntax:</para>
     /// <list type="bullet">
     ///     <item><description><c>--key=value</c></description></item>
     ///     <item><description><c>--key value</c></description></item>
+    ///     <item><description><c>-key=value</c></description></item>
+    ///     <item><description><c>-key value</c></description></item>
     ///     <item><description><c>/key=value</c></description></item>
     ///     <item><description><c>/key value</c></description></item>
     ///     <item><description><c>key=value</c></description></item>
     /// </list>
     /// <para>Keys with dots (such as <c>"a.b.c"</c>) are treated as hierarchical and get split into segments.</para>
     /// <para>Multiple occurences of the same key are merged into arrays.</para>
+    /// <para>Standalone keys may be optionally supplied with a default value.</para>
+    /// <para>Standalone values may be optionally grouped under default key.</para>
     /// </summary>
     [PublicAPI]
     public class CommandLineSource : LazyConstantSource
     {
-        public CommandLineSource(string[] args)
-            : base(() => ParseSettings(args))
+        public CommandLineSource([CanBeNull] string[] args)
+            : this(args, null, null)
         {
         }
 
-        private static ISettingsNode ParseSettings(string[] args)
+        public CommandLineSource([CanBeNull] string[] args, [CanBeNull] string defaultKey, [CanBeNull] string defaultValue)
+            : base(() => ParseSettings(args, defaultKey, defaultValue))
+        {
+        }
+
+        private static ISettingsNode ParseSettings(string[] args, string defaultKey, string defaultValue)
         {
             var resultBuilder = new ObjectNodeBuilder();
             var valueNodeIndex = new Dictionary<string, List<ValueNode>>(StringComparer.OrdinalIgnoreCase);
             var objectNodeIndex = new Dictionary<string, ISettingsNode>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var (key, value) in CommandLineArgumentsParser.Parse(args ?? Enumerable.Empty<string>()))
+            foreach (var pair in CommandLineArgumentsParser.Parse(args ?? Array.Empty<string>()))
             {
+                var key = pair.key ?? defaultKey;
+                if (key == null)
+                    continue;
+
+                var value = pair.value ?? defaultValue;
+                if (value == null)
+                    continue;
+
                 var node = TreeFactory.CreateTreeByMultiLevelKey(null, key.Split('.'), value).Children.Single();
                 var name = node.Name ?? string.Empty;
 

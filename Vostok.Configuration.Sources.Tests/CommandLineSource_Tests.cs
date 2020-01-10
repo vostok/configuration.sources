@@ -23,7 +23,27 @@ namespace Vostok.Configuration.Sources.Tests
         }
 
         [Test]
-        public void Should_handle_syntax_with_double_minus_and_equals_sign()
+        public void Should_handle_syntax_with_single_hyphen_and_equals_sign()
+        {
+            Observe("-key1=value1", "-key2=value2").Should().Be(new ObjectNode(null, new ISettingsNode[]
+            {
+                new ValueNode("key1", "value1"),
+                new ValueNode("key2", "value2")
+            }));
+        }
+
+        [Test]
+        public void Should_handle_syntax_with_single_hyphen_and_space_before_value()
+        {
+            Observe("-key1", "value1", "-key2", "value2").Should().Be(new ObjectNode(null, new ISettingsNode[]
+            {
+                new ValueNode("key1", "value1"),
+                new ValueNode("key2", "value2")
+            }));
+        }
+
+        [Test]
+        public void Should_handle_syntax_with_double_hyphen_and_equals_sign()
         {
             Observe("--key1=value1", "--key2=value2").Should().Be(new ObjectNode(null, new ISettingsNode[]
             {
@@ -33,7 +53,7 @@ namespace Vostok.Configuration.Sources.Tests
         }
 
         [Test]
-        public void Should_handle_syntax_with_double_minus_and_space_before_value()
+        public void Should_handle_syntax_with_double_hyphen_and_space_before_value()
         {
             Observe("--key1", "value1", "--key2", "value2").Should().Be(new ObjectNode(null, new ISettingsNode[]
             {
@@ -75,7 +95,7 @@ namespace Vostok.Configuration.Sources.Tests
         [Test]
         public void Should_handle_mixed_syntax()
         {
-            Observe("key1=value1", "--key2", "value2", "/key3=value3", "--key4=value4", "/key5", "value5")
+            Observe("key1=value1", "--key2", "value2", "/key3=value3", "--key4=value4", "/key5", "value5", "-key6=value6", "-key7", "value7")
                 .Should().Be(new ObjectNode(null, new ISettingsNode[]
             {
                 new ValueNode("key1", "value1"),
@@ -83,6 +103,8 @@ namespace Vostok.Configuration.Sources.Tests
                 new ValueNode("key3", "value3"),
                 new ValueNode("key4", "value4"),
                 new ValueNode("key5", "value5"),
+                new ValueNode("key6", "value6"),
+                new ValueNode("key7", "value7")
             }));
         }
 
@@ -107,13 +129,59 @@ namespace Vostok.Configuration.Sources.Tests
         }
 
         [Test]
-        public void Should_skip_incorrect_arguments()
+        public void Should_drop_values_without_keys_by_default()
         {
-            Observe("bullshit", "key1=value1", "", "key2=value2", "whatever", "--key3", "value3", "nope").Should().Be(new ObjectNode(null, new ISettingsNode[]
+            Observe("bullshit", "key1=value1", "", "key2=value2", "whatever", "--key3", "value3", "nope", "-key4=value4").Should().Be(new ObjectNode(null, new ISettingsNode[]
             {
                 new ValueNode("key1", "value1"),
                 new ValueNode("key2", "value2"),
-                new ValueNode("key3", "value3")
+                new ValueNode("key3", "value3"),
+                new ValueNode("key4", "value4")
+            }));
+        }
+
+        [Test]
+        public void Should_drop_keys_without_values_by_default()
+        {
+            Observe("-x", "key1=value1", "--y", "key2=value2", "/z", "--key3", "value3", "-key4=value4").Should().Be(new ObjectNode(null, new ISettingsNode[]
+            {
+                new ValueNode("key1", "value1"),
+                new ValueNode("key2", "value2"),
+                new ValueNode("key3", "value3"),
+                new ValueNode("key4", "value4")
+            }));
+        }
+
+        [Test]
+        public void Should_group_arguments_without_keys_into_an_array_with_with_default_key_if_supplied()
+        {
+            ObserveWithDefaultKey("default", "bullshit", "key1=value1", "", "key2=value2", "whatever", "--key3", "value3", "nope", "-key4=value4").Should().Be(new ObjectNode(null, new ISettingsNode[]
+            {
+                new ValueNode("key1", "value1"),
+                new ValueNode("key2", "value2"),
+                new ValueNode("key3", "value3"),
+                new ValueNode("key4", "value4"),
+                new ArrayNode("default", new ISettingsNode[]
+                {
+                    new ValueNode("0", "bullshit"),
+                    new ValueNode("1", "whatever"),
+                    new ValueNode("2", "nope")
+                })
+            }));
+        }
+
+        [Test]
+        public void Should_provide_default_values_for_orphaned_keys_if_supplied()
+        {
+            ObserveWithDefaultValue("true", "-x", "key1=value1", "--y", "key2=value2", "/z", "--key3", "value3", "-key4=value4").Should().Be(new ObjectNode(null, new ISettingsNode[]
+            {
+                new ValueNode("key1", "value1"),
+                new ValueNode("key2", "value2"),
+                new ValueNode("key3", "value3"),
+                new ValueNode("key4", "value4"),
+                new ValueNode("x", "true"),
+                new ValueNode("y", "true"),
+                new ValueNode("z", "true")
             }));
         }
 
@@ -139,5 +207,11 @@ namespace Vostok.Configuration.Sources.Tests
 
         private static ISettingsNode Observe(params string[] args)
             => new CommandLineSource(args).Observe().WaitFirstValue(1.Seconds()).settings;
+
+        private static ISettingsNode ObserveWithDefaultKey(string defaultKey, params string[] args)
+            => new CommandLineSource(args, defaultKey, null).Observe().WaitFirstValue(1.Seconds()).settings;
+
+        private static ISettingsNode ObserveWithDefaultValue(string defaultValue, params string[] args)
+            => new CommandLineSource(args, null, defaultValue).Observe().WaitFirstValue(1.Seconds()).settings;
     }
 }
