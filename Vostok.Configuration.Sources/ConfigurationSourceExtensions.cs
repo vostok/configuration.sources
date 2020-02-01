@@ -7,6 +7,7 @@ using Vostok.Configuration.Abstractions.Merging;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Combined;
 using Vostok.Configuration.Sources.Helpers;
+using Vostok.Configuration.Sources.Nesting;
 using Vostok.Configuration.Sources.Scoped;
 using Vostok.Configuration.Sources.Transforming;
 
@@ -52,5 +53,11 @@ namespace Vostok.Configuration.Sources
         /// </summary>
         public static IConfigurationSource Transform(this IConfigurationSource source, Func<ISettingsNode, ISettingsNode> transform) =>
             new TransformingSource(source, transform);
+
+        /// <summary>
+        /// Wraps provided <paramref name="source"/> into a <see cref="NestingSource"/> with given <paramref name="scopes"/>.
+        /// </summary>
+        public static IConfigurationSource Nest(this IConfigurationSource source, params string[] scopes) =>
+            new NestingSource(source, scopes);
     }
 }

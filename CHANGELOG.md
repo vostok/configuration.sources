@@ -1,3 +1,7 @@
+## 0.1.8 (01.02.2020):
+
+Implemented NestingSource.
+
 ## 0.1.7 (11.01.2020):
 
 CommandLineSource: support for single-hyphen key syntax, default keys and values.
