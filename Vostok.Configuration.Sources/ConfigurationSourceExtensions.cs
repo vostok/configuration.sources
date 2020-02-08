@@ -55,6 +55,12 @@ namespace Vostok.Configuration.Sources
             new TransformingSource(source, transform);
 
         /// <summary>
+        /// Wraps provided <paramref name="source"/> into a <see cref="TransformingSource"/> with given <paramref name="transformer"/>.
+        /// </summary>
+        public static IConfigurationSource Transform(this IConfigurationSource source, NodeTransformer transformer) =>
+            new TransformingSource(source, transformer);
+
+        /// <summary>
         /// Wraps provided <paramref name="source"/> into a <see cref="NestingSource"/> with given <paramref name="scopes"/>.
         /// </summary>
         public static IConfigurationSource Nest(this IConfigurationSource source, params string[] scopes) =>

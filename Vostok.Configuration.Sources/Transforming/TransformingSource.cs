@@ -23,6 +23,11 @@ namespace Vostok.Configuration.Sources.Transforming
             this.treeTransform = treeTransform ?? throw new ArgumentNullException(nameof(treeTransform));
         }
 
+        public TransformingSource([NotNull] IConfigurationSource baseSource, [NotNull] NodeTransformer transformer)
+            : this(baseSource, transformer.Transform)
+        {
+        }
+
         public IObservable<(ISettingsNode settings, Exception error)> Observe() =>
             baseSource.Observe().SelectValueOrError(TransformTree);
 

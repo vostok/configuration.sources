@@ -1,3 +1,7 @@
+## 0.1.9 (08.02.2020):
+
+Added NodeTransformer and ValueNodeTransfomer — helpers for TransformingSource.
+
 ## 0.1.8 (01.02.2020):
 
 Implemented NestingSource.
