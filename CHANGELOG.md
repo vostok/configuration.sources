@@ -1,3 +1,8 @@
+## 0.1.10 (04.05.2020):
+
+- Added FrozenSource and Freeze() extension to turn dynamic sources into static ones.
+- Added TemplatingSource and Substitute() extension to substitute placeholders in nodes values.
+
 ## 0.1.9 (08.02.2020):
 
 Added NodeTransformer and ValueNodeTransfomer — helpers for TransformingSource.
