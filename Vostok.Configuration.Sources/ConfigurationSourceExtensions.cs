@@ -10,6 +10,7 @@ using Vostok.Configuration.Sources.Frozen;
 using Vostok.Configuration.Sources.Helpers;
 using Vostok.Configuration.Sources.Nesting;
 using Vostok.Configuration.Sources.Scoped;
+using Vostok.Configuration.Sources.Templating;
 using Vostok.Configuration.Sources.Transforming;
 
 namespace Vostok.Configuration.Sources
@@ -72,5 +73,11 @@ namespace Vostok.Configuration.Sources
         /// </summary>
         public static IConfigurationSource Freeze(this IConfigurationSource source) =>
             new FrozenSource(source);
+
+        /// <summary>
+        /// Wraps provided <paramref name="source"/> into a <see cref="TemplatingSource"/> with given <paramref name="substitutions"/>.
+        /// </summary>
+        public static IConfigurationSource Substitute(this IConfigurationSource source, params Substitution[] substitutions) =>
+            new TemplatingSource(source, new TemplatingSourceOptions(substitutions));
     }
 }
