@@ -6,6 +6,7 @@ using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.Merging;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Combined;
+using Vostok.Configuration.Sources.Frozen;
 using Vostok.Configuration.Sources.Helpers;
 using Vostok.Configuration.Sources.Nesting;
 using Vostok.Configuration.Sources.Scoped;
@@ -65,5 +66,11 @@ namespace Vostok.Configuration.Sources
         /// </summary>
         public static IConfigurationSource Nest(this IConfigurationSource source, params string[] scopes) =>
             new NestingSource(source, scopes);
+
+        /// <summary>
+        /// Wraps provided <paramref name="source"/> into a <see cref="FrozenSource"/>.
+        /// </summary>
+        public static IConfigurationSource Freeze(this IConfigurationSource source) =>
+            new FrozenSource(source);
     }
 }
