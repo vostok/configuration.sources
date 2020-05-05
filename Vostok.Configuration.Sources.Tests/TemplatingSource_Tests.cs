@@ -85,6 +85,22 @@ namespace Vostok.Configuration.Sources.Tests
             Transform("A random text with a '#{Key}' in the middle of it.").Should().Be("A random text with a 'value' in the middle of it.");
         }
 
+        [Test]
+        public void Should_tolerate_null_substitution_values()
+        {
+            Substitute("Key", null);
+
+            Transform("__#{Key}__").Should().Be("____");
+        }
+
+        [Test]
+        public void Should_tolerate_empty_substitution_values()
+        {
+            Substitute("Key", string.Empty);
+
+            Transform("__#{Key}__").Should().Be("____");
+        }
+
         private void Substitute(string name, string value)
             => substitutions.Add(new Substitution(name, value));
 

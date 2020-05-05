@@ -15,7 +15,6 @@ namespace Vostok.Configuration.Sources.Templating
 
         public SubstitutingTransformer(IEnumerable<Substitution> substitutions)
         {
-
             this.substitutions = new Dictionary<string, Substitution>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var substitution in substitutions)
@@ -41,7 +40,7 @@ namespace Vostok.Configuration.Sources.Templating
                 if (!substitutions.TryGetValue(name, out var substitution))
                     continue;
 
-                var substitutionValue = substitution.Value;
+                var substitutionValue = substitution.Value ?? string.Empty;
 
                 builder
                     .Remove(match.Index + offset, match.Length)
