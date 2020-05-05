@@ -1,3 +1,7 @@
+## 0.1.11 (05.05.2020):
+
+TemplatingSource no longer fails on null substitution values.
+
 ## 0.1.10 (04.05.2020):
 
 - Added FrozenSource and Freeze() extension to turn dynamic sources into static ones.
