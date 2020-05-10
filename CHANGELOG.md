@@ -1,3 +1,7 @@
+## 0.1.12 (10.05.2020):
+
+Implemented SwitchingSource that allows to dynamically switch the underlying source without invalidating current subscriptions.
+
 ## 0.1.11 (05.05.2020):
 
 TemplatingSource no longer fails on null substitution values.
