@@ -10,8 +10,6 @@ using NUnit.Framework;
 using Vostok.Commons.Testing;
 using Vostok.Commons.Testing.Observable;
 using Vostok.Configuration.Sources.File;
-using Vostok.Configuration.Sources.Helpers;
-using Vostok.Configuration.Sources.Tests.Helpers;
 
 namespace Vostok.Configuration.Sources.Tests.Integration
 {
@@ -50,6 +48,48 @@ namespace Vostok.Configuration.Sources.Tests.Integration
             var watcher = CreateFileWatcher();
 
             watcher.WaitFirstValue(1.Seconds()).Should().Be(("settings", null));
+        }
+
+        [TestCase("settings")]
+        [TestCase("../settings.txt")]
+        [TestCase("..\\settings.txt")]
+        [TestCase("./settings.txt")]
+        [TestCase(".\\settings.txt")]
+        public void Should_change_relative_file_path_to_absolute(string filePath)
+        {
+            var expectedFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
+            SetupFileExists(expectedFilePath, "some settings");
+            
+            var watcher = CreateFileWatcher(null, filePath);
+            watcher.WaitFirstValue(1.Seconds());
+
+            fileSystem.Received()
+                .OpenFile(
+                    expectedFilePath,
+                    Arg.Any<FileMode>(),
+                    Arg.Any<FileAccess>(),
+                    Arg.Any<FileShare>(),
+                    Arg.Any<Encoding>());
+        }
+
+        [TestCase("/etc/apt/apt.conf")]
+        [TestCase("C:/settings/one.json")]
+        [TestCase(@"\\some_share\dir\file.txt")]
+        [TestCase(@"C:\settings\one.json")]
+        public void Should_not_change_absolute_file_path(string filePath)
+        {
+            SetupFileExists(filePath, "settings file content");
+            
+            var watcher = CreateFileWatcher(null, filePath);
+            watcher.WaitFirstValue(1.Seconds());
+
+            fileSystem.Received()
+                .OpenFile(
+                    filePath,
+                    Arg.Any<FileMode>(),
+                    Arg.Any<FileAccess>(),
+                    Arg.Any<FileShare>(),
+                    Arg.Any<Encoding>());
         }
 
         [Test]
@@ -129,9 +169,9 @@ namespace Vostok.Configuration.Sources.Tests.Integration
             assertion2.ShouldNotFailIn(100.Milliseconds());
         }
 
-        private IObservable<(string value, Exception error)> CreateFileWatcher(TimeSpan? fileWatcherPeriod = null)
+        private IObservable<(string value, Exception error)> CreateFileWatcher(TimeSpan? fileWatcherPeriod = null, string filePath = null)
         {
-            var settings = new FileSourceSettings(settingsPath);
+            var settings = new FileSourceSettings(filePath ?? settingsPath);
             if (fileWatcherPeriod != null)
                 settings.FileWatcherPeriod = fileWatcherPeriod.Value;
             return factory.CreateWatcher(settings);

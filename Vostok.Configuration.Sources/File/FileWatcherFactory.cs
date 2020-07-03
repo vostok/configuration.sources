@@ -17,7 +17,8 @@ namespace Vostok.Configuration.Sources.File
 
         public IObservable<(string value, Exception error)> CreateWatcher(FileSourceSettings settings)
         {
-            return GenerateSignals(settings).SelectValueOrError(_ => ReadFile(settings));
+            var fixedSettings = MakeFilePathAbsolute(settings);
+            return GenerateSignals(fixedSettings).SelectValueOrError(_ => ReadFile(fixedSettings));
         }
 
         private IObservable<object> GenerateSignals(FileSourceSettings settings)
@@ -53,8 +54,16 @@ namespace Vostok.Configuration.Sources.File
         {
             var path = Path.GetDirectoryName(filePath);
             if (string.IsNullOrEmpty(path))
-                path = Directory.GetCurrentDirectory();
+                path = AppDomain.CurrentDomain.BaseDirectory;
             return fileSystem.WatchFileSystem(path, Path.GetFileName(filePath), handler);
+        }
+
+        private static FileSourceSettings MakeFilePathAbsolute(FileSourceSettings settings)
+        {
+            if (Path.IsPathRooted(settings.FilePath))
+                return settings;
+            var absoluteFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, settings.FilePath);
+            return settings.WithFilePath(absoluteFilePath);
         }
     }
 }

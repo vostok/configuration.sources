@@ -31,6 +31,17 @@ namespace Vostok.Configuration.Sources.File
         /// </summary>
         public TimeSpan FileWatcherPeriod { get; set; } = TimeSpan.FromSeconds(5);
 
+        [Pure]
+        [NotNull]
+        internal FileSourceSettings WithFilePath(string filePath)
+        {
+            return new FileSourceSettings(filePath)
+            {
+                Encoding = Encoding,
+                FileWatcherPeriod = FileWatcherPeriod
+            };
+        }
+
         #region Equality
 
         public override bool Equals(object obj)
