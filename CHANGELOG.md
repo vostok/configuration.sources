@@ -1,3 +1,7 @@
+## 0.1.13 (03.07.2020):
+
+FileSource now resolves relative file paths from AppDomain.CurrentDomain.BaseDirectory.
+
 ## 0.1.12 (10.05.2020):
 
 Implemented SwitchingSource that allows to dynamically switch the underlying source without invalidating current subscriptions.
