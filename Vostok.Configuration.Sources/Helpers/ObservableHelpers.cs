@@ -1,6 +1,7 @@
 using System;
 using System.Reactive.Linq;
 using JetBrains.Annotations;
+using Vostok.Commons.Helpers.Rx;
 using Vostok.Configuration.Sources.File;
 
 namespace Vostok.Configuration.Sources.Helpers
