@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using JetBrains.Annotations;
+using Vostok.Commons.Helpers.Rx;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.Merging;
 using Vostok.Configuration.Abstractions.SettingsTree;
@@ -17,6 +18,8 @@ namespace Vostok.Configuration.Sources.Combined
     [PublicAPI]
     public class CombinedSource : IConfigurationSource
     {
+        static CombinedSource() => RxHacker.Hack();
+        
         private readonly IEnumerable<IConfigurationSource> sources;
         private readonly SettingsMergeOptions options;
 
