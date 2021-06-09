@@ -10,7 +10,7 @@
     <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionPrefix>0.1.14</VersionPrefix>
+    <VersionPrefix>0.1.15</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup>
     <Title>Vostok.Configuration.Sources</Title>
