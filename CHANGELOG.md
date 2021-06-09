@@ -1,4 +1,8 @@
-## 0.1.14 (09.06.2020):
+## 0.1.15 (09.06.2021):
+
+Fixed bug with Rx and debugger for all sources.
+
+## 0.1.14 (09.06.2021):
 
 Fixed bug with Rx and debugger.
 
