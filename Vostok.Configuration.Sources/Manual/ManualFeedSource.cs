@@ -1,6 +1,7 @@
 using System;
 using System.Reactive.Subjects;
 using JetBrains.Annotations;
+using Vostok.Commons.Helpers.Rx;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.SettingsTree;
 
@@ -12,8 +13,9 @@ namespace Vostok.Configuration.Sources.Manual
     [PublicAPI]
     public class ManualFeedSource : IConfigurationSource
     {
-        private readonly ReplaySubject<(ISettingsNode settings, Exception error)> subject = 
+        private readonly ReplaySubject<(ISettingsNode settings, Exception error)> subject =
             new ReplaySubject<(ISettingsNode settings, Exception error)>(1);
+        static ManualFeedSource() => RxHacker.Hack();
 
         public ManualFeedSource()
         {

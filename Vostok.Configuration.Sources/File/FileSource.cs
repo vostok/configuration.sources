@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Linq;
 using JetBrains.Annotations;
+using Vostok.Commons.Helpers.Rx;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.SettingsTree;
 using Vostok.Configuration.Sources.Helpers;
@@ -17,12 +18,13 @@ namespace Vostok.Configuration.Sources.File
     [PublicAPI]
     public class FileSource : IConfigurationSource
     {
+        private static readonly WatcherCache<FileSourceSettings, string> Watchers =
+            new WatcherCache<FileSourceSettings, string>(new FileWatcherFactory(new FileSystem()));
+
         private readonly Func<string, ISettingsNode> parseSettings;
         private readonly Func<IObservable<(string, Exception)>> fileWatcherProvider;
+        static FileSource() => RxHacker.Hack();
 
-        private static readonly WatcherCache<FileSourceSettings, string> Watchers = 
-            new WatcherCache<FileSourceSettings, string>(new FileWatcherFactory(new FileSystem()));
-        
         public FileSource([NotNull] FileSourceSettings settings, [NotNull] Func<string, ISettingsNode> parseSettings)
             : this(() => Watchers.Watch(settings), parseSettings)
         {
@@ -42,8 +44,8 @@ namespace Vostok.Configuration.Sources.File
         public IObservable<(ISettingsNode settings, Exception error)> Observe()
         {
             return fileWatcherProvider()
-                .DistinctUntilChanged()
-                .SelectValueOrError(parseSettings);
+               .DistinctUntilChanged()
+               .SelectValueOrError(parseSettings);
         }
     }
 }

@@ -13,10 +13,7 @@ namespace Vostok.Configuration.Sources.Helpers
     [PublicAPI]
     public static class ObservableExtensions
     {
-        static ObservableExtensions()
-        {
-            RxHacker.Hack();
-        }
+        static ObservableExtensions() => RxHacker.Hack();
 
         /// <summary>
         /// Returns (<paramref name="selector"/>(value), null) normally, and (null, error) in case the <paramref name="selector"/>(value) call fails.

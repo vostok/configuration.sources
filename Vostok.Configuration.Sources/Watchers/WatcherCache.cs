@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using JetBrains.Annotations;
 using Vostok.Commons.Collections;
+using Vostok.Commons.Helpers.Rx;
 using Vostok.Configuration.Sources.File;
 
 namespace Vostok.Configuration.Sources.Watchers
@@ -20,6 +21,7 @@ namespace Vostok.Configuration.Sources.Watchers
     {
         private readonly IWatcherFactory<TKey, TValue> factory;
         private readonly ConcurrentDictionary<TKey, CountingAdapter> cache;
+        static WatcherCache() => RxHacker.Hack();
 
         public WatcherCache(
             [NotNull] IWatcherFactory<TKey, TValue> factory,
@@ -56,7 +58,9 @@ namespace Vostok.Configuration.Sources.Watchers
             private int subscriptions;
 
             public CountingAdapter(
-                TKey key, Func<IObservable<(TValue, Exception)>> source, ConcurrentDictionary<TKey, CountingAdapter> cache)
+                TKey key,
+                Func<IObservable<(TValue, Exception)>> source,
+                ConcurrentDictionary<TKey, CountingAdapter> cache)
             {
                 this.key = key;
                 this.cache = cache;

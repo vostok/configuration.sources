@@ -18,8 +18,6 @@ namespace Vostok.Configuration.Sources.Combined
     [PublicAPI]
     public class CombinedSource : IConfigurationSource
     {
-        static CombinedSource() => RxHacker.Hack();
-        
         private readonly IEnumerable<IConfigurationSource> sources;
         private readonly SettingsMergeOptions options;
 

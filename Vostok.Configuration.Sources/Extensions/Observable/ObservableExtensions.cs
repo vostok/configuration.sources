@@ -11,10 +11,7 @@ namespace Vostok.Configuration.Sources.Extensions.Observable
     [PublicAPI]
     public static class ObservableExtensions
     {
-        static ObservableExtensions()
-        {
-            RxHacker.Hack();
-        }
+        static ObservableExtensions() => RxHacker.Hack();
 
         /// <summary>
         /// Projects each element of an observable sequence into a new form.

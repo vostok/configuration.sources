@@ -2,6 +2,7 @@ using System;
 using System.Reactive.Linq;
 using System.Threading;
 using JetBrains.Annotations;
+using Vostok.Commons.Helpers.Rx;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Abstractions.SettingsTree;
 
@@ -15,6 +16,7 @@ namespace Vostok.Configuration.Sources.Constant
     {
         private readonly Func<ISettingsNode> settingsGetter;
         private readonly Lazy<(ISettingsNode, Exception)> currentSettings;
+        static LazyConstantSource() => RxHacker.Hack();
 
         public LazyConstantSource([NotNull] Func<ISettingsNode> settingsGetter)
         {
