@@ -1,3 +1,7 @@
+## 0.1.14 (09.06.2020):
+
+Fixed bug with Rx and debugger.
+
 ## 0.1.13 (03.07.2020):
 
 FileSource now resolves relative file paths from AppDomain.CurrentDomain.BaseDirectory.
