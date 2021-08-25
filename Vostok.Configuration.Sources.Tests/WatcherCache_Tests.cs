@@ -4,7 +4,6 @@ using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using Vostok.Commons.Testing.Observable;
-using Vostok.Configuration.Sources.Tests.Helpers;
 using Vostok.Configuration.Sources.Watchers;
 using Exception = System.Exception;
 

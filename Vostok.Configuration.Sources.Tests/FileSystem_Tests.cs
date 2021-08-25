@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
@@ -74,6 +75,21 @@ namespace Vostok.Configuration.Sources.Tests
                     new Action(() => receivedEvents.Should().BeGreaterThan(0))
                         .ShouldPassIn(5.Seconds());
                 }
+            }
+        }
+
+        [Test]
+        public void WatchFileSystem_should_not_throw_if_directory_doesnt_exist()
+        {
+            using (var folder = new TemporaryFolder())
+            {
+                Directory.Delete(folder.Name);
+
+                Action createWatcher = () => fileSystem.WatchFileSystem(folder.Name, "*.*", (sender, args) => {});
+                
+                createWatcher.Should().NotThrow();
+
+                Directory.Exists(folder.Name).Should().BeTrue();
             }
         }
     }
