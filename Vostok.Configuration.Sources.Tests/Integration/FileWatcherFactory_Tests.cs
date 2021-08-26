@@ -74,9 +74,9 @@ namespace Vostok.Configuration.Sources.Tests.Integration
         }
 
         [TestCase("/etc/apt/apt.conf")]
-        [TestCase("C:/settings/one.json")]
-        [TestCase(@"\\some_share\dir\file.txt")]
-        [TestCase(@"C:\settings\one.json")]
+        [TestCase("//etc/apt/apt.conf")]
+        [TestCase("C:/settings/one.json", IncludePlatform = "Win")]
+        [TestCase(@"C:\settings\one.json", IncludePlatform = "Win")]
         public void Should_not_change_absolute_file_path(string filePath)
         {
             SetupFileExists(filePath, "settings file content");
