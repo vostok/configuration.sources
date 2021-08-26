@@ -66,7 +66,7 @@ namespace Vostok.Configuration.Sources.File
             return settings.WithFilePath(absoluteFilePath);
         }
 
-        // NOTE (tsup): An alternative for https://docs.microsoft.com/ru-ru/dotnet/api/system.io.path.ispathrooted
+        // NOTE (tsup): An alternative for https://docs.microsoft.com/ru-ru/dotnet/api/system.io.path.ispathfullyqualified
         // since above method doesn't exist on .net standard and 'true' value of Path.IsPathRooted does not mean that path is relative.
         private static bool IsPathFullyQualified(string path)
         {
