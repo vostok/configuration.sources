@@ -60,10 +60,18 @@ namespace Vostok.Configuration.Sources.File
 
         private static FileSourceSettings MakeFilePathAbsolute(FileSourceSettings settings)
         {
-            if (Path.IsPathRooted(settings.FilePath))
+            if (IsPathFullyQualified(settings.FilePath))
                 return settings;
             var absoluteFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, settings.FilePath);
             return settings.WithFilePath(absoluteFilePath);
+        }
+
+        // NOTE (tsup): An alternative for https://docs.microsoft.com/ru-ru/dotnet/api/system.io.path.ispathrooted
+        // since above method doesn't exist on .net standard and 'true' value of Path.IsPathRooted does not mean that path is relative.
+        private static bool IsPathFullyQualified(string path)
+        {
+            var root = Path.GetPathRoot(path);
+            return root.StartsWith(@"\\") || root.EndsWith(@"\");
         }
     }
 }
