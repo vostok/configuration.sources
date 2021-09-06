@@ -16,9 +16,6 @@ namespace Vostok.Configuration.Sources.File
 
         public IDisposable WatchFileSystem(string path, string filter, FileSystemEventHandler handler)
         {
-            // NOTE (tsup): FileWatcher raises an exception in case directory does not exist.
-            Directory.CreateDirectory(path);
-
             var fileWatcher = new FileSystemWatcher(path, filter)
             {
                 InternalBufferSize = 8192,
