@@ -13,6 +13,7 @@ namespace Vostok.Configuration.Sources.File
         private readonly FileSystemEventHandler eventHandler;
         private readonly PeriodicalAction periodicalChecker;
         private volatile IDisposable currentWatcher;
+        private volatile bool disposed;
 
         public ReusableFileSystemWatcher(string path, string filter, FileSystemEventHandler eventHandler)
         {
@@ -25,6 +26,8 @@ namespace Vostok.Configuration.Sources.File
 
         public void Dispose()
         {
+            disposed = true;
+
             periodicalChecker?.Stop();
             currentWatcher?.Dispose();
             currentWatcher = null;
@@ -32,6 +35,9 @@ namespace Vostok.Configuration.Sources.File
 
         private void RecreateWatcherIfNeeded()
         {
+            if (disposed)
+                return;
+
             if (!folder.Exists)
             {
                 currentWatcher?.Dispose();
