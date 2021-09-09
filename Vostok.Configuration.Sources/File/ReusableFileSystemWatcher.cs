@@ -13,7 +13,7 @@ namespace Vostok.Configuration.Sources.File
         private readonly FileSystemEventHandler eventHandler;
         private readonly PeriodicalAction periodicalChecker;
         private volatile IDisposable currentWatcher;
-        private volatile bool disposed;
+        private DateTime lastSeenCreationTime;
 
         public ReusableFileSystemWatcher(string path, string filter, FileSystemEventHandler eventHandler)
         {
@@ -30,8 +30,6 @@ namespace Vostok.Configuration.Sources.File
 
         public void Dispose()
         {
-            disposed = true;
-
             periodicalChecker?.Stop();
             currentWatcher?.Dispose();
             currentWatcher = null;
@@ -39,16 +37,16 @@ namespace Vostok.Configuration.Sources.File
 
         private void RecreateWatcherIfNeeded()
         {
-            if (disposed)
-                return;
-
             if (!folder.Exists)
             {
                 currentWatcher?.Dispose();
                 currentWatcher = null;
             }
-            else if (currentWatcher == null && TryCreateWatcher(out var newWatcher))
+            else if ((currentWatcher == null || folder.CreationTime != lastSeenCreationTime) && TryCreateWatcher(out var newWatcher))
+            {
+                lastSeenCreationTime = folder.CreationTime;
                 currentWatcher = newWatcher;
+            }
         }
 
         private bool TryCreateWatcher(out IDisposable watcher)
@@ -76,6 +74,10 @@ namespace Vostok.Configuration.Sources.File
                 fileWatcher.Renamed += (sender, args) => eventHandler(sender, args);
 
                 fileWatcher.EnableRaisingEvents = true;
+
+                // NOTE (tsup): We have to handle situations where the folder was deleted and recreated with a file so that we could see this event as a file change.
+                foreach (var file in Directory.EnumerateFiles(folder.FullName, filter))
+                    eventHandler(this, new FileSystemEventArgs(WatcherChangeTypes.Changed, folder.Name, file));
 
                 watcher = fileWatcher;
                 return true;
