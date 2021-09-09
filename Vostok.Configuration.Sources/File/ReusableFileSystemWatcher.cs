@@ -20,6 +20,10 @@ namespace Vostok.Configuration.Sources.File
             folder = new DirectoryInfo(path);
             this.filter = filter;
             this.eventHandler = eventHandler;
+
+            if (TryCreateWatcher(out var watcher))
+                currentWatcher = watcher;
+
             periodicalChecker = new PeriodicalAction(RecreateWatcherIfNeeded, exception => {}, () => CheckPeriod);
             periodicalChecker.Start();
         }

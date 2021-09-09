@@ -86,10 +86,10 @@ namespace Vostok.Configuration.Sources.Tests
                 Directory.Delete(folder.Name);
 
                 Action createWatcher = () => fileSystem.WatchFileSystem(folder.Name, "*.*", (sender, args) => {});
-                
+
                 createWatcher.Should().NotThrow();
 
-                Directory.Exists(folder.Name).Should().BeTrue();
+                Directory.CreateDirectory(folder.Name);
             }
         }
     }
