@@ -130,6 +130,9 @@ namespace Vostok.Configuration.Sources.Tests
                 fired.Should().Be(0);
 
                 Directory.Delete(folder.Name, true);
+
+                Thread.Sleep(1000);
+
                 Directory.CreateDirectory(folder.Name);
                 System.IO.File.WriteAllText(filepath, "newContents");
 
