@@ -24,7 +24,6 @@
     <RepositoryUrl>https://github.com/vostok/configuration.sources</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
-
     <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ByReferenceEqualityComparer.cs" Link="Commons\ByReferenceEqualityComparer.cs" />
     <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ConcurrentDictionaryExtensions.cs" Link="Commons\ConcurrentDictionaryExtensions.cs" />
     <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\RecyclingBoundedCache.cs" Link="Commons\RecyclingBoundedCache.cs" />
