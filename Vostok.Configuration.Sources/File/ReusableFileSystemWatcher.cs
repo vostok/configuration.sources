@@ -1,18 +1,23 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using Vostok.Commons.Time;
 
 namespace Vostok.Configuration.Sources.File
 {
     internal class ReusableFileSystemWatcher : IDisposable
     {
+        private const int Initial = 0;
+        private const int Disposed = 1;
+
         private static readonly TimeSpan CheckPeriod = TimeSpan.FromSeconds(10);
 
         private readonly DirectoryInfo folder;
         private readonly string filter;
         private readonly FileSystemEventHandler eventHandler;
-        private IDisposable currentWatcher;
         private readonly PeriodicalAction periodicalChecker;
+        private IDisposable currentWatcher;
+        private int state = Initial;
 
         public ReusableFileSystemWatcher(string path, string filter, FileSystemEventHandler eventHandler)
         {
@@ -20,15 +25,12 @@ namespace Vostok.Configuration.Sources.File
             this.filter = filter;
             this.eventHandler = eventHandler;
             periodicalChecker = new PeriodicalAction(RecreateWatcherIfNeeded, exception => {}, () => CheckPeriod);
-        }
-
-        public void Watch()
-        {
             periodicalChecker.Start();
         }
 
         public void Dispose()
         {
+            Interlocked.Exchange(ref state, Disposed);
             periodicalChecker?.Stop();
             currentWatcher?.Dispose();
         }
@@ -40,8 +42,13 @@ namespace Vostok.Configuration.Sources.File
                 currentWatcher?.Dispose();
                 currentWatcher = null;
             }
-            else if (currentWatcher == null)
-                TryCreateWatcher(out currentWatcher);
+            else if (currentWatcher == null && state != Disposed && TryCreateWatcher(out var newWatcher))
+            {
+                if (state != Disposed)
+                    currentWatcher = newWatcher;
+                else
+                    newWatcher.Dispose();
+            }
         }
 
         private bool TryCreateWatcher(out IDisposable watcher)
