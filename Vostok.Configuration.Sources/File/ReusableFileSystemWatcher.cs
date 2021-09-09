@@ -22,7 +22,9 @@ namespace Vostok.Configuration.Sources.File
             this.filter = filter;
             this.eventHandler = eventHandler;
 
-            periodicalChecker = new PeriodicalAction(RecreateWatcherIfNeeded, exception => {}, () => CheckPeriod);
+            currentWatcher = TryCreateWatcher();
+
+            periodicalChecker = new PeriodicalAction(RecreateWatcherIfNeeded, exception => {}, () => CheckPeriod, true);
             periodicalChecker.Start();
         }
 

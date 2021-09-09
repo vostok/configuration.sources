@@ -104,15 +104,14 @@ namespace Vostok.Configuration.Sources.Tests
                 var fired = 0;
 
                 Action createWatcher = () => fileSystem.WatchFileSystem(folder.Name, "*.*", (sender, args) => fired++);
-
                 createWatcher.Should().NotThrow();
                 fired.Should().Be(0);
 
                 Directory.CreateDirectory(folder.Name);
                 System.IO.File.WriteAllText(folder.GetFileName("settings.txt"), "newContents");
-                Thread.Sleep(20000);
 
-                fired.Should().Be(1);
+                Action check = () => fired.Should().Be(1);
+                check.ShouldPassIn(TimeSpan.FromSeconds(20));
             }
         }
 
@@ -122,17 +121,11 @@ namespace Vostok.Configuration.Sources.Tests
             using (var folder = new TemporaryFolder())
             {
                 var filepath = folder.GetFileName("settings.txt");
-
                 System.IO.File.WriteAllText(filepath, "contents");
 
                 var fired = 0;
 
-                Action createWatcher = () => fileSystem.WatchFileSystem(folder.Name, "*.*",
-                    (sender, args) =>
-                    {
-                        fired++;
-                    });
-
+                Action createWatcher = () => fileSystem.WatchFileSystem(folder.Name, "*.*", (sender, args) => fired++);
                 createWatcher.Should().NotThrow();
                 fired.Should().Be(0);
 
@@ -140,10 +133,8 @@ namespace Vostok.Configuration.Sources.Tests
                 Directory.CreateDirectory(folder.Name);
                 System.IO.File.WriteAllText(filepath, "newContents");
 
-                Thread.Sleep(20000);
-
-                fired.Should().Be(1 + 1 + 1 + 1); // Changed + deleted + deleted + changed
-
+                Action check = () => fired.Should().Be(1 + 1); // deleted + changed
+                check.ShouldPassIn(TimeSpan.FromSeconds(20));
                 System.IO.File.Delete(filepath);
             }
         }
