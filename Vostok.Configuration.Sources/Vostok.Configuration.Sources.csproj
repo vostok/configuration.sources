@@ -24,6 +24,7 @@
     <RepositoryUrl>https://github.com/vostok/configuration.sources</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
+
     <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ByReferenceEqualityComparer.cs" Link="Commons\ByReferenceEqualityComparer.cs" />
     <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ConcurrentDictionaryExtensions.cs" Link="Commons\ConcurrentDictionaryExtensions.cs" />
     <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\RecyclingBoundedCache.cs" Link="Commons\RecyclingBoundedCache.cs" />
@@ -32,6 +33,8 @@
     <Compile Include="..\..\vostok.commons.formatting\Vostok.Commons.Formatting\ToStringDetector.cs" Link="Commons\ToStringDetector.cs" />
     <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Extensions\TypeExtensions.cs" Link="Commons\TypeExtensions.cs" />
     <Compile Include="..\..\vostok.commons.helpers\.not-compiled\RxHacker.cs" Link="Commons\RxHacker.cs" />
+    <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\PeriodicalAction.cs" Link="Commons\PeriodicalAction.cs" />
+    <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeBudget.cs" Link="Commons\TimeBudget.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Vostok.Configuration.Abstractions">

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
+using Vostok.Commons.Time;
 
 namespace Vostok.Configuration.Sources.File
 {
-    public class ReusableFileSystemWatcher : IDisposable
+    internal class ReusableFileSystemWatcher : IDisposable
     {
         private static readonly TimeSpan CheckPeriod = TimeSpan.FromSeconds(10);
 
@@ -12,26 +12,34 @@ namespace Vostok.Configuration.Sources.File
         private readonly string filter;
         private readonly FileSystemEventHandler eventHandler;
         private IDisposable currentWatcher;
-        private IDisposable periodicalChecker;
+        private readonly PeriodicalAction periodicalChecker;
 
         public ReusableFileSystemWatcher(string path, string filter, FileSystemEventHandler eventHandler)
         {
             folder = new DirectoryInfo(path);
             this.filter = filter;
             this.eventHandler = eventHandler;
+            periodicalChecker = new PeriodicalAction(RecreateWatcherIfNeeded, exception => {}, () => CheckPeriod);
+        }
+
+        public void Watch()
+        {
+            periodicalChecker.Start();
         }
 
         public void Dispose()
         {
-            periodicalChecker?.Dispose();
+            periodicalChecker?.Stop();
             currentWatcher?.Dispose();
         }
 
-        // TODO: Add periodical action
         private void RecreateWatcherIfNeeded()
         {
             if (!folder.Exists)
+            {
                 currentWatcher?.Dispose();
+                currentWatcher = null;
+            }
             else if (currentWatcher == null)
                 TryCreateWatcher(out currentWatcher);
         }
@@ -63,7 +71,6 @@ namespace Vostok.Configuration.Sources.File
                 fileWatcher.EnableRaisingEvents = true;
 
                 watcher = fileWatcher;
-
                 return true;
             }
 
