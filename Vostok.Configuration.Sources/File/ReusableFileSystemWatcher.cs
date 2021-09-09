@@ -12,17 +12,15 @@ namespace Vostok.Configuration.Sources.File
         private readonly string filter;
         private readonly FileSystemEventHandler eventHandler;
         private readonly PeriodicalAction periodicalChecker;
-        private volatile IDisposable currentWatcher;
+        private IDisposable currentWatcher;
         private DateTime lastSeenCreationTime;
 
         public ReusableFileSystemWatcher(string path, string filter, FileSystemEventHandler eventHandler)
         {
             folder = new DirectoryInfo(path);
+            lastSeenCreationTime = folder.CreationTime;
             this.filter = filter;
             this.eventHandler = eventHandler;
-
-            if (TryCreateWatcher(out var watcher))
-                currentWatcher = watcher;
 
             periodicalChecker = new PeriodicalAction(RecreateWatcherIfNeeded, exception => {}, () => CheckPeriod);
             periodicalChecker.Start();
@@ -30,61 +28,61 @@ namespace Vostok.Configuration.Sources.File
 
         public void Dispose()
         {
-            periodicalChecker?.Stop();
+            periodicalChecker.Stop();
             currentWatcher?.Dispose();
             currentWatcher = null;
         }
 
         private void RecreateWatcherIfNeeded()
         {
-            if (!folder.Exists)
+            folder.Refresh();
+
+            if (!folder.Exists || folder.CreationTime != lastSeenCreationTime)
             {
                 currentWatcher?.Dispose();
                 currentWatcher = null;
             }
-            else if ((currentWatcher == null || folder.CreationTime != lastSeenCreationTime) && TryCreateWatcher(out var newWatcher))
-            {
-                lastSeenCreationTime = folder.CreationTime;
-                currentWatcher = newWatcher;
-            }
+
+            currentWatcher ??= TryCreateWatcher();
         }
 
-        private bool TryCreateWatcher(out IDisposable watcher)
+        private IDisposable TryCreateWatcher()
         {
-            if (folder.Exists)
+            FileSystemWatcher fileWatcher;
+
+            try
             {
-                FileSystemWatcher fileWatcher;
-
-                try
-                {
-                    fileWatcher = new FileSystemWatcher(folder.FullName, filter)
-                    {
-                        InternalBufferSize = 8192,
-                    };
-                }
-                catch (Exception)
-                {
-                    watcher = null;
-                    return false;
-                }
-
-                fileWatcher.Created += eventHandler;
-                fileWatcher.Deleted += eventHandler;
-                fileWatcher.Changed += eventHandler;
-                fileWatcher.Renamed += (sender, args) => eventHandler(sender, args);
-
-                fileWatcher.EnableRaisingEvents = true;
-
-                // NOTE (tsup): We have to handle situations where the folder was deleted and recreated with a file so that we could see this event as a file change.
-                foreach (var file in Directory.EnumerateFiles(folder.FullName, filter))
-                    eventHandler(this, new FileSystemEventArgs(WatcherChangeTypes.Changed, folder.Name, file));
-
-                watcher = fileWatcher;
-                return true;
+                fileWatcher = CreateFileWatcher();
+            }
+            catch (Exception)
+            {
+                return null;
             }
 
-            watcher = null;
-            return false;
+            // NOTE (tsup): We have to handle situations where the folder was deleted and recreated with a file so that we could see this event as a file change.
+            if (lastSeenCreationTime != folder.CreationTime)
+                foreach (var file in folder.EnumerateFiles(filter))
+                    eventHandler(this, new FileSystemEventArgs(WatcherChangeTypes.Changed, folder.Name, file.Name));
+            lastSeenCreationTime = folder.CreationTime;
+
+            return fileWatcher;
+        }
+
+        private FileSystemWatcher CreateFileWatcher()
+        {
+            var fileWatcher = new FileSystemWatcher(folder.FullName, filter)
+            {
+                InternalBufferSize = 8192
+            };
+
+            fileWatcher.Created += eventHandler;
+            fileWatcher.Deleted += eventHandler;
+            fileWatcher.Changed += eventHandler;
+            fileWatcher.Renamed += (sender, args) => eventHandler(sender, args);
+
+            fileWatcher.EnableRaisingEvents = true;
+
+            return fileWatcher;
         }
     }
 }
