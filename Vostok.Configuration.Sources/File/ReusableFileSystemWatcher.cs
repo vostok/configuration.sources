@@ -53,23 +53,19 @@ namespace Vostok.Configuration.Sources.File
 
         private IDisposable TryCreateWatcher()
         {
-            FileSystemWatcher fileWatcher;
-
-            try
+            // NOTE (tsup): Let's trigger folder absence as an event in order to have actual state information
+            if (!folder.Exists)
             {
-                fileWatcher = CreateFileWatcher();
-            }
-            catch (Exception)
-            {
-                // NOTE (tsup): Let's trigger file absence as an event in order to have actual state information
                 eventHandler(this, new FileSystemEventArgs(WatcherChangeTypes.Deleted, folder.FullName, string.Empty));
-                throw;
+                return null;
             }
+
+            var fileWatcher = CreateFileWatcher();;
 
             // NOTE (tsup): We have to handle situations where the folder was deleted and recreated with a file so that we could see this event as a file change.
             if (lastSeenCreationTime != folder.CreationTime)
                 foreach (var file in folder.EnumerateFiles(filter))
-                    eventHandler(this, new FileSystemEventArgs(WatcherChangeTypes.Changed, folder.FullName, file.Name));
+                    eventHandler(this, new FileSystemEventArgs(WatcherChangeTypes.Created, folder.FullName, file.Name));
             lastSeenCreationTime = folder.CreationTime;
 
             return fileWatcher;
