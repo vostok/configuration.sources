@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Vostok.Commons.Time;
 
 namespace Vostok.Configuration.Sources.File
@@ -11,7 +12,7 @@ namespace Vostok.Configuration.Sources.File
         private readonly DirectoryInfo folder;
         private readonly string filter;
         private readonly FileSystemEventHandler eventHandler;
-        private readonly PeriodicalAction periodicalChecker;
+        private readonly AsyncPeriodicalAction periodicalChecker;
         private IDisposable currentWatcher;
         private DateTime lastSeenCreationTime;
 
@@ -24,7 +25,7 @@ namespace Vostok.Configuration.Sources.File
 
             currentWatcher = TryCreateWatcher();
 
-            periodicalChecker = new PeriodicalAction(RecreateWatcherIfNeeded, exception => {}, () => CheckPeriod, true);
+            periodicalChecker = new AsyncPeriodicalAction(RecreateWatcherIfNeeded, exception => {}, () => CheckPeriod, true);
             periodicalChecker.Start();
         }
 
@@ -35,7 +36,7 @@ namespace Vostok.Configuration.Sources.File
             currentWatcher = null;
         }
 
-        private void RecreateWatcherIfNeeded()
+        private Task RecreateWatcherIfNeeded()
         {
             folder.Refresh();
 
@@ -46,6 +47,8 @@ namespace Vostok.Configuration.Sources.File
             }
 
             currentWatcher ??= TryCreateWatcher();
+
+            return Task.CompletedTask;
         }
 
         private IDisposable TryCreateWatcher()
