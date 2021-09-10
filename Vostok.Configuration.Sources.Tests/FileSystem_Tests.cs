@@ -129,14 +129,12 @@ namespace Vostok.Configuration.Sources.Tests
                 createWatcher.Should().NotThrow();
                 fired.Should().Be(0);
 
-                System.IO.File.Delete(filepath);
-                Directory.Delete(folder.Name);
+                Directory.Delete(folder.Name, true);
                 Directory.CreateDirectory(folder.Name);
                 System.IO.File.WriteAllText(filepath, "newContents");
 
                 Action check = () => fired.Should().Be(1 + 1); // deleted + changed
                 check.ShouldPassIn(TimeSpan.FromSeconds(20));
-                System.IO.File.Delete(filepath);
             }
         }
     }
