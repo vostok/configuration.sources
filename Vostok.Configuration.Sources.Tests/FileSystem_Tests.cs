@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Threading;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
@@ -86,9 +85,9 @@ namespace Vostok.Configuration.Sources.Tests
             {
                 Directory.Delete(folder.Name);
 
-                Action createWatcher = () => fileSystem.WatchFileSystem(folder.Name, "*.*", (sender, args) => {});
-
-                createWatcher.Should().NotThrow();
+                using (fileSystem.WatchFileSystem(folder.Name, "*.*", (sender, args) => {}))
+                {
+                }
 
                 Directory.CreateDirectory(folder.Name);
             }
@@ -100,23 +99,22 @@ namespace Vostok.Configuration.Sources.Tests
             using (var folder = new TemporaryFolder())
             {
                 Directory.Delete(folder.Name);
-
                 var fired = 0;
 
-                Action createWatcher = () => fileSystem.WatchFileSystem(folder.Name, "*.*", (sender, args) => fired++);
-                createWatcher.Should().NotThrow();
-                fired.Should().Be(0);
+                using (fileSystem.WatchFileSystem(folder.Name, "*.*", (sender, args) => fired++))
+                {
+                    fired.Should().Be(1);
+                    Directory.CreateDirectory(folder.Name);
+                    System.IO.File.WriteAllText(folder.GetFileName("settings.txt"), "newContents");
 
-                Directory.CreateDirectory(folder.Name);
-                System.IO.File.WriteAllText(folder.GetFileName("settings.txt"), "newContents");
-
-                Action check = () => fired.Should().Be(1);
-                check.ShouldPassIn(TimeSpan.FromSeconds(20));
+                    Action check = () => fired.Should().Be(2);
+                    check.ShouldPassIn(TimeSpan.FromSeconds(20));
+                }
             }
         }
 
         [Test]
-        public void WatchFileSystem_should_fire_event_on_fast_directory_deletion_and_creation()
+        public void WatchFileSystem_should_fire_events_on_parent_directory_deletion_and_creation()
         {
             using (var folder = new TemporaryFolder())
             {
@@ -125,16 +123,26 @@ namespace Vostok.Configuration.Sources.Tests
 
                 var fired = 0;
 
-                Action createWatcher = () => fileSystem.WatchFileSystem(folder.Name, "*.*", (sender, args) => fired++);
-                createWatcher.Should().NotThrow();
-                fired.Should().Be(0);
+                using (fileSystem.WatchFileSystem(folder.Name, "*.*", (sender, args) => fired++))
+                {
+                    fired.Should().Be(0);
 
-                Directory.Delete(folder.Name, true);
-                Directory.CreateDirectory(folder.Name);
-                System.IO.File.WriteAllText(filepath, "newContents");
+                    System.IO.File.Delete(filepath);
 
-                Action check = () => fired.Should().Be(1 + 1); // deleted + changed
-                check.ShouldPassIn(TimeSpan.FromSeconds(20));
+                    Action check = () => fired.Should().Be(1);
+                    check.ShouldPassIn(TimeSpan.FromSeconds(20));
+
+                    Directory.Delete(folder.Name);
+
+                    check = () => fired.Should().Be(2);
+                    check.ShouldPassIn(TimeSpan.FromSeconds(20));
+
+                    Directory.CreateDirectory(folder.Name);
+                    System.IO.File.WriteAllText(filepath, "newContents");
+
+                    check = () => fired.Should().Be(3);
+                    check.ShouldPassIn(TimeSpan.FromSeconds(20));
+                }
             }
         }
     }
