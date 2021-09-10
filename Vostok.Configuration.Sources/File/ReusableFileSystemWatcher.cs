@@ -60,7 +60,7 @@ namespace Vostok.Configuration.Sources.File
             {
                 // NOTE (tsup): Let's trigger file absence as an event in order to have actual state information
                 eventHandler(this, new FileSystemEventArgs(WatcherChangeTypes.Deleted, folder.FullName, string.Empty));
-                return null;
+                throw;
             }
 
             // NOTE (tsup): We have to handle situations where the folder was deleted and recreated with a file so that we could see this event as a file change.
