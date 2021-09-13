@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using FluentAssertions;
 using FluentAssertions.Extensions;
@@ -25,7 +26,7 @@ namespace Vostok.Configuration.Sources.Tests.Integration
         [SetUp]
         public void SetUp()
         {
-            settingsPath = @"C:\settings";
+            settingsPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @"C:\settings" : "/etc/settings/";
             fsWatcher = Substitute.For<IDisposable>();
             fileSystem = Substitute.For<IFileSystem>();
             fileSystem.WatchFileSystem("", "", null).ReturnsForAnyArgs(fsWatcher);
@@ -73,9 +74,9 @@ namespace Vostok.Configuration.Sources.Tests.Integration
         }
 
         [TestCase("/etc/apt/apt.conf")]
-        [TestCase("C:/settings/one.json")]
-        [TestCase(@"\\some_share\dir\file.txt")]
-        [TestCase(@"C:\settings\one.json")]
+        [TestCase("//etc/apt/apt.conf")]
+        [TestCase("C:/settings/one.json", IncludePlatform = "Win")]
+        [TestCase(@"C:\settings\one.json", IncludePlatform = "Win")]
         public void Should_not_change_absolute_file_path(string filePath)
         {
             SetupFileExists(filePath, "settings file content");
