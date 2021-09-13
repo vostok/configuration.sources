@@ -14,21 +14,6 @@ namespace Vostok.Configuration.Sources.File
             return new StreamReader(stream, encoding);
         }
 
-        public IDisposable WatchFileSystem(string path, string filter, FileSystemEventHandler handler)
-        {
-            var fileWatcher = new FileSystemWatcher(path, filter)
-            {
-                InternalBufferSize = 8192,
-            };
-
-            fileWatcher.Created += handler;
-            fileWatcher.Deleted += handler;
-            fileWatcher.Changed += handler;
-            fileWatcher.Renamed += (sender, args) => handler(sender, args);
-
-            fileWatcher.EnableRaisingEvents = true;
-
-            return fileWatcher;
-        }
+        public IDisposable WatchFileSystem(string path, string filter, FileSystemEventHandler handler) => new ReusableFileSystemWatcher(path, filter, handler);
     }
 }
