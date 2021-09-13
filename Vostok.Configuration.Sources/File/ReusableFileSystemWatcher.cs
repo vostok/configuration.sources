@@ -23,7 +23,9 @@ namespace Vostok.Configuration.Sources.File
             this.filter = filter;
             this.eventHandler = eventHandler;
 
-            periodicalChecker = new AsyncPeriodicalAction(RecreateWatcherIfNeeded, exception => {}, () => CheckPeriod);
+            currentWatcher = TryCreateWatcher();
+
+            periodicalChecker = new AsyncPeriodicalAction(RecreateWatcherIfNeeded, exception => {}, () => CheckPeriod, true);
             periodicalChecker.Start();
         }
 
@@ -58,7 +60,16 @@ namespace Vostok.Configuration.Sources.File
                 return null;
             }
 
-            var fileWatcher = CreateFileWatcher();;
+            FileSystemWatcher fileWatcher;
+
+            try
+            {
+                fileWatcher = CreateFileWatcher();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
 
             // NOTE (tsup): We have to handle situations where the folder was deleted and recreated with a file so that we could see this event as a file change.
             if (lastSeenCreationTime != folder.CreationTime)
