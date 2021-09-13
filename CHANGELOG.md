@@ -1,3 +1,8 @@
+## 0.1.16 (13.09.2021):
+
+- Fixed bug with rooted paths.
+- FileWatcher is now able to handle cases when parent folder is deleted while being observed.
+
 ## 0.1.15 (09.06.2021):
 
 Fixed bug with Rx and debugger for all sources.
