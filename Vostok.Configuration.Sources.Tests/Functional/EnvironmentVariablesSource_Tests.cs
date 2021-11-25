@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using FluentAssertions;
@@ -24,15 +25,18 @@ namespace Vostok.Configuration.Sources.Tests.Functional
 
         private static void CheckResult(ISettingsNode settings)
         {
+            foreach (var k in System.Environment.GetEnvironmentVariables().Keys)
+                Console.WriteLine(k);
+
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                settings["pAtH"].Value.Should().NotBeNull();
-                settings["APPdata"].Value.Should().NotBeNull();
+                (settings["pAtH"]?.Value).Should().NotBeNull();
+                (settings["APPdata"]?.Value).Should().NotBeNull();
             }
             else
             {
-                settings["pAtH"].Value.Should().NotBeNull();
-                settings["sheLL"].Value.Should().NotBeNull();
+                (settings["pAtH"]?.Value).Should().NotBeNull();
+                (settings["sheLL"]?.Value).Should().NotBeNull();
             }
         }
     }
