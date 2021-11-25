@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
@@ -23,19 +24,16 @@ namespace Vostok.Configuration.Sources.Tests.Functional
 
         private static void CheckResult(ISettingsNode settings)
         {
-            var windows = new[] { PlatformID.Win32NT, PlatformID.Win32S, PlatformID.Win32Windows, PlatformID.WinCE };
-            if (windows.Contains(System.Environment.OSVersion.Platform))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 settings["pAtH"].Value.Should().NotBeNull();
                 settings["APPdata"].Value.Should().NotBeNull();
             }
-            else if (System.Environment.OSVersion.Platform == PlatformID.Unix)
+            else
             {
                 settings["pAtH"].Value.Should().NotBeNull();
                 settings["sheLL"].Value.Should().NotBeNull();
             }
-            else
-                throw new NotImplementedException();
         }
     }
 }
