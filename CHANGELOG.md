@@ -1,3 +1,7 @@
+## 0.1.17 (06-12-2021):
+
+Added `net6.0` target.
+
 ## 0.1.16 (13.09.2021):
 
 - Fixed bug with rooted paths.
@@ -30,7 +34,7 @@ TemplatingSource no longer fails on null substitution values.
 
 ## 0.1.9 (08.02.2020):
 
-Added NodeTransformer and ValueNodeTransfomer — helpers for TransformingSource.
+Added NodeTransformer and ValueNodeTransfomer ï¿½ helpers for TransformingSource.
 
 ## 0.1.8 (01.02.2020):
 
