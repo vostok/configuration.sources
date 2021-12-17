@@ -56,11 +56,11 @@ namespace Vostok.Configuration.Sources.Object
             {
                 var itemType = item.GetType();
 
-                if (ToStringDetector.HasCustomToString(itemType))
-                    return new ValueNode(name, item.ToString());
-
                 if (CustomFormatters.TryFormat(item, out var customFormatting))
                     return new ValueNode(name, customFormatting);
+                
+                if (ShouldUseCustomToString(itemType))
+                    return new ValueNode(name, item.ToString());
 
                 if (DictionaryInspector.IsSimpleDictionary(itemType))
                     return ParseDictionary(name, DictionaryInspector.EnumerateSimpleDictionary(item), path, settings);
@@ -105,5 +105,8 @@ namespace Vostok.Configuration.Sources.Object
             var tokens = pairs.Select(pair => ParseObject(pair.Item1, pair.Item2, path, settings)).ToArray();
             return new ObjectNode(name, tokens);
         }
+        
+        private static bool ShouldUseCustomToString(Type itemType) =>
+            ParseMethodFinder.HasAnyKindOfParseMethod(itemType) && ToStringDetector.HasCustomToString(itemType);
     }
 }
