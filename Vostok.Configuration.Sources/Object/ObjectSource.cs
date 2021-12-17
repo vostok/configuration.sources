@@ -7,6 +7,7 @@ using Vostok.Commons.Collections;
 using Vostok.Commons.Formatting;
 using Vostok.Commons.Helpers.Extensions;
 using Vostok.Configuration.Abstractions.SettingsTree;
+using Vostok.Configuration.Helpers;
 using Vostok.Configuration.Sources.Manual;
 
 namespace Vostok.Configuration.Sources.Object
@@ -59,8 +60,8 @@ namespace Vostok.Configuration.Sources.Object
                 if (CustomFormatters.TryFormat(item, out var customFormatting))
                     return new ValueNode(name, customFormatting);
                 
-                if (ShouldUseCustomToString(itemType))
-                    return new ValueNode(name, item.ToString());
+                if (ToStringHelper.TryUseCustomToString(item, itemType, out var asString) )
+                    return new ValueNode(name, asString);
 
                 if (DictionaryInspector.IsSimpleDictionary(itemType))
                     return ParseDictionary(name, DictionaryInspector.EnumerateSimpleDictionary(item), path, settings);
@@ -105,8 +106,5 @@ namespace Vostok.Configuration.Sources.Object
             var tokens = pairs.Select(pair => ParseObject(pair.Item1, pair.Item2, path, settings)).ToArray();
             return new ObjectNode(name, tokens);
         }
-        
-        private static bool ShouldUseCustomToString(Type itemType) =>
-            ParseMethodFinder.HasAnyKindOfParseMethod(itemType) && ToStringDetector.HasCustomToString(itemType);
     }
 }
