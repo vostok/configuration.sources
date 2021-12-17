@@ -60,7 +60,7 @@ namespace Vostok.Configuration.Sources.Object
                 if (CustomFormatters.TryFormat(item, out var customFormatting))
                     return new ValueNode(name, customFormatting);
                 
-                if (ToStringHelper.TryUseCustomToString(item, itemType, out var asString) )
+                if (ParseMethodFinder.HasAnyKindOfParseMethod(itemType) && ToStringDetector.TryInvokeCustomToString(itemType, item, out var asString))
                     return new ValueNode(name, asString);
 
                 if (DictionaryInspector.IsSimpleDictionary(itemType))
