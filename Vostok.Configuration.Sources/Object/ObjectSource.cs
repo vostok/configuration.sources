@@ -7,7 +7,6 @@ using Vostok.Commons.Collections;
 using Vostok.Commons.Formatting;
 using Vostok.Commons.Helpers.Extensions;
 using Vostok.Configuration.Abstractions.SettingsTree;
-using Vostok.Configuration.Helpers;
 using Vostok.Configuration.Sources.Manual;
 
 namespace Vostok.Configuration.Sources.Object
