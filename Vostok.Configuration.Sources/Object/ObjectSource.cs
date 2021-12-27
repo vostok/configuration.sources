@@ -56,11 +56,11 @@ namespace Vostok.Configuration.Sources.Object
             {
                 var itemType = item.GetType();
 
-                if (ToStringDetector.HasCustomToString(itemType))
-                    return new ValueNode(name, item.ToString());
-
                 if (CustomFormatters.TryFormat(item, out var customFormatting))
                     return new ValueNode(name, customFormatting);
+                
+                if (ParseMethodFinder.HasAnyKindOfParseMethod(itemType) && ToStringDetector.TryInvokeCustomToString(itemType, item, out var asString))
+                    return new ValueNode(name, asString);
 
                 if (DictionaryInspector.IsSimpleDictionary(itemType))
                     return ParseDictionary(name, DictionaryInspector.EnumerateSimpleDictionary(item), path, settings);
