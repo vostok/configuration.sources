@@ -1,3 +1,7 @@
+## 0.1.19 (27-12-2021):
+
+Use `ToString` method only when `Parse`/`TryParse` is available.
+
 ## 0.1.18 (06-12-2021):
 
 Added `net6.0` target.
