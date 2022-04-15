@@ -46,12 +46,12 @@
     <PropertyGroup>
       <ILRepackExecutable>dotnet --roll-forward Major "$(MSBuildThisFileDirectory)../../vostok.devtools.ilrepack.bin/netcoreapp2.1/ILRepack.Core.dll"</ILRepackExecutable>
       <BinPath>$(ProjectDir)$(OutputPath)</BinPath>
-      <ResultAssembly>$(BinPath)$(AssemblyName).dll</ResultAssembly>
+      <ResultAssembly>"$(BinPath)$(AssemblyName).dll"</ResultAssembly>
     </PropertyGroup>
     <ItemGroup>
       <MergeAssemblies Include="$(BinPath)System*.dll" />
     </ItemGroup>
-    <Exec WorkingDirectory="$(BinPath)" Command="$(ILRepackExecutable) /internalize /renameInternalized /out:$(ResultAssembly) $(ResultAssembly) @(MergeAssemblies->'%(RelativeDir)%(FileName)%(Extension)', ' ')" />
+    <Exec WorkingDirectory="$(BinPath)" Command="$(ILRepackExecutable) /internalize /renameInternalized /out:$(ResultAssembly) $(ResultAssembly) @(MergeAssemblies->'&quot;%(RelativeDir)%(FileName)%(Extension)&quot;', ' ')" />
     <Delete Files="@(MergeAssemblies)" />
   </Target>
 </Project>
