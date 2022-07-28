@@ -1,0 +1,112 @@
+override Vostok.Configuration.Sources.File.FileSourceSettings.Equals(object obj) -> bool
+override Vostok.Configuration.Sources.File.FileSourceSettings.GetHashCode() -> int
+override Vostok.Configuration.Sources.Transforming.ValueNodeTransformer.TryTransform(Vostok.Configuration.Abstractions.SettingsTree.ValueNode valueNode, out Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode transformedNode) -> bool
+static Vostok.Configuration.Sources.ConfigurationSourceExtensions.CombineWith(this Vostok.Configuration.Abstractions.IConfigurationSource source, params Vostok.Configuration.Abstractions.IConfigurationSource[] others) -> Vostok.Configuration.Abstractions.IConfigurationSource
+static Vostok.Configuration.Sources.ConfigurationSourceExtensions.CombineWith(this Vostok.Configuration.Abstractions.IConfigurationSource source, System.Collections.Generic.IEnumerable<Vostok.Configuration.Abstractions.IConfigurationSource> others, Vostok.Configuration.Abstractions.Merging.SettingsMergeOptions options = null) -> Vostok.Configuration.Abstractions.IConfigurationSource
+static Vostok.Configuration.Sources.ConfigurationSourceExtensions.CombineWith(this Vostok.Configuration.Abstractions.IConfigurationSource source, Vostok.Configuration.Abstractions.IConfigurationSource other, Vostok.Configuration.Abstractions.Merging.SettingsMergeOptions options = null) -> Vostok.Configuration.Abstractions.IConfigurationSource
+static Vostok.Configuration.Sources.ConfigurationSourceExtensions.CombineWith(this Vostok.Configuration.Abstractions.IConfigurationSource source, Vostok.Configuration.Abstractions.Merging.SettingsMergeOptions options, params Vostok.Configuration.Abstractions.IConfigurationSource[] others) -> Vostok.Configuration.Abstractions.IConfigurationSource
+static Vostok.Configuration.Sources.ConfigurationSourceExtensions.Freeze(this Vostok.Configuration.Abstractions.IConfigurationSource source) -> Vostok.Configuration.Abstractions.IConfigurationSource
+static Vostok.Configuration.Sources.ConfigurationSourceExtensions.Nest(this Vostok.Configuration.Abstractions.IConfigurationSource source, params string[] scopes) -> Vostok.Configuration.Abstractions.IConfigurationSource
+static Vostok.Configuration.Sources.ConfigurationSourceExtensions.ScopeTo(this Vostok.Configuration.Abstractions.IConfigurationSource source, params string[] scope) -> Vostok.Configuration.Abstractions.IConfigurationSource
+static Vostok.Configuration.Sources.ConfigurationSourceExtensions.Substitute(this Vostok.Configuration.Abstractions.IConfigurationSource source, params Vostok.Configuration.Sources.Templating.Substitution[] substitutions) -> Vostok.Configuration.Abstractions.IConfigurationSource
+static Vostok.Configuration.Sources.ConfigurationSourceExtensions.Transform(this Vostok.Configuration.Abstractions.IConfigurationSource source, System.Func<Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode, Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode> transform) -> Vostok.Configuration.Abstractions.IConfigurationSource
+static Vostok.Configuration.Sources.ConfigurationSourceExtensions.Transform(this Vostok.Configuration.Abstractions.IConfigurationSource source, Vostok.Configuration.Sources.Transforming.NodeTransformer transformer) -> Vostok.Configuration.Abstractions.IConfigurationSource
+static Vostok.Configuration.Sources.Extensions.Observable.ObservableExtensions.DistinctUntilChanged<TSource, TKey>(this System.IObservable<TSource> source, System.Func<TSource, TKey> keySelector) -> System.IObservable<TSource>
+static Vostok.Configuration.Sources.Extensions.Observable.ObservableExtensions.DistinctUntilChanged<TSource>(this System.IObservable<TSource> source) -> System.IObservable<TSource>
+static Vostok.Configuration.Sources.Extensions.Observable.ObservableExtensions.Select<TSource, TResult>(this System.IObservable<TSource> source, System.Func<TSource, TResult> selector) -> System.IObservable<TResult>
+static Vostok.Configuration.Sources.Extensions.Observable.ObservableExtensions.Where<TSource>(this System.IObservable<TSource> source, System.Func<TSource, bool> predicate) -> System.IObservable<TSource>
+static Vostok.Configuration.Sources.Helpers.ObservableExtensions.SelectValueOrError<TSource, TResult>(this System.IObservable<(TSource, System.Exception)> source, System.Func<TSource, TResult> selector) -> System.IObservable<(TResult value, System.Exception error)>
+static Vostok.Configuration.Sources.Helpers.ObservableExtensions.SelectValueOrError<TSource, TResult>(this System.IObservable<TSource> source, System.Func<TSource, TResult> selector) -> System.IObservable<(TResult value, System.Exception error)>
+static Vostok.Configuration.Sources.Helpers.ObservableHelpers.PeriodicalSignalsFromNow(System.TimeSpan period) -> System.IObservable<object>
+static Vostok.Configuration.Sources.SettingsTree.TreeFactory.CreateTreeByMultiLevelKey(string rootName, string[] keys, string value) -> Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode
+static Vostok.Configuration.Sources.SettingsTree.TreeFactory.CreateTreeByMultiLevelKey(string rootName, string[] keys, string[] values) -> Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode
+static Vostok.Configuration.Sources.SettingsTree.TreeFactory.CreateTreeByMultiLevelKey(string rootName, System.Collections.Generic.IEnumerable<string> keys, Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode value) -> Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode
+virtual Vostok.Configuration.Sources.Transforming.NodeTransformer.TryTransform(Vostok.Configuration.Abstractions.SettingsTree.ArrayNode arrayNode, out Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode transformedNode) -> bool
+virtual Vostok.Configuration.Sources.Transforming.NodeTransformer.TryTransform(Vostok.Configuration.Abstractions.SettingsTree.ObjectNode objectNode, out Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode transformedNode) -> bool
+virtual Vostok.Configuration.Sources.Transforming.NodeTransformer.TryTransform(Vostok.Configuration.Abstractions.SettingsTree.ValueNode valueNode, out Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode transformedNode) -> bool
+Vostok.Configuration.Sources.Combined.CombinedSource
+Vostok.Configuration.Sources.Combined.CombinedSource.CombinedSource(params Vostok.Configuration.Abstractions.IConfigurationSource[] sources) -> void
+Vostok.Configuration.Sources.Combined.CombinedSource.CombinedSource(System.Collections.Generic.IEnumerable<Vostok.Configuration.Abstractions.IConfigurationSource> sources, Vostok.Configuration.Abstractions.Merging.SettingsMergeOptions options) -> void
+Vostok.Configuration.Sources.Combined.CombinedSource.Observe() -> System.IObservable<(Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode settings, System.Exception error)>
+Vostok.Configuration.Sources.CommandLine.CommandLineSource
+Vostok.Configuration.Sources.CommandLine.CommandLineSource.CommandLineSource(string[] args) -> void
+Vostok.Configuration.Sources.CommandLine.CommandLineSource.CommandLineSource(string[] args, string defaultKey, string defaultValue) -> void
+Vostok.Configuration.Sources.ConfigurationSourceExtensions
+Vostok.Configuration.Sources.Constant.ConstantSource
+Vostok.Configuration.Sources.Constant.ConstantSource.ConstantSource(Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode settings) -> void
+Vostok.Configuration.Sources.Constant.ConstantSource.Observe() -> System.IObservable<(Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode settings, System.Exception error)>
+Vostok.Configuration.Sources.Constant.LazyConstantSource
+Vostok.Configuration.Sources.Constant.LazyConstantSource.LazyConstantSource(System.Func<Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode> settingsGetter) -> void
+Vostok.Configuration.Sources.Constant.LazyConstantSource.Observe() -> System.IObservable<(Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode settings, System.Exception error)>
+Vostok.Configuration.Sources.Environment.EnvironmentVariablesSource
+Vostok.Configuration.Sources.Environment.EnvironmentVariablesSource.EnvironmentVariablesSource() -> void
+Vostok.Configuration.Sources.Extensions.Observable.ObservableExtensions
+Vostok.Configuration.Sources.File.FileSource
+Vostok.Configuration.Sources.File.FileSource.FileSource(Vostok.Configuration.Sources.File.FileSourceSettings settings, System.Func<string, Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode> parseSettings) -> void
+Vostok.Configuration.Sources.File.FileSource.Observe() -> System.IObservable<(Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode settings, System.Exception error)>
+Vostok.Configuration.Sources.File.FileSourceSettings
+Vostok.Configuration.Sources.File.FileSourceSettings.Encoding.get -> System.Text.Encoding
+Vostok.Configuration.Sources.File.FileSourceSettings.Encoding.set -> void
+Vostok.Configuration.Sources.File.FileSourceSettings.Equals(Vostok.Configuration.Sources.File.FileSourceSettings other) -> bool
+Vostok.Configuration.Sources.File.FileSourceSettings.FilePath.get -> string
+Vostok.Configuration.Sources.File.FileSourceSettings.FileSourceSettings(string filePath) -> void
+Vostok.Configuration.Sources.File.FileSourceSettings.FileWatcherPeriod.get -> System.TimeSpan
+Vostok.Configuration.Sources.File.FileSourceSettings.FileWatcherPeriod.set -> void
+Vostok.Configuration.Sources.Frozen.FrozenSource
+Vostok.Configuration.Sources.Frozen.FrozenSource.FrozenSource(Vostok.Configuration.Abstractions.IConfigurationSource source) -> void
+Vostok.Configuration.Sources.Frozen.FrozenSource.Observe() -> System.IObservable<(Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode settings, System.Exception error)>
+Vostok.Configuration.Sources.Helpers.ObservableExtensions
+Vostok.Configuration.Sources.Helpers.ObservableHelpers
+Vostok.Configuration.Sources.Manual.ManualFeedSource
+Vostok.Configuration.Sources.Manual.ManualFeedSource.ManualFeedSource() -> void
+Vostok.Configuration.Sources.Manual.ManualFeedSource.ManualFeedSource(Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode initialSettings) -> void
+Vostok.Configuration.Sources.Manual.ManualFeedSource.Observe() -> System.IObservable<(Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode settings, System.Exception error)>
+Vostok.Configuration.Sources.Manual.ManualFeedSource.Push(Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode settings, System.Exception error = null) -> void
+Vostok.Configuration.Sources.Manual.ManualFeedSource<T>
+Vostok.Configuration.Sources.Manual.ManualFeedSource<T>.ManualFeedSource(System.Func<T, Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode> transform) -> void
+Vostok.Configuration.Sources.Manual.ManualFeedSource<T>.Observe() -> System.IObservable<(Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode settings, System.Exception error)>
+Vostok.Configuration.Sources.Manual.ManualFeedSource<T>.Push(T value) -> void
+Vostok.Configuration.Sources.Nesting.NestingSource
+Vostok.Configuration.Sources.Nesting.NestingSource.NestingSource(Vostok.Configuration.Abstractions.IConfigurationSource baseSource, params string[] scopes) -> void
+Vostok.Configuration.Sources.Object.ObjectSource
+Vostok.Configuration.Sources.Object.ObjectSource.ObjectSource(object source, Vostok.Configuration.Sources.Object.ObjectSourceSettings settings = null) -> void
+Vostok.Configuration.Sources.Object.ObjectSource.ObjectSource(Vostok.Configuration.Sources.Object.ObjectSourceSettings settings = null) -> void
+Vostok.Configuration.Sources.Object.ObjectSourceSettings
+Vostok.Configuration.Sources.Object.ObjectSourceSettings.IgnoreFieldsWithNullValue.get -> bool
+Vostok.Configuration.Sources.Object.ObjectSourceSettings.IgnoreFieldsWithNullValue.set -> void
+Vostok.Configuration.Sources.Object.ObjectSourceSettings.ObjectSourceSettings() -> void
+Vostok.Configuration.Sources.Scoped.ScopedSource
+Vostok.Configuration.Sources.Scoped.ScopedSource.Observe() -> System.IObservable<(Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode settings, System.Exception error)>
+Vostok.Configuration.Sources.Scoped.ScopedSource.ScopedSource(Vostok.Configuration.Abstractions.IConfigurationSource source, params string[] scope) -> void
+Vostok.Configuration.Sources.SettingsTree.TreeFactory
+Vostok.Configuration.Sources.Switching.SwitchingSource
+Vostok.Configuration.Sources.Switching.SwitchingSource.CurrentSource.get -> Vostok.Configuration.Abstractions.IConfigurationSource
+Vostok.Configuration.Sources.Switching.SwitchingSource.Observe() -> System.IObservable<(Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode settings, System.Exception error)>
+Vostok.Configuration.Sources.Switching.SwitchingSource.SwitchingSource(Vostok.Configuration.Abstractions.IConfigurationSource initialSource) -> void
+Vostok.Configuration.Sources.Switching.SwitchingSource.SwitchTo(System.Func<Vostok.Configuration.Abstractions.IConfigurationSource, Vostok.Configuration.Abstractions.IConfigurationSource> transform) -> void
+Vostok.Configuration.Sources.Switching.SwitchingSource.SwitchTo(Vostok.Configuration.Abstractions.IConfigurationSource newSource) -> void
+Vostok.Configuration.Sources.Templating.Substitution
+Vostok.Configuration.Sources.Templating.Substitution.Name.get -> string
+Vostok.Configuration.Sources.Templating.Substitution.Substitution(string name, string value) -> void
+Vostok.Configuration.Sources.Templating.Substitution.Substitution(string name, System.Func<string> valueProvider) -> void
+Vostok.Configuration.Sources.Templating.Substitution.Value.get -> string
+Vostok.Configuration.Sources.Templating.TemplatingSource
+Vostok.Configuration.Sources.Templating.TemplatingSource.TemplatingSource(Vostok.Configuration.Abstractions.IConfigurationSource baseSource, Vostok.Configuration.Sources.Templating.TemplatingSourceOptions options) -> void
+Vostok.Configuration.Sources.Templating.TemplatingSourceOptions
+Vostok.Configuration.Sources.Templating.TemplatingSourceOptions.Substitutions.get -> System.Collections.Generic.IReadOnlyList<Vostok.Configuration.Sources.Templating.Substitution>
+Vostok.Configuration.Sources.Templating.TemplatingSourceOptions.TemplatingSourceOptions(System.Collections.Generic.IReadOnlyList<Vostok.Configuration.Sources.Templating.Substitution> substitutions) -> void
+Vostok.Configuration.Sources.Transforming.NodeTransformer
+Vostok.Configuration.Sources.Transforming.NodeTransformer.NodeTransformer() -> void
+Vostok.Configuration.Sources.Transforming.NodeTransformer.Transform(Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode node) -> Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode
+Vostok.Configuration.Sources.Transforming.TransformingSource
+Vostok.Configuration.Sources.Transforming.TransformingSource.Observe() -> System.IObservable<(Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode settings, System.Exception error)>
+Vostok.Configuration.Sources.Transforming.TransformingSource.TransformingSource(Vostok.Configuration.Abstractions.IConfigurationSource baseSource, System.Func<Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode, Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode> treeTransform) -> void
+Vostok.Configuration.Sources.Transforming.TransformingSource.TransformingSource(Vostok.Configuration.Abstractions.IConfigurationSource baseSource, Vostok.Configuration.Sources.Transforming.NodeTransformer transformer) -> void
+Vostok.Configuration.Sources.Transforming.ValueNodeTransformer
+Vostok.Configuration.Sources.Transforming.ValueNodeTransformer.ValueNodeTransformer(System.Func<Vostok.Configuration.Abstractions.SettingsTree.ValueNode, Vostok.Configuration.Abstractions.SettingsTree.ISettingsNode> transform) -> void
+Vostok.Configuration.Sources.Watchers.IWatcherFactory<TSettings, TValue>
+Vostok.Configuration.Sources.Watchers.IWatcherFactory<TSettings, TValue>.CreateWatcher(TSettings settings) -> System.IObservable<(TValue value, System.Exception error)>
+Vostok.Configuration.Sources.Watchers.WatcherCache<TKey, TValue>
+Vostok.Configuration.Sources.Watchers.WatcherCache<TKey, TValue>.Watch(TKey key) -> System.IObservable<(TValue value, System.Exception error)>
+Vostok.Configuration.Sources.Watchers.WatcherCache<TKey, TValue>.WatcherCache(Vostok.Configuration.Sources.Watchers.IWatcherFactory<TKey, TValue> factory) -> void
+Vostok.Configuration.Sources.Watchers.WatcherCache<TKey, TValue>.WatcherCache(Vostok.Configuration.Sources.Watchers.IWatcherFactory<TKey, TValue> factory, System.Collections.Generic.IEqualityComparer<TKey> comparer) -> void
