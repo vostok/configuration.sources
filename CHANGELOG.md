@@ -1,3 +1,7 @@
+## 0.1.20 (12-12-2024): 
+
+Bump NuGet deps versions
+
 ## 0.1.19 (27-12-2021):
 
 Use `ToString` method only when `Parse`/`TryParse` is available.
