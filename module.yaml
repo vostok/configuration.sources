@@ -8,6 +8,22 @@ notests *default:
   install:
     - Vostok.Configuration.Sources/bin/Release/netstandard2.0/Vostok.Configuration.Sources.dll
     - module vostok.configuration.abstractions
+    - groups:
+        - target-framework: "netstandard2.0"
+          libraries:
+            - Vostok.Configuration.Sources/bin/Release/netstandard2.0/Vostok.Configuration.Sources.dll
+          modules:
+            - name: vostok.configuration.abstractions
+        - target-framework: "net6.0"
+          libraries:
+            - Vostok.Configuration.Sources/bin/Release/net6.0/Vostok.Configuration.Sources.dll
+          modules:
+            - name: vostok.configuration.abstractions
+        - target-framework: "net8.0"
+          libraries:
+            - Vostok.Configuration.Sources/bin/Release/net8.0/Vostok.Configuration.Sources.dll
+          modules:
+            - name: vostok.configuration.abstractions
 
   deps:
     - vostok.devtools
@@ -23,6 +39,28 @@ full-build > notests:
     - vostok.devtools@with-net6.0
     - vostok.commons.testing/src
 
+  install:
+    - Vostok.Configuration.Sources/bin/Release/netstandard2.0/Vostok.Configuration.Sources.dll
+    - module vostok.configuration.abstractions
+    - groups:
+        - target-framework: "netstandard2.0"
+          libraries:
+            - Vostok.Configuration.Sources/bin/Release/netstandard2.0/Vostok.Configuration.Sources.dll
+          modules:
+            - name: vostok.configuration.abstractions
+        - target-framework: "net6.0"
+          libraries:
+            - Vostok.Configuration.Sources/bin/Release/net6.0/Vostok.Configuration.Sources.dll
+          modules:
+            - name: vostok.configuration.abstractions
+        - target-framework: "net8.0"
+          libraries:
+            - Vostok.Configuration.Sources/bin/Release/net8.0/Vostok.Configuration.Sources.dll
+          modules:
+            - name: vostok.configuration.abstractions
+
   build:
     target: Vostok.Configuration.Sources.sln
     configuration: Release
+    tool:
+      name: dotnet
